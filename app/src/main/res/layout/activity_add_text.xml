@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/_5sdp"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".AddTextActivity">
+    <include layout="@layout/custom_action_bar" />
+
+    <EditText
+        android:id="@+id/edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_350sdp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:hint=" Enter the Caption "
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:inputType="textMultiLine"
+        android:maxLines="5"
+        android:gravity="top"
+        android:textSize="@dimen/_15sdp" />
+
+</LinearLayout>

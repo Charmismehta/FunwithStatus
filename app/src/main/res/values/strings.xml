@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Fun with Status</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="TEXTVIEW">This is Text View</string>
+    <string name="Image">This is Image View</string>
+    <string name="Video">This is Video view</string>
+    <string name="hello_world">hello</string>
+    <string name="title_activity_display_image">DisplayImage</string>
+</resources>

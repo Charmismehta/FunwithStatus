@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/_40sdp"
+    android:layout_marginRight="@dimen/_40sdp"
+    android:layout_marginTop="@dimen/_15sdp">
+
+
+        <EditText
+            android:id="@+id/edit_caption"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_350sdp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint=" Enter the Caption "
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:inputType="textMultiLine"
+            android:maxLines="5"
+            android:gravity="top"
+            android:textSize="@dimen/_15sdp" />
+        <ImageView
+            android:id="@+id/button_caption_send"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_gravity="center"
+            android:src="@drawable/send" />
+</LinearLayout>
