@@ -22,7 +22,7 @@
                 android:navigationIcon="@drawable/navigation"
                 android:textAlignment="center"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:titleTextColor="@color/black">
+                app:titleTextColor="@color/white">
             </android.support.v7.widget.Toolbar>
 
         </FrameLayout>

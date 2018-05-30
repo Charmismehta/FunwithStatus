@@ -4,6 +4,8 @@ import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.addstatus.AddStatus;
 import com.epsilon.FunwithStatus.jsonpojo.category_text.Category;
 import com.epsilon.FunwithStatus.jsonpojo.dislike.DisLike;
+import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
+import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.utills.ServerURl;
 import com.epsilon.FunwithStatus.jsonpojo.login.Login;
@@ -69,5 +71,13 @@ public interface APIInterface {
                               @Field("email") String email,
                               @Field("status_id") String status_id,
                               @Field("status") String status);
+
+    @GET(ServerURl.IMAGECATEGORY)
+    Call<ImageCategory> imagepojo();
+
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.IMAGELIST)
+    Call<ImageList> imagelistpojo(@Field("subcata") String subcata);
 
 }

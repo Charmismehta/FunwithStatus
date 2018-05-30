@@ -37,6 +37,9 @@ public class HomeFragment extends Fragment {
     ListView textlist_view;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     List<CategoryDatum> data;
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

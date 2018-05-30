@@ -11,5 +11,7 @@ public class ServerURl {
     public static final String ADDSTATUS = "add_status.php";
     public static final String ADDLIKE = "like_status.php";
     public static final String DISLIKE = "dislike_status.php";
+    public static final String IMAGECATEGORY = "image_category.php";
+    public static final String IMAGELIST = "show_images.php";
 
 }

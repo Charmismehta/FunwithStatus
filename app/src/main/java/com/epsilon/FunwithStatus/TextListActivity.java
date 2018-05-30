@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +18,8 @@ import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.adapter.TextAdapter;
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
+import com.epsilon.FunwithStatus.fragment.HomeFragment;
+import com.epsilon.FunwithStatus.fragment.ImageFragment;
 import com.epsilon.FunwithStatus.jsonpojo.category_text.Category;
 import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
@@ -38,6 +43,7 @@ public class TextListActivity extends AppCompatActivity {
     Activity context;
     ImageView ileft, iright;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +67,13 @@ public class TextListActivity extends AppCompatActivity {
         ileft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent it = new Intent(TextListActivity.this, Dashboard.class);
-                startActivity(it);
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+                {
+                    getSupportFragmentManager().popBackStack();
+                } else
+                {
+                   finish();
+                }
             }
         });
         lv_text_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -123,9 +134,12 @@ public class TextListActivity extends AppCompatActivity {
         });
     }
     public void onBackPressed() {
-        Intent it = new Intent(TextListActivity.this, Dashboard.class);
-        startActivity(it);
-        finish();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+        {
+            getSupportFragmentManager().popBackStack();
+        } else
+            {
+                this.finish();
+            }
     }
-
 }

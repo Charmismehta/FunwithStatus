@@ -16,12 +16,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.ImageConverter;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Random;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ImageListAdapter extends BaseAdapter {
     Activity activity;
@@ -35,12 +39,12 @@ public class ImageListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 8;
+        return Constants.imageListData.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return i;
+        return Constants.imageListData;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class ImageListAdapter extends BaseAdapter {
 
         final MyViewHolder viewHolder;
         if (view == null) {
-            view = inflater.inflate(R.layout.image_item, viewGroup, false);
+            view = inflater.inflate(R.layout.subimage_item, viewGroup, false);
             viewHolder = new MyViewHolder(view);
             view.setTag(viewHolder);
 
@@ -61,14 +65,8 @@ public class ImageListAdapter extends BaseAdapter {
         } else {
             viewHolder = (MyViewHolder) view.getTag();
         }
-
-        final Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.a);
-        Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(bitmap, 100);
-
-
-        viewHolder.tvimage.setImageBitmap(circularBitmap);
-
-
+            Glide.with(activity).load(Constants.imageListData.get(i).getImage()).placeholder(R.drawable.icon).into(viewHolder.tvimage);
+//            viewHolder.tvimage_name.setText(Constants.imageListData.get(i).getSubcata());
         return view;
     }
 

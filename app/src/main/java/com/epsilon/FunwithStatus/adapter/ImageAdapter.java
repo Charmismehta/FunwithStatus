@@ -19,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.ImageConverter;
 
@@ -42,12 +44,12 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 8;
+        return Constants.imageCategoryData.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return i;
+        return Constants.imageCategoryData.get(i);
     }
 
     @Override
@@ -68,14 +70,8 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             viewHolder = (MyViewHolder) view.getTag();
         }
-
-        final Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.a);
-        Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(bitmap, 100);
-
-
-        viewHolder.tvimage.setImageBitmap(circularBitmap);
-
-
+        Glide.with(activity).load(Constants.imageCategoryData.get(i).getImage()).placeholder(R.drawable.icon).into(viewHolder.tvimage);
+        viewHolder.tvimage_name.setText(Constants.imageCategoryData.get(i).getName());
         return view;
     }
 

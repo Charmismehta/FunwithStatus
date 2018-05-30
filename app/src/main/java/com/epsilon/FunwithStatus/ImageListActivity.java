@@ -2,6 +2,7 @@ package com.epsilon.FunwithStatus;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -26,11 +27,24 @@ import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.adapter.ImageAdapter;
 import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
+import com.epsilon.FunwithStatus.adapter.SubCatImageAdapter;
+import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
+import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageSubcategory;
+import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
+import com.epsilon.FunwithStatus.utills.Constants;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ImageListActivity extends AppCompatActivity {
 
@@ -38,13 +52,14 @@ public class ImageListActivity extends AppCompatActivity {
     GridView imagelistgrid_view;
     ImageView ileft, iright;
     TextView title;
-    String post_files;
+    String subcat;
     File fileGallery;
     public static final int GALLARY_REQUEST = 2;
     public static final int MY_PERMISSIONS_REQUEST_GALLARY = 11;
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
     public static final int CAMERA_CROP_RESULT = 10;
     private final int RESULT_CROP = 40;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +67,17 @@ public class ImageListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_list);
         context = this;
         idMappings();
+
+        Intent mIntent = getIntent();
+        int i = mIntent.getIntExtra("position", 0);
+            subcat = Constants.imageSubcategories.get(i).getName();
+            Imagecategory(subcat);
+
         imagelistgrid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent it = new Intent(ImageListActivity.this, DisplayImage.class);
+                it.putExtra("pic",Constants.imageListData.get(position).getImage());
                 startActivity(it);
             }
         });
@@ -63,7 +85,7 @@ public class ImageListActivity extends AppCompatActivity {
         ileft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(ImageListActivity.this, Dashboard.class);
+                Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
                 startActivity(it);
                 finish();
             }
@@ -127,10 +149,6 @@ public class ImageListActivity extends AppCompatActivity {
                 // to the app after tapping on an ad.
             }
         });
-    }
-
-    private void Listners() {
-
     }
 
     private void idMappings() {
@@ -280,9 +298,30 @@ public class ImageListActivity extends AppCompatActivity {
 
     }
 
-    public void onBackPressed() {
-        Intent it = new Intent(ImageListActivity.this, Dashboard.class);
-        startActivity(it);
-        finish();
+    public void Imagecategory(String subcat) {
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<ImageList> countrycall = apiInterface.imagelistpojo(subcat);
+        countrycall.enqueue(new Callback<ImageList>() {
+            @Override
+            public void onResponse(Call<ImageList> call, Response<ImageList> response) {
+                dialog.dismiss();
+
+                if (Constants.imageListData != null) {
+                    Constants.imageListData.clear();
+                }
+                Constants.imageListData.addAll(response.body().getImages());
+                ImageListAdapter adapter = new ImageListAdapter(context);
+                imagelistgrid_view.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Call<ImageList> call, Throwable t) {
+                dialog.dismiss();
+            }
+        });
     }
+
 }

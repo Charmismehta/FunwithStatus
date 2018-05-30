@@ -3,6 +3,7 @@ package com.epsilon.FunwithStatus;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -27,6 +29,7 @@ import com.epsilon.FunwithStatus.fragment.VideoFragment;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -39,19 +42,24 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
     NavigationView navigationView;
     Fragment fragment = null;
     String passStr;
+    Sessionmanager sessionmanager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         activity = this;
+        sessionmanager = new Sessionmanager(activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.navigation);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_navigation);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        String text = sessionmanager.getValue(Sessionmanager.Name);
+        String cap = text.substring(0, 1).toUpperCase() + text.substring(1);
+        toolbar.setTitle(cap);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mainbtn = (LinearLayout) findViewById(R.id.mainbtn);
-
 
 
         fragment = new MainFragment();
@@ -109,8 +117,7 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
 
             @Override
             public void run() {
-                System.exit(0);
-                doubleBackToExitPressedOnce = false;
+                doubleBackToExitPressedOnce=false;
             }
         }, 2000);
     }
@@ -166,6 +173,11 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
             case R.id.nav_feedback:
 
             case R.id.nav_logout:
+                sessionmanager.logoutUser();
+                Intent i = new Intent(Dashboard.this, LoginPage.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
 
         }
 
@@ -173,6 +185,7 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, fragment);
+            ft.addToBackStack("Some String").commit();
             ft.commit();
         }
 

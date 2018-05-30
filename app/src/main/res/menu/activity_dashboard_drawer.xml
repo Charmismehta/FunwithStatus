@@ -13,36 +13,36 @@
 
         <item
             android:id="@+id/nav_text"
-            android:icon="@drawable/textword"
+            android:icon="@drawable/vc_text"
             android:title="Text" />
 
         <item
             android:id="@+id/nav_image"
-            android:icon="@drawable/contactus"
+            android:icon="@drawable/vc_image"
             android:title="Image" />
         <item
             android:id="@+id/nav_Video"
-            android:icon="@drawable/contactus"
+            android:icon="@drawable/vc_video"
             android:title="Video" />
 
 
         <item
             android:id="@+id/nav_Contact"
-            android:icon="@drawable/contactus"
+            android:icon="@drawable/vc_contact"
             android:title="Contacts" />
 
         <item
             android:id="@+id/nav_about_us"
-            android:icon="@drawable/aboutus"
+            android:icon="@drawable/vc_aboutus"
             android:title="About us" />
         <item
             android:id="@+id/nav_feedback"
-            android:icon="@drawable/feedback"
+            android:icon="@drawable/vc_feedback"
             android:title="Feedback" />
 
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/logout"
+            android:icon="@drawable/vc_logout"
             android:title="Logout" />
 
     </group>
