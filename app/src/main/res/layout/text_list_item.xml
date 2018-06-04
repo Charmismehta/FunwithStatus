@@ -5,12 +5,11 @@
     android:id="@+id/lplaygrid_item"
     android:paddingLeft="@dimen/_15sdp"
     android:paddingRight="@dimen/_15sdp"
-
     android:paddingTop="@dimen/_10sdp"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <com.rockerhieu.emojicon.EmojiconTextView
         android:id="@+id/tvtext_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +19,8 @@
         android:textColor="#000"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_10sdp"
         android:orientation="horizontal">
@@ -41,7 +41,18 @@
             android:textSize="@dimen/_8sdp"
             tools:text="1" />
 
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/_150sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10sdp"
+            tools:text="charmis" />
 
     </LinearLayout>
+
+
 
 </LinearLayout>

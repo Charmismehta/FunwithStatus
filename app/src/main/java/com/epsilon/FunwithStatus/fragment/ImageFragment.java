@@ -1,60 +1,37 @@
 package com.epsilon.FunwithStatus.fragment;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.epsilon.FunwithStatus.GallaryUtils;
-import com.epsilon.FunwithStatus.ImageListActivity;
+import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.SubCatImage;
-import com.epsilon.FunwithStatus.adapter.ImageAdapter;
-import com.epsilon.FunwithStatus.adapter.TextAdapter;
-import com.epsilon.FunwithStatus.jsonpojo.category_text.Category;
-import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
-import com.epsilon.FunwithStatus.retrofit.APIClient;
-import com.epsilon.FunwithStatus.retrofit.APIInterface;
-import com.epsilon.FunwithStatus.utills.Constants;
-import com.epsilon.FunwithStatus.utills.Helper;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.epsilon.FunwithStatus.adapter.AlbumsAdapter;
+import com.epsilon.FunwithStatus.utills.Album;
 
-import java.io.File;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ImageFragment extends Fragment {
 
+    private RecyclerView recyclerView;
+    private AlbumsAdapter adapter;
+    private List<Album> albumList;
     Activity context;
-    GridView imagegrid_view;
-    ImageView plus;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,84 +44,146 @@ public class ImageFragment extends Fragment {
 
 
         context = getActivity();
-        plus = (ImageView)view.findViewById(R.id.plus);
-        imagegrid_view = (GridView)view.findViewById(R.id.imagegrid_view);
+        initCollapsingToolbar(view);
 
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
-        if (!Helper.isConnectingToInternet(context)) {
-            Helper.showToastMessage(context, "Please Connect Internet");
-        } else {
-            Imagecategory();
+        albumList = new ArrayList<>();
+        adapter = new AlbumsAdapter(getActivity(), albumList);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+
+        prepareAlbums();
+
+        try {
+            Glide.with(this).load(R.drawable.cover1).into((ImageView)view.findViewById(R.id.backdrop));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return view;
+
+    }
+
+    /**
+     * Initializing collapsing toolbar
+     * Will show and hide the toolbar title on scroll
+     */
+    private void initCollapsingToolbar(View view) {
+        final CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout)view.findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle(" ");
+        AppBarLayout appBarLayout = (AppBarLayout)view.findViewById(R.id.appbar);
+        appBarLayout.setExpanded(true);
+
+        // hiding & showing the title when toolbar expanded & collapsed
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbar.setTitle(getString(R.string.app_name));
+                    isShow = true;
+                } else if (isShow) {
+                    collapsingToolbar.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
+    }
+
+    /**
+     * Adding few albums for testing
+     */
+    private void prepareAlbums() {
+        int[] covers = new int[]{
+                R.drawable.trending,
+                R.drawable.laughter,
+                R.drawable.emotions,
+                R.drawable.life,
+                R.drawable.wishes,
+                R.drawable.sports,
+                R.drawable.language,
+                R.drawable.entertainment};
+
+        Album a = new Album("Tranding", 1, covers[0]);
+        albumList.add(a);
+
+        a = new Album("Laughter", 2, covers[1]);
+        albumList.add(a);
+
+        a = new Album("Emotions", 5, covers[2]);
+        albumList.add(a);
+
+        a = new Album("Life", 4, covers[3]);
+        albumList.add(a);
+
+        a = new Album("Wishes", 5, covers[4]);
+        albumList.add(a);
+
+        a = new Album("Sports", 2, covers[5]);
+        albumList.add(a);
+
+        a = new Album("Language", 3, covers[6]);
+        albumList.add(a);
+
+        a = new Album("Entertainment", 14, covers[7]);
+        albumList.add(a);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * RecyclerView item decoration - give equal margin around grid item
+     */
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
         }
 
-        imagegrid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent it = new Intent(getActivity(), SubCatImage.class);
-                it.putExtra("position",position);
-                startActivity(it);
-            }
-        });
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
 
-        AdView mAdView = view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
 
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the user is about to return
-                // to the app after tapping on an ad.
-            }
-        });
-        return view;
-    }
-    public void Imagecategory() {
-        final ProgressDialog dialog = new ProgressDialog(context);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<ImageCategory> countrycall = apiInterface.imagepojo();
-        countrycall.enqueue(new Callback<ImageCategory>() {
-            @Override
-            public void onResponse(Call<ImageCategory> call, Response<ImageCategory> response) {
-                dialog.dismiss();
-
-                if (Constants.imageCategoryData != null) {
-                    Constants.imageCategoryData.clear();
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
                 }
-                Constants.imageCategoryData.addAll(response.body().getCatagory());
-                ImageAdapter adapter = new ImageAdapter(context);
-                imagegrid_view.setAdapter(adapter);
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
             }
+        }
+    }
 
-            @Override
-            public void onFailure(Call<ImageCategory> call, Throwable t) {
-                dialog.dismiss();
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
 }

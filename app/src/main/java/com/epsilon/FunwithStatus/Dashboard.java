@@ -1,27 +1,24 @@
 package com.epsilon.FunwithStatus;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
+
+import com.epsilon.FunwithStatus.fragment.AboutusFragment;
+import com.epsilon.FunwithStatus.fragment.ContactUsFragment;
 import com.epsilon.FunwithStatus.fragment.HomeFragment;
 import com.epsilon.FunwithStatus.fragment.ImageFragment;
 import com.epsilon.FunwithStatus.fragment.MainFragment;
@@ -30,19 +27,17 @@ import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
-public class Dashboard extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Context activity;
     DrawerLayout drawer;
     LinearLayout mainbtn;
-    String nav_item_intent=null;
+    String nav_item_intent = null;
     NavigationView navigationView;
     Fragment fragment = null;
     String passStr;
     Sessionmanager sessionmanager;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,43 +56,17 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mainbtn = (LinearLayout) findViewById(R.id.mainbtn);
 
-
         fragment = new MainFragment();
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, fragment);
+            ft.addToBackStack("Some String");
             ft.commit();
         }
-        nav_item_intent=getIntent().getStringExtra(Constants.NAV_ITEM_INTENT);
-        navigationView= (NavigationView) findViewById(R.id.nav_view);
+        nav_item_intent = getIntent().getStringExtra(Constants.NAV_ITEM_INTENT);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View hView =  navigationView.getHeaderView(0);
-
-
-//
-//
-//
-//            if(nav_item_intent!=null)
-//            {
-//                if(nav_item_intent.equals("nav_profile"))
-//                {
-//                    displaySelectedScreen(R.id.nav_home);
-//                    navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
-//
-//                }
-//                else
-//                {
-//                    displaySelectedScreen(R.id.nav_chat);
-//                    navigationView.getMenu().findItem(R.id.nav_chat).setChecked(true);
-//
-//                }
-//            }
-//            else
-//            {
-//                displaySelectedScreen(R.id.nav_chat);
-//                navigationView.getMenu().findItem(R.id.nav_chat).setChecked(true);
-//
-//            }
+        View hView = navigationView.getHeaderView(0);
 
     }
 
@@ -117,7 +86,7 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
 
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }
@@ -145,6 +114,7 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void displaySelectedScreen(int itemId) {
 
 
@@ -167,10 +137,19 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
                 break;
 
             case R.id.nav_Contact:
+                fragment = new ContactUsFragment();
+                break;
 
             case R.id.nav_about_us:
+                fragment = new AboutusFragment();
+                break;
 
             case R.id.nav_feedback:
+                Intent viewIntent =
+                        new Intent("android.intent.action.VIEW",
+                                Uri.parse("https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus"));
+                startActivity(viewIntent);
+                break;
 
             case R.id.nav_logout:
                 sessionmanager.logoutUser();
@@ -178,6 +157,7 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
+                break;
 
         }
 
@@ -185,7 +165,7 @@ public class Dashboard extends AppCompatActivity  implements NavigationView.OnNa
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, fragment);
-            ft.addToBackStack("Some String").commit();
+            ft.addToBackStack("Some String");
             ft.commit();
         }
 

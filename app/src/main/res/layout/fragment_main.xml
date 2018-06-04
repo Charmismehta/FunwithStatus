@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dbbackground"
     tools:context=".fragment.MainFragment">
 
     <LinearLayout
@@ -14,7 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/_140sdp"
-            android:background="@drawable/dbbd"
+            android:background="@drawable/bg"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
@@ -23,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/dbbackground"
+        android:background="@color/background"
         >
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,7 +56,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Text"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
@@ -79,12 +78,12 @@
                         android:src="@drawable/vc_image" />
 
                     <TextView
-                        android:layout_marginTop="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_7sdp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Image"
-                        android:textColor="@color/white"
+                        android:text="Images"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
@@ -117,8 +116,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Video"
-                        android:textColor="@color/white"
+                        android:text="Videos"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
@@ -145,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Help"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
@@ -166,7 +165,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="0dp"
-            ads:adSize="BANNER"
+            ads:adSize="SMART_BANNER"
             ads:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>
 
     </LinearLayout>

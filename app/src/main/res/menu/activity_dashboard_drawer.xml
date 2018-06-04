@@ -19,11 +19,11 @@
         <item
             android:id="@+id/nav_image"
             android:icon="@drawable/vc_image"
-            android:title="Image" />
+            android:title="Images" />
         <item
             android:id="@+id/nav_Video"
             android:icon="@drawable/vc_video"
-            android:title="Video" />
+            android:title="Videos" />
 
 
         <item

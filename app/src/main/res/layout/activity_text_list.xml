@@ -9,6 +9,11 @@
     tools:context=".TextListActivity">
     <include layout="@layout/custom_action_bar" />
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <ListView
         android:id="@+id/lv_text_list"
         android:layout_width="match_parent"
@@ -16,5 +21,6 @@
         android:layout_margin="@dimen/_3sdp"
         android:layout_weight="1">
     </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

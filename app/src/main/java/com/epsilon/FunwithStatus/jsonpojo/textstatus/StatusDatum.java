@@ -7,15 +7,18 @@ public class StatusDatum {
     @SerializedName("id")
     @Expose
     private String id;
+    @SerializedName("subcata")
+    @Expose
+    private String subcata;
     @SerializedName("status")
     @Expose
     private String status;
-    @SerializedName("like")
+    @SerializedName("liked")
     @Expose
-    private String like;
-    @SerializedName("dislike")
+    private String liked;
+    @SerializedName("user")
     @Expose
-    private String dislike;
+    private String user;
 
     public String getId() {
         return id;
@@ -23,6 +26,14 @@ public class StatusDatum {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getSubcata() {
+        return subcata;
+    }
+
+    public void setSubcata(String subcata) {
+        this.subcata = subcata;
     }
 
     public String getStatus() {
@@ -33,19 +44,19 @@ public class StatusDatum {
         this.status = status;
     }
 
-    public String getLike() {
-        return like;
+    public String getLiked() {
+        return liked;
     }
 
-    public void setLike(String like) {
-        this.like = like;
+    public void setLiked(String liked) {
+        this.liked = liked;
     }
 
-    public String getDislike() {
-        return dislike;
+    public String getUser() {
+        return user;
     }
 
-    public void setDislike(String dislike) {
-        this.dislike = dislike;
+    public void setUser(String user) {
+        this.user = user;
     }
 }

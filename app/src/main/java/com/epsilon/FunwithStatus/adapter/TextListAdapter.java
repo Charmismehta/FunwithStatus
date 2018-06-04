@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.rockerhieu.emojicon.EmojiconTextView;
 
 public class TextListAdapter extends BaseAdapter {
     Activity activity;
@@ -50,19 +51,25 @@ public class TextListAdapter extends BaseAdapter {
             viewHolder = (MyViewHolder) view.getTag();
         }
 
-        viewHolder.tvtext_name.setText(Constants.statusData.get(i).getStatus());
-        viewHolder.like_count.setText(Constants.statusData.get(i).getLike());
+        String str = Constants.statusData.get(i).getStatus();
+        str = str.replaceAll("\n\n",",");
+        viewHolder.tvtext_name.setText(str);
+
+        viewHolder.like_count.setText(Constants.statusData.get(i).getLiked());
+        viewHolder.user_name.setText(Constants.statusData.get(i).getUser());
 
         return view;
     }
 
     class MyViewHolder {
-        public TextView tvtext_name,like_count;
+        public TextView like_count,user_name;
+        public EmojiconTextView tvtext_name;
 
 
         public MyViewHolder(View item) {
-            tvtext_name = (TextView) item.findViewById(R.id.tvtext_name);
+            tvtext_name = (EmojiconTextView) item.findViewById(R.id.tvtext_name);
             like_count = (TextView) item.findViewById(R.id.like_count);
+            user_name = (TextView) item.findViewById(R.id.user_name);
         }
     }
 

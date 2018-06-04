@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.epsilon.FunwithStatus.Dashboard;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.adapter.VideoAdapter;
 import com.google.android.gms.ads.AdListener;
@@ -231,4 +233,22 @@ return view;
         dialog.show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    Intent it = new Intent(getContext(), Dashboard.class);
+                    startActivity(it);
+                    getActivity().finish();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
 }

@@ -9,18 +9,17 @@
     tools:context=".AddTextActivity">
     <include layout="@layout/custom_action_bar" />
 
-    <EditText
+    <com.rockerhieu.emojicon.EmojiconEditText
         android:textColor="@color/black"
         android:layout_margin="@dimen/_16sdp"
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_350sdp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:hint=" Enter the Caption "
         android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:inputType="textMultiLine"
-        android:maxLines="5"
+        android:maxLines="500"
         android:gravity="top"
         android:textSize="@dimen/_15sdp" />
 

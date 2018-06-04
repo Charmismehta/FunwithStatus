@@ -13,5 +13,10 @@ public class ServerURl {
     public static final String DISLIKE = "dislike_status.php";
     public static final String IMAGECATEGORY = "image_category.php";
     public static final String IMAGELIST = "show_images.php";
+    public static final String IMAGELIKE = "like_image.php";
+    public static final String IMAGEDISLIKE = "dislike_image.php";
+    public static final String ADDIMAGE = "test.php";
+    public static final String DELETEIMAGE = "delete_image.php";
+    public static final String DELETETEXT = "delete_status.php";
 
 }

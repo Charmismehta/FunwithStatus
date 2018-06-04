@@ -13,9 +13,12 @@ public class ImageListDatum {
     @SerializedName("image")
     @Expose
     private String image;
-    @SerializedName("like")
+    @SerializedName("liked")
     @Expose
-    private String like;
+    private String liked;
+    @SerializedName("user")
+    @Expose
+    private String user;
 
     public String getId() {
         return id;
@@ -41,12 +44,20 @@ public class ImageListDatum {
         this.image = image;
     }
 
-    public String getLike() {
-        return like;
+    public String getLiked() {
+        return liked;
     }
 
-    public void setLike(String like) {
-        this.like = like;
+    public void setLiked(String liked) {
+        this.liked = liked;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
 }

@@ -22,14 +22,25 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+
 import com.bumptech.glide.Glide;
+import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
+import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
+import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
+import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
+import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Sessionmanager;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -44,17 +55,24 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static java.lang.System.in;
 
 public class DisplayImage extends AppCompatActivity {
 
     Activity activity;
-    ImageView display_image, download, like, dislike, share;
-    String pic, root;
+    ImageView display_image, download, like, dislike, share,delete;
+    String pic,name, root,Id,email,u_name,loginuser;
     InputStream is = null;
+    Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
     File myDir;
     CardView card_view;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    Toolbar toolbar;
 
 
     @Override
@@ -65,9 +83,29 @@ public class DisplayImage extends AppCompatActivity {
         activity = this;
         idMappings();
         Listners();
+        sessionmanager = new Sessionmanager(this);
+        Id = getIntent().getStringExtra("Id");
+        name = getIntent().getStringExtra("NAME");
+        u_name = getIntent().getStringExtra("U_NAME");
+        Log.e("##########NAME",name);
+        email = sessionmanager.getValue(Sessionmanager.Email);
+        loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
         Glide.with(activity).load(pic).placeholder(R.drawable.icon).into(display_image);
         card_view.setPreventCornerOverlap(false);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        if(u_name.equalsIgnoreCase(loginuser))
+        {
+            delete.setVisibility(View.VISIBLE);
+        }
+
 
     }
 
@@ -77,6 +115,7 @@ public class DisplayImage extends AppCompatActivity {
         like = (ImageView) findViewById(R.id.like);
         dislike = (ImageView) findViewById(R.id.dislike);
         share = (ImageView) findViewById(R.id.share);
+        delete = (ImageView) findViewById(R.id.delete);
         card_view = (CardView) findViewById(R.id.card_view);
     }
 
@@ -95,10 +134,119 @@ public class DisplayImage extends AppCompatActivity {
                 new ShareImage().execute(pic);
             }
         });
+
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addlike(name,email,Id,pic);
+            }
+        });
+
+        dislike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dislike(name,email,Id,pic);
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                delete(Id);
+            }
+        });
     }
+
+    // TODO : IMAGE LIKE API >>
+
+    public void addlike(String category, String email, String image_id, String image) {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<ImageLike> countrycall = apiInterface.addimagelikepojo(category, email, image_id, image);
+        countrycall.enqueue(new Callback<ImageLike>() {
+            @Override
+            public void onResponse(Call<ImageLike> call, Response<ImageLike> response) {
+                dialog.dismiss();
+                Toast.makeText(activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<ImageLike> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // TODO IMAGE LIKE API END
+
+    // TODO : IMAGE DELETE API >>
+
+    public void delete(String id) {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<DeleteImage> countrycall = apiInterface.deleteimage(id);
+        countrycall.enqueue(new Callback<DeleteImage>() {
+            @Override
+            public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
+                dialog.dismiss();
+                if (response.body().getStatus().equals("Succ")) {
+                    Intent it = new Intent(activity,ImageListActivity.class);
+                    it.putExtra("NAME",name);
+                    startActivity(it);
+                    finish();
+                    Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(activity,"Try Again", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DeleteImage> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    // TODO IMAGE DELETE API END
+
+
+    // TODO IMAGE DISLIKE API >>
+
+    public void dislike(String category, String email, String status_id, String status) {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<ImageDislike> countrycall = apiInterface.imagedislikepojo(category, email, status_id, status);
+        countrycall.enqueue(new Callback<ImageDislike>() {
+            @Override
+            public void onResponse(Call<ImageDislike> call, Response<ImageDislike> response) {
+                dialog.dismiss();
+                Toast.makeText(activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<ImageDislike> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // TODO : IMAGE DISLIKE API END >>>>
 
     public void onBackPressed() {
         Intent it = new Intent(DisplayImage.this, ImageListActivity.class);
+        it.putExtra("NAME",name);
         startActivity(it);
         finish();
     }
@@ -227,4 +375,21 @@ public class DisplayImage extends AppCompatActivity {
     }
 
     // TODO : END SHARE IMAGE CODE ////////////////
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (item.getItemId() == android.R.id.home) {
+            Intent it = new Intent(activity,ImageListActivity.class);
+            it.putExtra("NAME",name);
+            startActivity(it);
+            finish();// close this activity and return to preview activity (if there is any)
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

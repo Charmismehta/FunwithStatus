@@ -7,14 +7,22 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -24,42 +32,53 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
-import com.epsilon.FunwithStatus.adapter.ImageAdapter;
+
+import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
-import com.epsilon.FunwithStatus.adapter.SubCatImageAdapter;
-import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
-import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageSubcategory;
+import com.epsilon.FunwithStatus.jsonpojo.addimage.AdddImage;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Helper;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.epsilon.FunwithStatus.utills.Sessionmanager.Id;
 
 public class ImageListActivity extends AppCompatActivity {
 
     Activity context;
     GridView imagelistgrid_view;
-    ImageView ileft, iright;
-    TextView title;
+    Toolbar toolbar;
     String subcat;
+    String post_files;
     File fileGallery;
+    private static final int SELECT_PICTURE = 1;
+    private String selectedImagePath;
     public static final int GALLARY_REQUEST = 2;
     public static final int MY_PERMISSIONS_REQUEST_GALLARY = 11;
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
     public static final int CAMERA_CROP_RESULT = 10;
     private final int RESULT_CROP = 40;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    SwipeRefreshLayout swipelayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,55 +86,31 @@ public class ImageListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_list);
         context = this;
         idMappings();
+        setSupportActionBar(toolbar);
 
-        Intent mIntent = getIntent();
-        int i = mIntent.getIntExtra("position", 0);
-            subcat = Constants.imageSubcategories.get(i).getName();
+        subcat = getIntent().getStringExtra("NAME");
+
+        if (!Helper.isConnectingToInternet(context)) {
+            Helper.showToastMessage(context, "Please Connect Internet");
+        } else {
             Imagecategory(subcat);
+        }
 
-        imagelistgrid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent it = new Intent(ImageListActivity.this, DisplayImage.class);
-                it.putExtra("pic",Constants.imageListData.get(position).getImage());
-                startActivity(it);
+            public void onRefresh() {
+                Imagecategory(subcat);
+                swipelayout.setRefreshing(false);
             }
         });
 
-        ileft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-                startActivity(it);
-                finish();
-            }
-        });
-        iright.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        choosePhotoFromGallary();
-
-                    } else {
-                        //Request Location Permission
-                        checkCameraPermission();
-                        checkStoragePermission();
-                    }
-                } else {
-                    choosePhotoFromGallary();
-                }
-            }
-        });
-
-        ileft.setImageResource(R.drawable.back);
-        iright.setImageResource(R.drawable.addmember);
-        title.setText("");
-
-        ImageListAdapter adapter = new ImageListAdapter(context);
-        imagelistgrid_view.setAdapter(adapter);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        toolbar.setTitle(subcat);
 
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -151,54 +146,60 @@ public class ImageListActivity extends AppCompatActivity {
         });
     }
 
+    public void onBackPressed() {
+        Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
+        it.putExtra("NAME",subcat);
+        startActivity(it);
+        finish();
+    }
+
     private void idMappings() {
 
         imagelistgrid_view = (GridView) findViewById(R.id.imagelistgrid_view);
-        ileft = (ImageView) findViewById(R.id.ileft);
-        iright = (ImageView) findViewById(R.id.iright);
-        title = (TextView) findViewById(R.id.title);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        swipelayout=(SwipeRefreshLayout) findViewById(R.id.swipelayout);
     }
-
+    public void choosePhotoFromGallary() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, GALLARY_REQUEST);
+    }
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED
                 ) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(context,
                     android.Manifest.permission.CAMERA)
                     ) {
-                ActivityCompat.requestPermissions((Activity) context,
+                ActivityCompat.requestPermissions(context,
                         new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
-
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions((Activity) context,
+                ActivityCompat.requestPermissions(context,
                         new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
             }
         }
     }
-
     private void checkStoragePermission() {
-
-
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(context,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    && ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    && ActivityCompat.shouldShowRequestPermissionRationale(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-                ActivityCompat.requestPermissions((Activity) context,
+                ActivityCompat.requestPermissions(context,
                         new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_GALLARY);
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions((Activity) context,
+                ActivityCompat.requestPermissions(context,
                         new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_GALLARY);
             }
@@ -207,95 +208,114 @@ public class ImageListActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == this.RESULT_CANCELED) {
+            return;
+        }
         if (requestCode == GALLARY_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                String picturePath = data.getStringExtra("picturePath");
-                //perform Crop on the Image Selected from Gallery
-                performCrop(picturePath);
-            }
-        }
+            Toast.makeText(context, "gallary request", Toast.LENGTH_LONG).show();
+            if (data != null) {
+                Uri contentURI = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                    post_files = saveImage(bitmap);
+                    if (bitmap != null) {
+                        popup(bitmap);
+                    }
 
-        if (requestCode == RESULT_CROP) {
-            if (resultCode == Activity.RESULT_OK) {
-                Bundle extras = data.getExtras();
-                Bitmap selectedBitmap = extras.getParcelable("data");
-                // Set The Bitmap Data To ImageView
-                popup(selectedBitmap);
-
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
-
-    private void performCrop(String picUri) {
+    private String saveImage(Bitmap thumbnail) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        File wallpaperDirectory = new File(
+                Environment.getExternalStorageDirectory() + "IMAGE_DIRECTORY");
+        // have the object build the directory structure, if needed.
+        if (!wallpaperDirectory.exists()) {
+            wallpaperDirectory.mkdirs();
+        }
         try {
-            //Start Crop Activity
-
-            Intent cropIntent = new Intent("com.android.camera.action.CROP");
-            // indicate image type and Uri
-            File f = new File(picUri);
-            Uri contentUri = Uri.fromFile(f);
-
-            cropIntent.setDataAndType(contentUri, "image/*");
-            // set crop properties
-            cropIntent.putExtra("crop", "true");
-            // indicate aspect of desired crop
-            cropIntent.putExtra("aspectX", 1);
-            cropIntent.putExtra("aspectY", 1);
-            // indicate output X and Y
-            cropIntent.putExtra("outputX", 280);
-            cropIntent.putExtra("outputY", 280);
-
-            // retrieve data on return
-            cropIntent.putExtra("return-data", true);
-            // start the activity - we handle returning in onActivityResult
-            startActivityForResult(cropIntent, RESULT_CROP);
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File f = new File(path, "DemoPicture.jpg");
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            MediaScannerConnection.scanFile(this,
+                    new String[]{f.getPath()},
+                    new String[]{"image/jpeg"}, null);
+            fo.close();
+            Log.e("TAG", "File Saved::--->" + f.getAbsolutePath());
+            return f.getAbsolutePath();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-        // respond to users whose devices do not support the crop action
-        catch (ActivityNotFoundException anfe) {
-            // display an error message
-            String errorMessage = "your device doesn't support the crop action!";
-            Toast toast = Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        return "";
     }
 
-
-    public void popup(final Bitmap bm) {
+    public void popup(Bitmap bitmap) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.addpicture);
 
-        ImageView iv_image = (ImageView) dialog.findViewById(R.id.iv_image);
+        final ImageView iv_image = (ImageView) dialog.findViewById(R.id.iv_image);
         ImageView button_chat_send = (ImageView) dialog.findViewById(R.id.button_caption_send);
         final EditText edit_caption = (EditText) dialog.findViewById(R.id.edit_caption);
 
-        iv_image.setImageBitmap(bm);
-        iv_image.setScaleType(ImageView.ScaleType.FIT_XY);
+        iv_image.setImageBitmap(bitmap);
+        fileGallery = new File(post_files);
         dialog.show();
 
         button_chat_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(edit_caption.getWindowToken(), 0);
-                Toast.makeText(context, "Add Image Successfully", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-
+                if (iv_image != null) {
+                    Uploadpic(edit_caption.getText().toString(),
+                            fileGallery);
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-
         dialog.show();
     }
 
+    public void Uploadpic( String comments,File post_files) {
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
 
-    public void choosePhotoFromGallary() {
-        Intent gallery_Intent = new Intent(getApplicationContext(), GallaryUtils.class);
-        startActivityForResult(gallery_Intent, GALLARY_REQUEST);
-
-
+        RequestBody name = RequestBody.create(MediaType.parse("text/plain"), comments);
+        if (post_files != null) {
+            RequestBody  requestFile = RequestBody.create(MediaType.parse("image/*"), post_files);
+            MultipartBody.Part image = MultipartBody.Part.createFormData("post_files", post_files.getName(), requestFile);
+            Call<AdddImage> circlePostAddPCall = apiInterface.addimage(name,image);
+            circlePostAddPCall.enqueue(new Callback<AdddImage>() {
+                @Override
+                public void onResponse(Call<AdddImage> uploadImageCall, Response<AdddImage> response)
+                {
+                    if (response.body().getStatus().equalsIgnoreCase("Succ")) {
+                        dialog.dismiss();
+                        Toast.makeText(context,"success", Toast.LENGTH_SHORT).show();
+                    } else {
+                        dialog.dismiss();
+                        Toast.makeText(context, "try again", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<AdddImage> call, Throwable t) {
+                    dialog.dismiss();
+                    }
+            });
+        }
     }
 
     public void Imagecategory(String subcat) {
@@ -308,20 +328,63 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ImageList> call, Response<ImageList> response) {
                 dialog.dismiss();
-
-                if (Constants.imageListData != null) {
-                    Constants.imageListData.clear();
+                if (response.body().getStatus().equals("Success")) {
+                    if (Constants.imageListData != null) {
+                        Constants.imageListData.clear();
+                    }
+                    Constants.imageListData.addAll(response.body().getImages());
+                    ImageListAdapter adapter = new ImageListAdapter(context);
+                    imagelistgrid_view.setAdapter(adapter);
                 }
-                Constants.imageListData.addAll(response.body().getImages());
-                ImageListAdapter adapter = new ImageListAdapter(context);
-                imagelistgrid_view.setAdapter(adapter);
+                else
+                {
+                    Toast.makeText(context,"Try Again", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call<ImageList> call, Throwable t) {
                 dialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menuimage, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.vc_addtoolbar) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    choosePhotoFromGallary();
+                } else {
+                    //Request Location Permission
+                    checkCameraPermission();
+                    checkStoragePermission();
+                }
+            } else {
+                choosePhotoFromGallary();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
+
+

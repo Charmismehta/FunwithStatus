@@ -31,10 +31,9 @@ import retrofit2.Response;
 
 public class RegistrationPage extends AppCompatActivity implements View.OnClickListener{
     EditText name, username, register_eemail, register_epassword,register_emobile;
-    Button btnRegistration;
     Context context;
-    TextView tbirthday;
-    LinearLayout lbirthday;
+    TextView tbirthday,btnRegistration;
+    LinearLayout lbirthday,login_tsignin;
     int mYear, mMonth, mDay;
     ImageView pwdeye;
     private int passwordNotVisible=1;
@@ -52,6 +51,15 @@ Sessionmanager sessionmanager;
         idMappings();
         Listener();
         lbirthday.setOnClickListener(this);
+
+        login_tsignin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(RegistrationPage.this,LoginPage.class);
+                startActivity(it);
+                finish();
+            }
+        });
     }
 
     private void idMappings() {
@@ -61,7 +69,8 @@ Sessionmanager sessionmanager;
         lbirthday=(LinearLayout)findViewById(R.id.lbirthday);
         register_epassword = (EditText) findViewById(R.id.register_epassword);
         tbirthday = (TextView) findViewById(R.id.tbirthday);
-        btnRegistration = (Button) findViewById(R.id.btnRegistration);
+        login_tsignin = (LinearLayout) findViewById(R.id.login_tsignin);
+        btnRegistration = (TextView) findViewById(R.id.btnRegistration);
         pwdeye = (ImageView) findViewById(R.id.pwdeye);
         register_emobile = (EditText) findViewById(R.id.register_emobile);
     }
@@ -103,6 +112,8 @@ Sessionmanager sessionmanager;
                         Helper.showToastMessage(context, "No Internet Connection");
                     }
                 }
+
+
             }
 
             private void Registercall(String name, String username, String email, String mobile, String birthdate,String password) {
