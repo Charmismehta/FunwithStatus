@@ -1,5 +1,6 @@
 package com.epsilon.FunwithStatus.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -69,6 +70,7 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
                 Intent it = new Intent(mContext, ImageListActivity.class);
                 it.putExtra("NAME",albumList.get(position).getName());
                 mContext.startActivity(it);
+                ((Activity)mContext).finish();
             }
         });
     }
