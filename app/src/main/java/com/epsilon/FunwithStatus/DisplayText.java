@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +59,14 @@ public class DisplayText extends AppCompatActivity {
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
         display_text.setText(text);
+        share.setColorFilter(getResources().getColor(R.color.colorAccent));
+        like.setColorFilter(getResources().getColor(R.color.colorAccent));
+        dislike.setColorFilter(getResources().getColor(R.color.colorAccent));
+        delete.setColorFilter(getResources().getColor(R.color.colorAccent));
+        copy.setColorFilter(getResources().getColor(R.color.colorAccent));
+
+        Display display = ((WindowManager)activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        display_text.setMaxWidth(display.getWidth()/2);
 
         toolbar=(Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

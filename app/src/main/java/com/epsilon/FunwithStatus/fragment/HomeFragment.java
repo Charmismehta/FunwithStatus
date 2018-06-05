@@ -27,10 +27,10 @@ import com.google.android.gms.ads.AdView;
 public class HomeFragment extends Fragment {
 
     Context context;
-    LinearLayout ic_politics,ic_groupadmin,ic_teacherstudent,ic_encourage,ic_friendship,ic_goodmorning,ic_goodnight,ic_birthday,ic_thankyou,ic_Anniversary,
+    LinearLayout ic_trending,ic_politics,ic_groupadmin,ic_teacherstudent,ic_encourage,ic_friendship,ic_goodmorning,ic_goodnight,ic_birthday,ic_thankyou,ic_Anniversary,
             ic_congratulation,ic_insult,ic_flirt,ic_love,ic_shayri,ic_sad,ic_sorry,ic_smile,ic_doublemeaning,ic_gujrati,ic_marathi,ic_religion,ic_music,
             ic_lyrics,ic_movie,ic_status;
-    TextView tv_politics,tv_groupadmin,tv_teacherstudent,tv_encourage,tv_friendship,tv_goodmorning,tv_goodnight,tv_birthday,tv_thankyou,tv_Anniversary,
+    TextView tv_trending,tv_politics,tv_groupadmin,tv_teacherstudent,tv_encourage,tv_friendship,tv_goodmorning,tv_goodnight,tv_birthday,tv_thankyou,tv_Anniversary,
             tv_congratulation, tv_insult,tv_flirt,tv_love,tv_shayri,tv_sad,tv_sorry,tv_smile,tv_doublemeaning,tv_gujrati,tv_marathi,tv_religion,tv_music,
             tv_lyrics,tv_movie,tv_status;
 
@@ -81,6 +81,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void Lisnter() {
+        ic_trending.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(getContext(), TextListActivity.class);
+                it.putExtra("NAME",tv_trending.getText().toString());
+                Log.e("NAME",tv_trending.getText().toString());
+                startActivity(it);
+            }
+        });
         ic_politics.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,7 +175,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME","congratulation");
+                it.putExtra("NAME",tv_congratulation.getText().toString());
                 startActivity(it);
             }
         });
@@ -303,6 +312,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void IpMappings(View view) {
+        ic_trending = (LinearLayout)view.findViewById(R.id.ic_trending);
         ic_politics = (LinearLayout)view.findViewById(R.id.ic_politics);
         ic_groupadmin = (LinearLayout)view.findViewById(R.id.ic_groupadmin);
         ic_teacherstudent = (LinearLayout)view.findViewById(R.id.ic_teacherstudent);
@@ -330,6 +340,7 @@ public class HomeFragment extends Fragment {
         ic_movie = (LinearLayout)view.findViewById(R.id.ic_movie);
         ic_status = (LinearLayout)view.findViewById(R.id.ic_status);
         tv_politics = (TextView) view.findViewById(R.id.tv_politics);
+        tv_trending = (TextView) view.findViewById(R.id.tv_trending);
         tv_groupadmin = (TextView) view.findViewById(R.id.tv_groupadmin);
         tv_teacherstudent = (TextView) view.findViewById(R.id.tv_teacherstudent);
         tv_encourage = (TextView) view.findViewById(R.id.tv_encourage);

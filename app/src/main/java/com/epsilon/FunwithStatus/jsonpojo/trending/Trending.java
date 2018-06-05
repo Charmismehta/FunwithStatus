@@ -1,15 +1,17 @@
-package com.epsilon.FunwithStatus.jsonpojo.imagelike;
+package com.epsilon.FunwithStatus.jsonpojo.trending;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ImageLike {
+import java.util.List;
+
+public class Trending {
     @SerializedName("status")
     @Expose
     private String status;
-    @SerializedName("message")
+    @SerializedName("data")
     @Expose
-    private String message;
+    private List<TrendingDatum> data = null;
 
     public String getStatus() {
         return status;
@@ -19,12 +21,11 @@ public class ImageLike {
         this.status = status;
     }
 
-    public String getMessage() {
-        return message;
+    public List<TrendingDatum> getData() {
+        return data;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setData(List<TrendingDatum> data) {
+        this.data = data;
     }
-
 }

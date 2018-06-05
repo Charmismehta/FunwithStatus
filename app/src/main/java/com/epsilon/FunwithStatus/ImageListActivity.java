@@ -1,5 +1,6 @@
 package com.epsilon.FunwithStatus;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -37,20 +39,24 @@ import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
-import com.epsilon.FunwithStatus.jsonpojo.addimage.AdddImage;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
+import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -64,31 +70,38 @@ import static com.epsilon.FunwithStatus.utills.Sessionmanager.Id;
 public class ImageListActivity extends AppCompatActivity {
 
     Activity context;
+    TextView text, title;
+    ImageView ileft, iright;
     GridView imagelistgrid_view;
-    Toolbar toolbar;
     String subcat;
-    String post_files;
+    String post_files, user;
     File fileGallery;
-    private static final int SELECT_PICTURE = 1;
-    private String selectedImagePath;
-    public static final int GALLARY_REQUEST = 2;
-    public static final int MY_PERMISSIONS_REQUEST_GALLARY = 11;
-    public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
-    public static final int CAMERA_CROP_RESULT = 10;
-    private final int RESULT_CROP = 40;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     SwipeRefreshLayout swipelayout;
+    Sessionmanager sessionmanager;
+    EditText edit_caption;
 
+    private int PICK_IMAGE_REQUEST = 1;
+
+    //storage permission code
+    private static final int STORAGE_PERMISSION_CODE = 123;
+
+    //Bitmap to get image from gallery
+    private Bitmap bitmap;
+
+    //Uri to store the image uri
+    private Uri filePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_list);
         context = this;
+        sessionmanager = new Sessionmanager(this);
         idMappings();
-        setSupportActionBar(toolbar);
 
         subcat = getIntent().getStringExtra("NAME");
+        user = sessionmanager.getValue(Sessionmanager.Name);
 
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");
@@ -104,13 +117,7 @@ public class ImageListActivity extends AppCompatActivity {
             }
         });
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-        toolbar.setTitle(subcat);
+        title.setText(subcat);
 
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -144,120 +151,150 @@ public class ImageListActivity extends AppCompatActivity {
                 // to the app after tapping on an ad.
             }
         });
+
+        iright.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestStoragePermission();
+                showFileChooser();
+            }
+        });
     }
 
-    public void onBackPressed() {
-        Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-        it.putExtra("NAME",subcat);
-        startActivity(it);
-        finish();
+    public void uploadMultipart(String name) {
+        //getting name for the image
+        name = edit_caption.getText().toString().trim();
+
+        //getting the actual path of the image
+        String path = getPath(filePath);
+
+        //Uploading code
+        try {
+            String uploadId = UUID.randomUUID().toString();
+
+            //Creating a multi part request
+            new MultipartUploadRequest(this, uploadId, Constants.UPLOAD_URL)
+                    .addFileToUpload(path, "image") //Adding file
+                    .addParameter("subcata", name) //Adding text parameter to the request
+                    .addParameter("name", name) //Adding text parameter to the request
+                    .setNotificationConfig(new UploadNotificationConfig())
+                    .setMaxRetries(2)
+                    .startUpload(); //Starting the upload
+
+        } catch (Exception exc) {
+            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                final Dialog dialog = new Dialog(context);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.addpicture);
+
+                final ImageView iv_image = (ImageView) dialog.findViewById(R.id.iv_image);
+                ImageView button_chat_send = (ImageView) dialog.findViewById(R.id.button_caption_send);
+                edit_caption = (EditText) dialog.findViewById(R.id.edit_caption);
+
+                iv_image.setImageBitmap(bitmap);
+                fileGallery = new File(post_files);
+                dialog.show();
+
+                button_chat_send.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        uploadMultipart(edit_caption.getText().toString());
+                        dialog.show();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String getPath(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String document_id = cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+        cursor.close();
+
+        cursor = getContentResolver().query(
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+
+        return path;
+    }
+
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            return;
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            //If the user has denied the permission previously your code will come to this block
+            //Here you can explain why you need this permission
+            //Explain here why you need this permission
+        }
+        //And finally ask for the permission
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+    }
+
+
+    //This method will be called when the user will tap on allow or deny
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        //Checking the request code of our request
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+
+            //If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Displaying a toast
+                Toast.makeText(this, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+            } else {
+                //Displaying another toast if permission is not granted
+                Toast.makeText(this, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
+
+
+//    public void onBackPressed() {
+//        Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
+//        it.putExtra("NAME",subcat);
+//        startActivity(it);
+//        finish();
+//    }
 
     private void idMappings() {
 
         imagelistgrid_view = (GridView) findViewById(R.id.imagelistgrid_view);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         swipelayout=(SwipeRefreshLayout) findViewById(R.id.swipelayout);
+        text=(TextView) findViewById(R.id.text);
+        title=(TextView) findViewById(R.id.title);
+        ileft=(ImageView) findViewById(R.id.ileft);
+        iright=(ImageView) findViewById(R.id.iright);
     }
-    public void choosePhotoFromGallary() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent, GALLARY_REQUEST);
-    }
-    private void checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED
-                ) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(context,
-                    android.Manifest.permission.CAMERA)
-                    ) {
-                ActivityCompat.requestPermissions(context,
-                        new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(context,
-                        new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
-            }
-        }
-    }
-    private void checkStoragePermission() {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(context,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    && ActivityCompat.shouldShowRequestPermissionRationale(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                ActivityCompat.requestPermissions(context,
-                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_GALLARY);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(context,
-                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_GALLARY);
-            }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == this.RESULT_CANCELED) {
-            return;
-        }
-        if (requestCode == GALLARY_REQUEST) {
-            Toast.makeText(context, "gallary request", Toast.LENGTH_LONG).show();
-            if (data != null) {
-                Uri contentURI = data.getData();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    post_files = saveImage(bitmap);
-                    if (bitmap != null) {
-                        popup(bitmap);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-    private String saveImage(Bitmap thumbnail) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-        File wallpaperDirectory = new File(
-                Environment.getExternalStorageDirectory() + "IMAGE_DIRECTORY");
-        // have the object build the directory structure, if needed.
-        if (!wallpaperDirectory.exists()) {
-            wallpaperDirectory.mkdirs();
-        }
-        try {
-            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File f = new File(path, "DemoPicture.jpg");
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-            MediaScannerConnection.scanFile(this,
-                    new String[]{f.getPath()},
-                    new String[]{"image/jpeg"}, null);
-            fo.close();
-            Log.e("TAG", "File Saved::--->" + f.getAbsolutePath());
-            return f.getAbsolutePath();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        return "";
-    }
-
     public void popup(Bitmap bitmap) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -266,7 +303,7 @@ public class ImageListActivity extends AppCompatActivity {
 
         final ImageView iv_image = (ImageView) dialog.findViewById(R.id.iv_image);
         ImageView button_chat_send = (ImageView) dialog.findViewById(R.id.button_caption_send);
-        final EditText edit_caption = (EditText) dialog.findViewById(R.id.edit_caption);
+        edit_caption = (EditText) dialog.findViewById(R.id.edit_caption);
 
         iv_image.setImageBitmap(bitmap);
         fileGallery = new File(post_files);
@@ -275,47 +312,10 @@ public class ImageListActivity extends AppCompatActivity {
         button_chat_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iv_image != null) {
-                    Uploadpic(edit_caption.getText().toString(),
-                            fileGallery);
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show();
-                }
+                uploadMultipart(edit_caption.getText().toString());
+                    dialog.show();
             }
         });
-        dialog.show();
-    }
-
-    public void Uploadpic( String comments,File post_files) {
-        final ProgressDialog dialog = new ProgressDialog(context);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-
-        RequestBody name = RequestBody.create(MediaType.parse("text/plain"), comments);
-        if (post_files != null) {
-            RequestBody  requestFile = RequestBody.create(MediaType.parse("image/*"), post_files);
-            MultipartBody.Part image = MultipartBody.Part.createFormData("post_files", post_files.getName(), requestFile);
-            Call<AdddImage> circlePostAddPCall = apiInterface.addimage(name,image);
-            circlePostAddPCall.enqueue(new Callback<AdddImage>() {
-                @Override
-                public void onResponse(Call<AdddImage> uploadImageCall, Response<AdddImage> response)
-                {
-                    if (response.body().getStatus().equalsIgnoreCase("Succ")) {
-                        dialog.dismiss();
-                        Toast.makeText(context,"success", Toast.LENGTH_SHORT).show();
-                    } else {
-                        dialog.dismiss();
-                        Toast.makeText(context, "try again", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                @Override
-                public void onFailure(Call<AdddImage> call, Throwable t) {
-                    dialog.dismiss();
-                    }
-            });
-        }
     }
 
     public void Imagecategory(String subcat) {
@@ -350,41 +350,7 @@ public class ImageListActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menuimage, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.vc_addtoolbar) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                        && ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                        && ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    choosePhotoFromGallary();
-                } else {
-                    //Request Location Permission
-                    checkCameraPermission();
-                    checkStoragePermission();
-                }
-            } else {
-                choosePhotoFromGallary();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
+
 
 

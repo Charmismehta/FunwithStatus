@@ -6,7 +6,6 @@ public class ServerURl {
 
     public static final String LOGIN = "login.php";
     public static final String REGISTER = "register.php";
-    public static final String GETTEXT = "text_category.php";
     public static final String TEXTLIST = "show_status.php";
     public static final String ADDSTATUS = "add_status.php";
     public static final String ADDLIKE = "like_status.php";
@@ -15,8 +14,7 @@ public class ServerURl {
     public static final String IMAGELIST = "show_images.php";
     public static final String IMAGELIKE = "like_image.php";
     public static final String IMAGEDISLIKE = "dislike_image.php";
-    public static final String ADDIMAGE = "test.php";
     public static final String DELETEIMAGE = "delete_image.php";
     public static final String DELETETEXT = "delete_status.php";
-
+    public static final String TRANDING = "trending_status.php";
 }

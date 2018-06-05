@@ -16,6 +16,5 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/white">
     </android.support.v7.widget.Toolbar>
-
 </LinearLayout>
 

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -27,11 +28,14 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
 import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
@@ -63,16 +67,17 @@ import static java.lang.System.in;
 
 public class DisplayImage extends AppCompatActivity {
 
-    Activity activity;
+    Context activity;
+    LinearLayout layout_content;
     ImageView display_image, download, like, dislike, share,delete;
     String pic,name, root,Id,email,u_name,loginuser;
     InputStream is = null;
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
     File myDir;
-    CardView card_view;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Toolbar toolbar;
+    InputStream stream = null;
 
 
     @Override
@@ -91,8 +96,13 @@ public class DisplayImage extends AppCompatActivity {
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
-        Glide.with(activity).load(pic).placeholder(R.drawable.icon).into(display_image);
-        card_view.setPreventCornerOverlap(false);
+
+        Glide.with(activity).load(pic)
+                .thumbnail(Glide.with(activity).load(R.drawable.load))
+                .fitCenter()
+                .crossFade()
+                .into(display_image);
+//        Glide.with(activity).load(pic).into(display_image);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
@@ -116,7 +126,7 @@ public class DisplayImage extends AppCompatActivity {
         dislike = (ImageView) findViewById(R.id.dislike);
         share = (ImageView) findViewById(R.id.share);
         delete = (ImageView) findViewById(R.id.delete);
-        card_view = (CardView) findViewById(R.id.card_view);
+        layout_content = (LinearLayout) findViewById(R.id.layout_content);
     }
 
     private void Listners() {
@@ -153,6 +163,18 @@ public class DisplayImage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 delete(Id);
+            }
+        });
+        display_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (layout_content.getVisibility() == View.VISIBLE) {
+                    layout_content.setVisibility(View.GONE);
+                } else if (layout_content.getVisibility() == View.GONE) {
+                    layout_content.setVisibility(View.VISIBLE);
+                } else {
+                    layout_content.setVisibility(View.GONE);
+                }
             }
         });
     }

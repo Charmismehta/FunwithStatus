@@ -8,25 +8,25 @@
     tools:context=".fragment.HomeFragment">
 
     <RelativeLayout
+        android:layout_marginLeft="@dimen/_8sdp"
+        android:layout_marginRight="@dimen/_8sdp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:isScrollContainer="false"
+            android:layout_marginBottom="@dimen/_40sdp"
             android:scrollbars="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/_8sdp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_16sdp"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -37,12 +37,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Trending"
+                            android:text="Featured"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_16sdp" />
 
                         <LinearLayout
-                            android:id="@+id/ic_politics"
+                            android:id="@+id/ic_trending"
                             android:layout_width="@dimen/_64sdp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -56,12 +56,12 @@
                                 android:src="@drawable/ic_teacher" />
 
                             <TextView
-                                android:id="@+id/tv_politics"
+                                android:id="@+id/tv_trending"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="@dimen/_4sdp"
-                                android:text="Politics"
+                                android:text="Trending"
                                 android:textColor="@color/black"
                                 android:textSize="@dimen/_10sdp" />
                         </LinearLayout>
@@ -139,6 +139,32 @@
                                     android:layout_marginTop="@dimen/_4sdp"
                                     android:gravity="center"
                                     android:text="Teacher Student"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/_10sdp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ic_politics"
+                                android:layout_width="@dimen/_64sdp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginBottom="@dimen/_5sdp"
+                                android:orientation="vertical"
+                                android:padding="@dimen/_8sdp">
+
+                                <ImageView
+                                    android:layout_width="@dimen/_30sdp"
+                                    android:layout_height="@dimen/_30sdp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_teacher" />
+
+                                <TextView
+                                    android:id="@+id/tv_politics"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:text="Politics"
                                     android:textColor="@color/black"
                                     android:textSize="@dimen/_10sdp" />
                             </LinearLayout>
@@ -576,7 +602,9 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                            black<LinearLayout
+                            black
+
+                            <LinearLayout
                                 android:id="@+id/ic_sorry"
                                 android:layout_width="@dimen/_64sdp"
                                 android:layout_height="match_parent"
@@ -937,12 +965,10 @@
 
             </LinearLayout>
         </ScrollView>
-
-
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_40sdp"
         android:layout_gravity="bottom">
 
         <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"

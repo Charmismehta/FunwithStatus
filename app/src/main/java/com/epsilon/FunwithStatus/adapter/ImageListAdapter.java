@@ -81,6 +81,7 @@ public class ImageListAdapter extends BaseAdapter {
                 it.putExtra("Id",Constants.imageListData.get(i).getId());
                 it.putExtra("U_NAME",Constants.imageListData.get(i).getUser());
                 activity.startActivity(it);
+                activity.finish();
             }
         });
 
@@ -97,8 +98,6 @@ public class ImageListAdapter extends BaseAdapter {
             username = (TextView) item.findViewById(R.id.username);
             tvlike_count = (TextView) item.findViewById(R.id.tvlike_count);
             tvimage = (ImageView) item.findViewById(R.id.tvimage);
-
         }
     }
-
 }

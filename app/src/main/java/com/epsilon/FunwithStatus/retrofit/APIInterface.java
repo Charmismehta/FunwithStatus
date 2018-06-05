@@ -1,6 +1,6 @@
 package com.epsilon.FunwithStatus.retrofit;
 
-import com.epsilon.FunwithStatus.jsonpojo.addimage.AdddImage;
+
 import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.addstatus.AddStatus;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
@@ -11,6 +11,7 @@ import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
+import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.utills.ServerURl;
 import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.jsonpojo.registration.Registration;
@@ -94,10 +95,7 @@ public interface APIInterface {
                                 @Field("image_id") String image_id,
                                 @Field("image") String image);
 
-    @Multipart
-    @POST(ServerURl.ADDIMAGE)
-    Call<AdddImage> addimage(@Part("name") RequestBody name,
-                                @Part MultipartBody.Part image);
+
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
@@ -117,5 +115,7 @@ public interface APIInterface {
     @POST(ServerURl.DELETETEXT)
     Call<DeleteText> deletetext(@Field("id") String id);
 
+    @GET(ServerURl.TRANDING)
+    Call<Trending> trendingpojo();
 
 }

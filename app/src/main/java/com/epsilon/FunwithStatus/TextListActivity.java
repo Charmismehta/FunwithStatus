@@ -21,10 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
+import com.epsilon.FunwithStatus.adapter.TrendingAdapter;
 import com.epsilon.FunwithStatus.fragment.HomeFragment;
 import com.epsilon.FunwithStatus.fragment.ImageFragment;
 import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
+import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
@@ -52,11 +54,17 @@ public class TextListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_list);
         context = this;
-         name = getIntent().getStringExtra("NAME");
+        name = getIntent().getStringExtra("NAME");
+
+        if (name.equalsIgnoreCase("Trending")) {
+            trending();
+        } else {
+            textstatus(name);
+        }
 
         idMapping();
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -67,13 +75,17 @@ public class TextListActivity extends AppCompatActivity {
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");
         } else {
-            textstatus(name);
+
         }
 
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                textstatus(name);
+                if (name.equalsIgnoreCase("Trending")) {
+                    trending();
+                } else {
+                    textstatus(name);
+                }
                 swipelayout.setRefreshing(false);
             }
         });
@@ -81,25 +93,35 @@ public class TextListActivity extends AppCompatActivity {
         lv_text_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent it = new Intent(TextListActivity.this, DisplayText.class);
-                it.putExtra("text", Constants.statusData.get(position).getStatus());
-                it.putExtra("Id", Constants.statusData.get(position).getId());
-                it.putExtra("NAME", name);
-                it.putExtra("U_NAME", Constants.statusData.get(position).getUser());
-                startActivity(it);
-                finish();
+
+                if(name.equalsIgnoreCase("Trending")) {
+                    Intent it = new Intent(TextListActivity.this, DisplayText.class);
+                    it.putExtra("text", Constants.trendingData.get(position).getStatus());
+                    it.putExtra("Id", Constants.trendingData.get(position).getId());
+                    it.putExtra("NAME", name);
+                    it.putExtra("U_NAME", Constants.trendingData.get(position).getUser());
+                    startActivity(it);
+                    finish();
+                }
+                else{
+                    Intent it = new Intent(TextListActivity.this, DisplayText.class);
+                    it.putExtra("text", Constants.statusData.get(position).getStatus());
+                    it.putExtra("Id", Constants.statusData.get(position).getId());
+                    it.putExtra("NAME", name);
+                    it.putExtra("U_NAME", Constants.statusData.get(position).getUser());
+                    startActivity(it);
+                    finish();
+                }
             }
         });
-
-
 
     }
 
 
     private void idMapping() {
-        toolbar=(Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         lv_text_list = (ListView) findViewById(R.id.lv_text_list);
-        swipelayout=(SwipeRefreshLayout) findViewById(R.id.swipelayout);
+        swipelayout = (SwipeRefreshLayout) findViewById(R.id.swipelayout);
     }
 
 
@@ -117,13 +139,11 @@ public class TextListActivity extends AppCompatActivity {
                 if (Constants.statusData != null) {
                     Constants.statusData.clear();
                 }
-                if(!Constants.statusData.equals("") && Constants.statusData != null) {
+                if (!Constants.statusData.equals("") && Constants.statusData != null) {
                     Constants.statusData.addAll(response.body().getData());
                     TextListAdapter adapter = new TextListAdapter(context);
                     lv_text_list.setAdapter(adapter);
-                }
-                else
-                {
+                } else {
                     Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -135,6 +155,38 @@ public class TextListActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void trending() {
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<Trending> countrycall = apiInterface.trendingpojo();
+        countrycall.enqueue(new Callback<Trending>() {
+            @Override
+            public void onResponse(Call<Trending> call, Response<Trending> response) {
+                dialog.dismiss();
+
+                if (Constants.trendingData != null) {
+                    Constants.trendingData.clear();
+                }
+                if (!Constants.trendingData.equals("") && Constants.statusData != null) {
+                    Constants.trendingData.addAll(response.body().getData());
+                    TrendingAdapter adapter = new TrendingAdapter(context);
+                    lv_text_list.setAdapter(adapter);
+                } else {
+                    Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Trending> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
@@ -178,5 +230,4 @@ public class TextListActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }

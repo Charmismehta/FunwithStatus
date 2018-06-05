@@ -13,98 +13,99 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom">
+        android:gravity="center_vertical">
 
-    <android.support.v7.widget.CardView
-        android:layout_margin="@dimen/_16sdp"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardElevation="@dimen/_5sdp"
-        card_view:cardCornerRadius="10dp">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            android:layout_height="wrap_content">
+
             <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-                android:weightSum="1"
-     android:orientation="vertical">
-            <com.rockerhieu.emojicon.EmojiconTextView
-                android:id="@+id/display_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:padding="@dimen/_16sdp"
-                android:background="@color/background"
-                android:fontFamily="monospace"
-                android:text="Looks like an issue with the format to me. It might help to see the actual console error message with callstack, could you paste the full logcat output?"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_15sdp"
-                android:textStyle="bold" />
-</LinearLayout>
-            </ScrollView>
-            <LinearLayout
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/_8sdp"
-                android:layout_marginLeft="@dimen/_8sdp"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/copy"
-                    android:layout_width="@dimen/_24sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_16sdp"
-                    android:src="@drawable/vc_copy" />
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/like"
-                    android:layout_width="@dimen/_24sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_16sdp"
-                    android:src="@drawable/vc_thumbup" />
+                    <LinearLayout
+                        android:background="@drawable/textbg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:weightSum="1">
+
+                        <com.rockerhieu.emojicon.EmojiconTextView
+                            android:id="@+id/display_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="monospace"
+                            android:padding="@dimen/_16sdp"
+                            android:text="Looks like an issue with the format to me. It might help to see the actual console error message with callstack, could you paste the full logcat output?"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_15sdp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </ScrollView>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/copy"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_16sdp"
+                        android:src="@drawable/vc_copy" />
+
+                    <ImageView
+                        android:id="@+id/like"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_16sdp"
+                        android:src="@drawable/vc_thumbup" />
 
 
-                <ImageView
-                    android:id="@+id/dislike"
-                    android:layout_width="@dimen/_24sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_16sdp"
-                    android:src="@drawable/vc_thumbdown" />
+                    <ImageView
+                        android:id="@+id/dislike"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_16sdp"
+                        android:src="@drawable/vc_thumbdown" />
 
-                <ImageView
-                    android:id="@+id/share"
-                    android:layout_width="@dimen/_24sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_16sdp"
-                    android:src="@drawable/vc_share" />
-                <ImageView
-                    android:id="@+id/delete"
-                    android:layout_width="@dimen/_24sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_16sdp"
-                    android:src="@drawable/vc_delete"
-                    android:visibility="gone"/>
+                    <ImageView
+                        android:id="@+id/share"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_16sdp"
+                        android:src="@drawable/vc_share" />
 
+                    <ImageView
+                        android:id="@+id/delete"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_16sdp"
+                        android:src="@drawable/vc_delete"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
-        </LinearLayout>
-</ScrollView>
-    </android.support.v7.widget.CardView>
+        </ScrollView>
     </RelativeLayout>
 </LinearLayout>

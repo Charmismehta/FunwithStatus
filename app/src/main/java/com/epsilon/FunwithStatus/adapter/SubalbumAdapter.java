@@ -70,7 +70,6 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
                 Intent it = new Intent(mContext, ImageListActivity.class);
                 it.putExtra("NAME",albumList.get(position).getName());
                 mContext.startActivity(it);
-                ((Activity)mContext).finish();
             }
         });
     }

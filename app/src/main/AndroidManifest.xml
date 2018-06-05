@@ -56,22 +56,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".Dashboard"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden" >
-
-        </activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".DisplayText"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden" >
-
-        </activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ImageListActivity"
             android:screenOrientation="portrait"
@@ -82,7 +77,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".SubCatImage"></activity>
+        <activity android:name=".SubCatImage" />
+        <activity android:name=".demo"></activity>
+        <activity android:name=".Demo"></activity>
     </application>
 
 </manifest>

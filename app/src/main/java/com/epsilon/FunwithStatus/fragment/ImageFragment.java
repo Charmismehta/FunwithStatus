@@ -1,6 +1,7 @@
 package com.epsilon.FunwithStatus.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -12,12 +13,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.epsilon.FunwithStatus.Dashboard;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.adapter.AlbumsAdapter;
 import com.epsilon.FunwithStatus.utills.Album;
@@ -114,7 +117,7 @@ public class ImageFragment extends Fragment {
                 R.drawable.language,
                 R.drawable.entertainment};
 
-        Album a = new Album("Tranding", 1, covers[0]);
+        Album a = new Album("Trending", 1, covers[0]);
         albumList.add(a);
 
         a = new Album("Laughter", 2, covers[1]);
@@ -184,6 +187,25 @@ public class ImageFragment extends Fragment {
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    Intent it = new Intent(getContext(), Dashboard.class);
+                    startActivity(it);
+                    getActivity().finish();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 }
