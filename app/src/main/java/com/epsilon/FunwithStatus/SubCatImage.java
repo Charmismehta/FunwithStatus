@@ -66,7 +66,7 @@ public class SubCatImage extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
-        if(name.equalsIgnoreCase("Tranding"))
+        if(name.equalsIgnoreCase("Featured"))
         {
             TrandingAlbums();
         }

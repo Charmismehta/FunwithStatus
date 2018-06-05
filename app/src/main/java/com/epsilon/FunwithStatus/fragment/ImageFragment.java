@@ -117,7 +117,7 @@ public class ImageFragment extends Fragment {
                 R.drawable.language,
                 R.drawable.entertainment};
 
-        Album a = new Album("Trending", 1, covers[0]);
+        Album a = new Album("Featured", 1, covers[0]);
         albumList.add(a);
 
         a = new Album("Laughter", 2, covers[1]);
