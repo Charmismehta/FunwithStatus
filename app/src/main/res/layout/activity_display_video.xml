@@ -6,30 +6,27 @@
     android:orientation="vertical"
     android:id="@+id/mainlayout"
     android:gravity="center"
-    android:background="@color/black"
+    android:background="@color/background"
     android:layout_height="match_parent"
-    tools:context=".DisplayImage">
+    tools:context=".DisplayVideo">
 
-    <LinearLayout
+    <VideoView
+        android:layout_centerInParent="true"
+        android:id="@+id/display_video"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-    <ImageView
-        android:id="@+id/display_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:src="@drawable/a" />
-    </LinearLayout>
+        android:layout_height="@dimen/_200sdp" />
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
     <LinearLayout
         android:layout_margin="@dimen/_16sdp"
         android:id="@+id/layout_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"
         android:orientation="horizontal">
 
         <ImageView

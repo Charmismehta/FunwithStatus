@@ -5,19 +5,24 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.epsilon.FunwithStatus.DisplayVideo;
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.utills.Constants;
 
 import java.io.File;
 
-public class VideoAdapter extends BaseAdapter {
+public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder> {
 
 
     Activity activity;
@@ -30,13 +35,30 @@ public class VideoAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return 5;
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.video_item, parent, false);
+
+        return new MyViewHolder(itemView);
     }
 
     @Override
-    public Object getItem(int i) {
-        return i;
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        holder.tvvideo.setVideoPath(Constants.videoListData.get(position).getImage());
+
+        holder.tvvideo.start();
+        holder.user_name.setText(Constants.videoListData.get(position).getUser());
+        holder.like_count.setText(Constants.videoListData.get(position).getLiked());
+        holder.video_name.setText(Constants.videoListData.get(position).getFilename());
+
+        holder.mainlayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(activity, DisplayVideo.class);
+                it.putExtra("VIDEO",Constants.videoListData.get(position).getImage());
+                activity.startActivity(it);
+            }
+        });
     }
 
     @Override
@@ -45,32 +67,23 @@ public class VideoAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-
-        final MyViewHolder viewHolder;
-        if (view == null) {
-            view = inflater.inflate(R.layout.video_item, viewGroup, false);
-            viewHolder = new MyViewHolder(view);
-            view.setTag(viewHolder);
-        } else {
-            viewHolder = (MyViewHolder) view.getTag();
-        }
-        viewHolder.tvvideo.setVideoPath("http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4");
-        final String path = "http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4";
-//        viewHolder.videoview.start();
-
-        return view;
+    public int getItemCount() {
+        return Constants.videoListData.size();
     }
 
-    class MyViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder{
         public VideoView tvvideo;
-        public TextView username,tvlike_count;
+        public LinearLayout mainlayout;
+        public TextView user_name,like_count,video_name;
 
 
         public MyViewHolder(View item) {
-            username = (TextView) item.findViewById(R.id.username);
-            tvlike_count = (TextView) item.findViewById(R.id.tvlike_count);
+            super(item);
+            user_name = (TextView) item.findViewById(R.id.user_name);
+            like_count = (TextView) item.findViewById(R.id.like_count);
+            video_name = (TextView) item.findViewById(R.id.video_name);
             tvvideo = (VideoView) item.findViewById(R.id.tvvideo);
+            mainlayout = (LinearLayout) item.findViewById(R.id.mainlayout);
         }
     }
 

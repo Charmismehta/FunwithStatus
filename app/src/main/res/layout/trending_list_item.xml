@@ -42,15 +42,6 @@
             tools:text="1" />
 
         <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginLeft="@dimen/_80sdp"
-            android:layout_gravity="center"
-            android:textSize="@dimen/_10sdp"
-            tools:text="charmis" />
-        <TextView
             android:id="@+id/category_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -9,16 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <LinearLayout
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_140sdp"
-            android:background="@drawable/bg"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-
-        </LinearLayout>
-    <LinearLayout
+            android:layout_height="@dimen/_150sdp">
+        </android.support.v4.view.ViewPager>
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

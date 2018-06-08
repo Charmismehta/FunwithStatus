@@ -8,8 +8,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -21,8 +23,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,10 +78,9 @@ public class ImageListActivity extends AppCompatActivity {
     Activity context;
     TextView text, title;
     ImageView ileft, iright;
-    GridView imagelistgrid_view;
+    private RecyclerView recyclerView;
     String subcat;
-    String post_files, user;
-    File fileGallery;
+    String  user;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     SwipeRefreshLayout swipelayout;
     Sessionmanager sessionmanager;
@@ -105,6 +110,21 @@ public class ImageListActivity extends AppCompatActivity {
                 swipelayout.setRefreshing(false);
             }
         });
+
+        ileft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
+        it.putExtra("NAME",subcat);
+        startActivity(it);
+        finish();
+            }
+        });
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         title.setText(subcat);
 
@@ -158,9 +178,49 @@ public class ImageListActivity extends AppCompatActivity {
 //        finish();
 //    }
 
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
+
     private void idMappings() {
 
-        imagelistgrid_view = (GridView) findViewById(R.id.imagelistgrid_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         swipelayout=(SwipeRefreshLayout) findViewById(R.id.swipelayout);
         text=(TextView) findViewById(R.id.text);
         title=(TextView) findViewById(R.id.title);
@@ -184,7 +244,7 @@ public class ImageListActivity extends AppCompatActivity {
                     }
                     Constants.imageListData.addAll(response.body().getImages());
                     ImageListAdapter adapter = new ImageListAdapter(context);
-                    imagelistgrid_view.setAdapter(adapter);
+                    recyclerView.setAdapter(adapter);
                 }
                 else
                 {

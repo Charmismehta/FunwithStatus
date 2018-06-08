@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -30,7 +31,7 @@ import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ImageListAdapter extends BaseAdapter {
+public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyViewHolder>  {
     Activity activity;
     private LayoutInflater inflater;
     public Resources res;
@@ -41,13 +42,33 @@ public class ImageListAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return Constants.imageListData.size();
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.subimage_item, parent, false);
+
+        return new MyViewHolder(itemView);
     }
 
+
     @Override
-    public Object getItem(int i) {
-        return Constants.imageListData;
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        Glide.with(activity).load(Constants.imageListData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.loading)).fitCenter().crossFade().into(holder.tvimage);
+        holder.tvlike_count.setText(Constants.imageListData.get(position).getLiked());
+        holder.username.setText(Constants.imageListData.get(position).getUser());
+
+        holder.tvimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(activity, DisplayImage.class);
+                it.putExtra("pic",Constants.imageListData.get(position).getImage());
+                it.putExtra("NAME",Constants.imageListData.get(position).getSubcata());
+                it.putExtra("Id",Constants.imageListData.get(position).getId());
+                it.putExtra("U_NAME",Constants.imageListData.get(position).getUser());
+                activity.startActivity(it);
+                activity.finish();
+            }
+        });
+
     }
 
     @Override
@@ -56,45 +77,18 @@ public class ImageListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
-
-        final MyViewHolder viewHolder;
-        if (view == null) {
-            view = inflater.inflate(R.layout.subimage_item, viewGroup, false);
-            viewHolder = new MyViewHolder(view);
-            view.setTag(viewHolder);
-
-
-        } else {
-            viewHolder = (MyViewHolder) view.getTag();
-        }
-            Glide.with(activity).load(Constants.imageListData.get(i).getImage()).placeholder(R.drawable.icon).into(viewHolder.tvimage);
-            viewHolder.tvlike_count.setText(Constants.imageListData.get(i).getLiked());
-//            viewHolder.tvimage_name.setText(Constants.imageListData.get(i).getSubcata());
-
-        viewHolder.tvimage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(activity, DisplayImage.class);
-                it.putExtra("pic",Constants.imageListData.get(i).getImage());
-                it.putExtra("NAME",Constants.imageListData.get(i).getSubcata());
-                it.putExtra("Id",Constants.imageListData.get(i).getId());
-                it.putExtra("U_NAME",Constants.imageListData.get(i).getUser());
-                activity.startActivity(it);
-                activity.finish();
-            }
-        });
-
-        return view;
+    public int getItemCount() {
+        return Constants.imageListData.size();
     }
 
 
-    class MyViewHolder {
+   public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView username,tvlike_count;
         public ImageView tvimage;
 
 
         public MyViewHolder(View item) {
+            super(item);
             username = (TextView) item.findViewById(R.id.username);
             tvlike_count = (TextView) item.findViewById(R.id.tvlike_count);
             tvimage = (ImageView) item.findViewById(R.id.tvimage);

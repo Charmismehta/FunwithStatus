@@ -10,8 +10,11 @@ import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
+import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
+import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoList;
+import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoListDatum;
 import com.epsilon.FunwithStatus.utills.ServerURl;
 import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.jsonpojo.registration.Registration;
@@ -117,5 +120,11 @@ public interface APIInterface {
 
     @GET(ServerURl.TRANDING)
     Call<Trending> trendingpojo();
+
+    @GET(ServerURl.TRANDINGIMG)
+    Call<TrendingImg> trendingimgpojo();
+
+    @GET(ServerURl.VIDEOLIST)
+    Call<VideoList> videolistpojo();
 
 }

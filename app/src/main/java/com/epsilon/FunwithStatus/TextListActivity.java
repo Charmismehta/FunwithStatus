@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -42,10 +45,10 @@ import retrofit2.Response;
 
 public class TextListActivity extends AppCompatActivity {
 
-    ListView lv_text_list;
     Toolbar toolbar;
     Activity context;
     SwipeRefreshLayout swipelayout;
+    RecyclerView recyclerView;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     String name;
 
@@ -54,6 +57,10 @@ public class TextListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_list);
         context = this;
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         name = getIntent().getStringExtra("NAME");
 
         if (name.equalsIgnoreCase("Trending")) {
@@ -89,38 +96,11 @@ public class TextListActivity extends AppCompatActivity {
                 swipelayout.setRefreshing(false);
             }
         });
-
-        lv_text_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                if(name.equalsIgnoreCase("Trending")) {
-                    Intent it = new Intent(TextListActivity.this, DisplayText.class);
-                    it.putExtra("text", Constants.trendingData.get(position).getStatus());
-                    it.putExtra("Id", Constants.trendingData.get(position).getId());
-                    it.putExtra("NAME", name);
-                    it.putExtra("U_NAME", Constants.trendingData.get(position).getUser());
-                    startActivity(it);
-                    finish();
-                }
-                else{
-                    Intent it = new Intent(TextListActivity.this, DisplayText.class);
-                    it.putExtra("text", Constants.statusData.get(position).getStatus());
-                    it.putExtra("Id", Constants.statusData.get(position).getId());
-                    it.putExtra("NAME", name);
-                    it.putExtra("U_NAME", Constants.statusData.get(position).getUser());
-                    startActivity(it);
-                    finish();
-                }
-            }
-        });
-
     }
-
 
     private void idMapping() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        lv_text_list = (ListView) findViewById(R.id.lv_text_list);
+
         swipelayout = (SwipeRefreshLayout) findViewById(R.id.swipelayout);
     }
 
@@ -142,7 +122,7 @@ public class TextListActivity extends AppCompatActivity {
                 if (!Constants.statusData.equals("") && Constants.statusData != null) {
                     Constants.statusData.addAll(response.body().getData());
                     TextListAdapter adapter = new TextListAdapter(context);
-                    lv_text_list.setAdapter(adapter);
+                    recyclerView.setAdapter(adapter);
                 } else {
                     Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
                 }
@@ -173,7 +153,7 @@ public class TextListActivity extends AppCompatActivity {
                 if (!Constants.trendingData.equals("") && Constants.statusData != null) {
                     Constants.trendingData.addAll(response.body().getData());
                     TrendingAdapter adapter = new TrendingAdapter(context);
-                    lv_text_list.setAdapter(adapter);
+                    recyclerView.setAdapter(adapter);
                 } else {
                     Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
                 }
@@ -199,7 +179,13 @@ public class TextListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menuimage, menu);
+        if(name.equalsIgnoreCase("Trending"))
+        {
+           menu.close();
+        }
+        else {
+            getMenuInflater().inflate(R.menu.menuimage, menu);
+        }
         return true;
     }
 
@@ -218,7 +204,6 @@ public class TextListActivity extends AppCompatActivity {
             }
 //            finish(); // close this activity and return to preview activity (if there is any)
         }
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.vc_addtoolbar) {
             Intent it = new Intent(TextListActivity.this, AddTextActivity.class);

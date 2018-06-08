@@ -62,7 +62,7 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final SubAlbum album = albumList.get(position);
         holder.title.setText(album.getName());
-        Glide.with(mContext).load(album.getThumbnail()).into(holder.thumbnail);
+        Glide.with(mContext).load(album.getThumbnail()).thumbnail(Glide.with(mContext).load(R.drawable.loading)).fitCenter().crossFade().into(holder.thumbnail);
 
         holder.thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +70,7 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
                 Intent it = new Intent(mContext, ImageListActivity.class);
                 it.putExtra("NAME",albumList.get(position).getName());
                 mContext.startActivity(it);
+                ((Activity)mContext).finish();
             }
         });
     }

@@ -2,7 +2,7 @@ package com.epsilon.FunwithStatus.utills;
 
 public class ServerURl {
 
-    public static final String BASE_URL="http://epsiloninfotech.co.in/funwithstatus/";
+    public static final String BASE_URL="https://epsiloninfotech.co.in/funwithstatus/";
 
     public static final String LOGIN = "login.php";
     public static final String REGISTER = "register.php";
@@ -17,4 +17,6 @@ public class ServerURl {
     public static final String DELETEIMAGE = "delete_image.php";
     public static final String DELETETEXT = "delete_status.php";
     public static final String TRANDING = "trending_status.php";
+    public static final String TRANDINGIMG = "trending_images.php";
+    public static final String VIDEOLIST = "video/show_videos.php";
 }

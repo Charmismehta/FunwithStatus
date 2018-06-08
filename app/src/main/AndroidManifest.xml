@@ -66,7 +66,9 @@
             android:name=".DisplayText"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden">
+
+        </activity>
         <activity
             android:name=".ImageListActivity"
             android:screenOrientation="portrait"
@@ -78,8 +80,9 @@
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".SubCatImage" />
-        <activity android:name=".demo"></activity>
-        <activity android:name=".Demo"></activity>
+        <activity android:name=".Demo" />
+        <activity android:name=".AddVideoActivity" />
+        <activity android:name=".DisplayVideo"></activity>
     </application>
 
 </manifest>

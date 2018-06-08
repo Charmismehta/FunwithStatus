@@ -1,6 +1,7 @@
 package com.epsilon.FunwithStatus;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -17,9 +18,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.epsilon.FunwithStatus.adapter.SubalbumAdapter;
+import com.epsilon.FunwithStatus.adapter.TrendingAdapter;
+import com.epsilon.FunwithStatus.adapter.TrendingImgAdapter;
+import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
+import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
+import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.SubAlbum;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -28,6 +37,10 @@ import com.google.android.gms.ads.AdView;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class SubCatImage extends AppCompatActivity {
     Activity context;
     Toolbar toolbar;
@@ -35,6 +48,7 @@ public class SubCatImage extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SubalbumAdapter adapter;
     private List<SubAlbum> albumList;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
 
     @Override
@@ -191,13 +205,35 @@ public class SubCatImage extends AppCompatActivity {
         }
     }
     private void TrandingAlbums() {
-        int[] covers = new int[]{
-                R.drawable.politics};
+            final ProgressDialog dialog = new ProgressDialog(context);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setMessage("Please Wait...");
+            dialog.show();
+            final Call<TrendingImg> countrycall = apiInterface.trendingimgpojo();
+            countrycall.enqueue(new Callback<TrendingImg>() {
+                @Override
+                public void onResponse(Call<TrendingImg> call, Response<TrendingImg> response) {
+                    dialog.dismiss();
 
-        SubAlbum a = new SubAlbum("Politics", covers[0]);
-        albumList.add(a);
-        adapter.notifyDataSetChanged();
-    }
+                    if (Constants.trendingimgData != null) {
+                        Constants.trendingimgData.clear();
+                    }
+                    if (!Constants.trendingimgData.equals("") && Constants.trendingimgData != null) {
+                        Constants.trendingimgData.addAll(response.body().getData());
+                        TrendingImgAdapter adapter = new TrendingImgAdapter(context);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<TrendingImg> call, Throwable t) {
+                    dialog.dismiss();
+                    Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+            }
     private void LaughterAlbums() {
         int[] covers = new int[]{
                 R.drawable.politics};

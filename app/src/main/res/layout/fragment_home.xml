@@ -396,16 +396,16 @@
                                     android:layout_width="@dimen/_30sdp"
                                     android:layout_height="@dimen/_30sdp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_happyanniversary" />
+                                    android:src="@drawable/ic_congrates" />
 
                                 <TextView
-                                    android:id="@+id/tv_Anniversary"
-                                    android:layout_width="match_parent"
+                                    android:id="@+id/tv_congratulation"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:layout_marginTop="@dimen/_4sdp"
                                     android:gravity="center"
-                                    android:text="Anniversary"
+                                    android:text="Congrats"
                                     android:textColor="@color/black"
                                     android:textSize="@dimen/_10sdp" />
                             </LinearLayout>
@@ -422,18 +422,19 @@
                                     android:layout_width="@dimen/_30sdp"
                                     android:layout_height="@dimen/_30sdp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_congrates" />
+                                    android:src="@drawable/ic_happyanniversary" />
 
                                 <TextView
-                                    android:id="@+id/tv_congratulation"
-                                    android:layout_width="wrap_content"
+                                    android:id="@+id/tv_Anniversary"
+                                    android:layout_width="@dimen/_60sdp"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:layout_marginTop="@dimen/_4sdp"
                                     android:gravity="center"
-                                    android:text="Congrats"
+                                    android:text="Anniversary"
                                     android:textColor="@color/black"
                                     android:textSize="@dimen/_10sdp" />
+
                             </LinearLayout>
 
 

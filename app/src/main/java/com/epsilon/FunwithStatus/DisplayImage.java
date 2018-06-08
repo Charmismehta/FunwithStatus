@@ -2,6 +2,7 @@ package com.epsilon.FunwithStatus;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -29,8 +31,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -69,8 +73,9 @@ public class DisplayImage extends AppCompatActivity {
 
     Context activity;
     LinearLayout layout_content;
-    ImageView display_image, download, like, dislike, share,delete;
-    String pic,name, root,Id,email,u_name,loginuser;
+    RelativeLayout mainlayout;
+    ImageView display_image, download, like, dislike, share, delete,whatsapp;
+    String pic, name, root, Id, email, u_name, loginuser;
     InputStream is = null;
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
@@ -92,27 +97,32 @@ public class DisplayImage extends AppCompatActivity {
         Id = getIntent().getStringExtra("Id");
         name = getIntent().getStringExtra("NAME");
         u_name = getIntent().getStringExtra("U_NAME");
-        Log.e("##########NAME",name);
+        Log.e("##########NAME", name);
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
 
+        share.setColorFilter(getResources().getColor(R.color.colorAccent));
+        like.setColorFilter(getResources().getColor(R.color.colorAccent));
+        dislike.setColorFilter(getResources().getColor(R.color.colorAccent));
+        delete.setColorFilter(getResources().getColor(R.color.colorAccent));
+        download.setColorFilter(getResources().getColor(R.color.colorAccent));
+
         Glide.with(activity).load(pic)
-                .thumbnail(Glide.with(activity).load(R.drawable.load))
+                .thumbnail(Glide.with(activity).load(R.drawable.loading))
                 .fitCenter()
                 .crossFade()
                 .into(display_image);
 //        Glide.with(activity).load(pic).into(display_image);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        if(u_name.equalsIgnoreCase(loginuser))
-        {
+        if (u_name.equalsIgnoreCase(loginuser)) {
             delete.setVisibility(View.VISIBLE);
         }
 
@@ -126,7 +136,9 @@ public class DisplayImage extends AppCompatActivity {
         dislike = (ImageView) findViewById(R.id.dislike);
         share = (ImageView) findViewById(R.id.share);
         delete = (ImageView) findViewById(R.id.delete);
+        whatsapp = (ImageView) findViewById(R.id.whatsapp);
         layout_content = (LinearLayout) findViewById(R.id.layout_content);
+        mainlayout = (RelativeLayout) findViewById(R.id.mainlayout);
     }
 
     private void Listners() {
@@ -134,46 +146,186 @@ public class DisplayImage extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DownloadImage().execute(pic);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.fadein);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                download.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        download.startAnimation(animation_3);
+                        finish();
+                        new DownloadImage().execute(pic);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
             }
         });
 
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ShareImage().execute(pic);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                share.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        share.startAnimation(animation_3);
+                        new ShareImage().execute(pic);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
+
             }
         });
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addlike(name,email,Id,pic);
+                final Animation animation_1 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                like.startAnimation(animation_1);
+
+                animation_1.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        like.startAnimation(animation_3);
+                        addlike(name, email, Id, pic);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
+
             }
         });
 
         dislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dislike(name,email,Id,pic);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.antirotate);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                dislike.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        dislike.startAnimation(animation_3);
+                        dislike(name, email, Id, pic);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
             }
         });
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delete(Id);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.move);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                delete.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        delete.startAnimation(animation_3);
+                        delete(Id);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
             }
         });
+
+        whatsapp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.slide_down);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                whatsapp.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        whatsapp.startAnimation(animation_3);
+                        new sharewhatsappImage().execute(pic);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+
+            });
+
         display_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (layout_content.getVisibility() == View.VISIBLE) {
                     layout_content.setVisibility(View.GONE);
+                    mainlayout.setBackgroundColor(Color.BLACK);
                 } else if (layout_content.getVisibility() == View.GONE) {
                     layout_content.setVisibility(View.VISIBLE);
+                    mainlayout.setBackgroundColor(Color.WHITE);
                 } else {
                     layout_content.setVisibility(View.GONE);
+                    mainlayout.setBackgroundColor(Color.BLACK);
                 }
             }
         });
@@ -217,15 +369,13 @@ public class DisplayImage extends AppCompatActivity {
             public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
                 dialog.dismiss();
                 if (response.body().getStatus().equals("Succ")) {
-                    Intent it = new Intent(activity,ImageListActivity.class);
-                    it.putExtra("NAME",name);
+                    Intent it = new Intent(activity, ImageListActivity.class);
+                    it.putExtra("NAME", name);
                     startActivity(it);
                     finish();
                     Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Toast.makeText(activity,"Try Again", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(activity, "Try Again", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -267,11 +417,85 @@ public class DisplayImage extends AppCompatActivity {
     // TODO : IMAGE DISLIKE API END >>>>
 
     public void onBackPressed() {
-        Intent it = new Intent(DisplayImage.this, ImageListActivity.class);
-        it.putExtra("NAME",name);
-        startActivity(it);
-        finish();
+        if (name.equalsIgnoreCase("featured"))
+        {
+            Intent it = new Intent(activity, SubCatImage.class);
+            it.putExtra("NAME", name);
+            startActivity(it);
+            finish();// close this activity and return to preview activity (if there is any)
+        }
+        else
+            {
+            Intent it = new Intent(activity, ImageListActivity.class);
+            it.putExtra("NAME", name);
+            startActivity(it);
+            finish();
+        }
     }
+
+    // TODO : SHARE ON WHATSAPP
+
+    private class sharewhatsappImage extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(DisplayImage.this);
+            // Set progressdialog title
+            mProgressDialog.setTitle("Share Image");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... URL) {
+
+            String imageURL = URL[0];
+
+            Bitmap bitmap = null;
+            try {
+                // Download Image from URL
+                InputStream input = new java.net.URL(imageURL).openStream();
+                // Decode Bitmap
+                bitmap = BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            SharewhatsappImage(result);
+            mProgressDialog.dismiss();
+            Toast.makeText(activity, "Image Share Successfully", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void SharewhatsappImage(Bitmap finalBitmap) {
+
+        String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
+                finalBitmap, "Design", null);
+
+        Uri uri = Uri.parse(path);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, "Share From epsilon infotech");
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_STREAM,uri);
+        intent.setType("image/jpeg");
+        intent.setPackage("com.whatsapp");
+        startActivity(intent);
+    }
+
+
+    // END SHARE
+
+
 
     // TODO SAVE IMAGE CODE :
     private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
@@ -358,8 +582,10 @@ public class DisplayImage extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             mProgressDialog = new ProgressDialog(DisplayImage.this);
+            mProgressDialog.setMessage("Loading...");
             mProgressDialog.show();
         }
+
         @Override
         protected Bitmap doInBackground(String... URL) {
 
@@ -376,6 +602,7 @@ public class DisplayImage extends AppCompatActivity {
             }
             return bitmap;
         }
+
         @Override
         protected void onPostExecute(Bitmap result) {
             ShareImage(result);
@@ -383,6 +610,7 @@ public class DisplayImage extends AppCompatActivity {
             addImageToGallery(pic, activity);
         }
     }
+
     private void ShareImage(Bitmap finalBitmap) {
 
         String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
@@ -406,12 +634,19 @@ public class DisplayImage extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (item.getItemId() == android.R.id.home) {
-            Intent it = new Intent(activity,ImageListActivity.class);
-            it.putExtra("NAME",name);
-            startActivity(it);
-            finish();// close this activity and return to preview activity (if there is any)
+            if (name.equalsIgnoreCase("featured")) {
+                Intent it = new Intent(activity, SubCatImage.class);
+                it.putExtra("NAME", name);
+                startActivity(it);
+                finish();// close this activity and return to preview activity (if there is any)
+            } else {
+                Intent it = new Intent(activity, ImageListActivity.class);
+                it.putExtra("NAME", name);
+                startActivity(it);
+                finish();
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

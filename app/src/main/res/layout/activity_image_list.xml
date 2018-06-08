@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/background"
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".ImageListActivity">
@@ -13,13 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <GridView
-        android:id="@+id/imagelistgrid_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_weight="1"
-        android:numColumns="2"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 
