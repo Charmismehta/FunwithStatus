@@ -29,6 +29,7 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
 
     private Context mContext;
     private List<SubAlbum> albumList;
+    private String name;
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -45,9 +46,10 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
     }
 
 
-    public SubalbumAdapter(Context mContext, List<SubAlbum> albumList) {
+    public SubalbumAdapter(Context mContext, List<SubAlbum> albumList,String name) {
         this.mContext = mContext;
         this.albumList = albumList;
+        this.name = name;
     }
 
     @Override
@@ -62,13 +64,14 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final SubAlbum album = albumList.get(position);
         holder.title.setText(album.getName());
-        Glide.with(mContext).load(album.getThumbnail()).thumbnail(Glide.with(mContext).load(R.drawable.loading)).fitCenter().crossFade().into(holder.thumbnail);
+        Glide.with(mContext).load(album.getThumbnail()).thumbnail(Glide.with(mContext).load(R.drawable.load)).fitCenter().crossFade().into(holder.thumbnail);
 
         holder.thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(mContext, ImageListActivity.class);
                 it.putExtra("NAME",albumList.get(position).getName());
+                it.putExtra("REALNAME",name);
                 mContext.startActivity(it);
                 ((Activity)mContext).finish();
             }

@@ -19,4 +19,6 @@ public class ServerURl {
     public static final String TRANDING = "trending_status.php";
     public static final String TRANDINGIMG = "trending_images.php";
     public static final String VIDEOLIST = "video/show_videos.php";
+    public static final String VIDEOLIKE = "video/like_video.php";
+    public static final String VIDEODISLIKE = "video/dislike_video.php";
 }

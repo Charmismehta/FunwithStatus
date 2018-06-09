@@ -15,4 +15,6 @@
     <string name="action_play_next">Play Next</string>
     <string name="backdrop_title">Latest Images</string>
     <string name="backdrop_subtitle">This season top 20 albums</string>
+
+    <string name="interstitial_full_screen">ca-app-pub-3953586403051771/5590057661</string>
 </resources>

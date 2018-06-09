@@ -18,10 +18,7 @@ public class Sessionmanager {
     public static final String Id = "idKey";
     public static final String Email = "emailKey";
     public static final String Name = "nameKey";
-    public static final String Username = "UsernameKey";
-    public static final String Birthdate = "BirthdateKey";
     public static final String Password = "PasswordKey";
-    public static final String Phone_number = "Phone_numberKey";
 
     public Sessionmanager(Context context) {
         this.context = context;
@@ -59,11 +56,8 @@ public class Sessionmanager {
     {
         sharedPreferences.edit().putString(Id,userLogin.getUser().getId()).apply();
         sharedPreferences.edit().putString(Name,userLogin.getUser().getName()).apply();
-        sharedPreferences.edit().putString(Username,userLogin.getUser().getUsername()).apply();
-        sharedPreferences.edit().putString(Birthdate,userLogin.getUser().getBirthdate()).apply();
         sharedPreferences.edit().putString(Email,userLogin.getUser().getEmail()).apply();
         sharedPreferences.edit().putString(Password,userLogin.getUser().getPassword()).apply();
-        sharedPreferences.edit().putString(Phone_number,userLogin.getUser().getMobile()).apply();
     }
 
 
@@ -71,11 +65,7 @@ public class Sessionmanager {
     {
         sharedPreferences.edit().putString(Id,userregister.getUser().getId()).apply();
         sharedPreferences.edit().putString(Name,userregister.getUser().getName()).apply();
-        sharedPreferences.edit().putString(Username,userregister.getUser().getUsername()).apply();
-        sharedPreferences.edit().putString(Birthdate,userregister.getUser().getBirthdate()).apply();
         sharedPreferences.edit().putString(Email,userregister.getUser().getEmail()).apply();
         sharedPreferences.edit().putString(Password,userregister.getUser().getPassword()).apply();
-        sharedPreferences.edit().putString(Phone_number,userregister.getUser().getMobile()).apply();
-
     }
 }

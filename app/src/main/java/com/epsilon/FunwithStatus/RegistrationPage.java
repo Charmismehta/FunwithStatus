@@ -29,14 +29,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegistrationPage extends AppCompatActivity implements View.OnClickListener{
-    EditText name, username, register_eemail, register_epassword,register_emobile;
+public class RegistrationPage extends AppCompatActivity {
+    EditText name,register_eemail, register_epassword;
     Context context;
-    TextView tbirthday,btnRegistration;
-    LinearLayout lbirthday,login_tsignin;
-    int mYear, mMonth, mDay;
+    LinearLayout login_tsignin;
     ImageView pwdeye;
     private int passwordNotVisible=1;
+    TextView btnRegistration;
 Sessionmanager sessionmanager;
 
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
@@ -50,7 +49,6 @@ Sessionmanager sessionmanager;
         sessionmanager = new Sessionmanager(this);
         idMappings();
         Listener();
-        lbirthday.setOnClickListener(this);
 
         login_tsignin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,15 +62,11 @@ Sessionmanager sessionmanager;
 
     private void idMappings() {
         name = (EditText) findViewById(R.id.name);
-        username = (EditText) findViewById(R.id.username);
         register_eemail = (EditText) findViewById(R.id.register_eemail);
-        lbirthday=(LinearLayout)findViewById(R.id.lbirthday);
         register_epassword = (EditText) findViewById(R.id.register_epassword);
-        tbirthday = (TextView) findViewById(R.id.tbirthday);
         login_tsignin = (LinearLayout) findViewById(R.id.login_tsignin);
-        btnRegistration = (TextView) findViewById(R.id.btnRegistration);
         pwdeye = (ImageView) findViewById(R.id.pwdeye);
-        register_emobile = (EditText) findViewById(R.id.register_emobile);
+        btnRegistration = (TextView) findViewById(R.id.btnRegistration);
     }
 
     private void Listener() {
@@ -83,14 +77,6 @@ Sessionmanager sessionmanager;
             public void onClick(View v) {
                 if ((name.getText().toString().length() == 0)) {
                     name.setError("Please Enter Name");
-                } else if (username.getText().toString().length() == 0) {
-                    username.setError("Please Enter Last Name");
-
-                } else if (tbirthday.getText().toString().length() == 0) {
-                    tbirthday.setError("Please Enter BirthDay");
-                } else if (register_emobile.getText().toString().length() == 0) {
-                    register_emobile.setError("Please Enter Mobile Number");
-
                 } else if (register_eemail.getText().toString().length() == 0) {
                     register_eemail.setError("Please Enter Email Address");
 
@@ -102,10 +88,8 @@ Sessionmanager sessionmanager;
                     register_epassword.setError("Please Enter Minimum 8 Digit");
                 } else {
                     if (Helper.isConnectingToInternet(context)) {
-                        Registercall(name.getText().toString(), username.getText().toString(),
+                        Registercall(name.getText().toString(),
                                 register_eemail.getText().toString(),
-                                register_emobile.getText().toString(),
-                                tbirthday.getText().toString(),
                                 register_epassword.getText().toString());
 
                     } else {
@@ -116,12 +100,12 @@ Sessionmanager sessionmanager;
 
             }
 
-            private void Registercall(String name, String username, String email, String mobile, String birthdate,String password) {
+            private void Registercall(String name, String email, String password) {
                 final ProgressDialog dialog = new ProgressDialog(context);
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.setMessage("Please Wait...");
                 dialog.show();
-                Call<Registration> registercall = apiInterface.registerPojoCall(name ,username,email,mobile, birthdate,password);
+                Call<Registration> registercall = apiInterface.registerPojoCall(name ,email,password);
 
                 registercall.enqueue(new Callback<Registration>() {
                     @Override
@@ -175,26 +159,6 @@ Sessionmanager sessionmanager;
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v == lbirthday) {
-            final Calendar c = Calendar.getInstance();
-            mYear = c.get(Calendar.YEAR);
-            mMonth = c.get(Calendar.MONTH);
-            mDay = c.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                    new DatePickerDialog.OnDateSetListener() {
-
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            tbirthday.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
-                        }
-                    }, mYear, mMonth, mDay);
-            datePickerDialog.show();
-            datePickerDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
-        }
-    }
     @Override
     public void onBackPressed() {
         Intent i=new Intent(RegistrationPage.this,LoginPage.class);

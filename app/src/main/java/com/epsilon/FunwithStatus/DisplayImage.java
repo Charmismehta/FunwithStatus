@@ -1,32 +1,24 @@
 package com.epsilon.FunwithStatus;
 
-import android.app.Activity;
+import android.Manifest;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
-import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,43 +31,29 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
-import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
-import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static java.lang.System.in;
-
 public class DisplayImage extends AppCompatActivity {
 
     Context activity;
     LinearLayout layout_content;
     RelativeLayout mainlayout;
-    ImageView display_image, download, like, dislike, share, delete,whatsapp;
-    String pic, name, root, Id, email, u_name, loginuser;
+    ImageView display_image, download, like, dislike, share, delete, whatsapp;
+    String pic, name, root, Id, email, u_name, loginuser, maincat;
     InputStream is = null;
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
@@ -83,6 +61,8 @@ public class DisplayImage extends AppCompatActivity {
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Toolbar toolbar;
     InputStream stream = null;
+    Uri uri;
+
 
 
     @Override
@@ -97,11 +77,12 @@ public class DisplayImage extends AppCompatActivity {
         Id = getIntent().getStringExtra("Id");
         name = getIntent().getStringExtra("NAME");
         u_name = getIntent().getStringExtra("U_NAME");
+        maincat = getIntent().getStringExtra("REALNAME");
         Log.e("##########NAME", name);
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
-
+        uri = Uri.parse(pic);
         share.setColorFilter(getResources().getColor(R.color.colorAccent));
         like.setColorFilter(getResources().getColor(R.color.colorAccent));
         dislike.setColorFilter(getResources().getColor(R.color.colorAccent));
@@ -109,7 +90,7 @@ public class DisplayImage extends AppCompatActivity {
         download.setColorFilter(getResources().getColor(R.color.colorAccent));
 
         Glide.with(activity).load(pic)
-                .thumbnail(Glide.with(activity).load(R.drawable.loading))
+                .thumbnail(Glide.with(activity).load(R.drawable.load))
                 .fitCenter()
                 .crossFade()
                 .into(display_image);
@@ -160,8 +141,11 @@ public class DisplayImage extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         download.startAnimation(animation_3);
-                        finish();
-                        new DownloadImage().execute(pic);
+                        boolean result = checkPermission();
+                        if (result) {
+                            saveimage(uri);
+                        }
+
                     }
 
                     @Override
@@ -169,7 +153,8 @@ public class DisplayImage extends AppCompatActivity {
 
                     }
                 });
-            }
+               }
+
         });
 
         share.setOnClickListener(new View.OnClickListener() {
@@ -312,7 +297,7 @@ public class DisplayImage extends AppCompatActivity {
                 });
             }
 
-            });
+        });
 
         display_image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -329,6 +314,52 @@ public class DisplayImage extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private boolean checkPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+//                Log.v(TAG,"Permission is granted2");
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+                return false;
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+//            Log.v(TAG,"Permission is granted2");
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 2:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //resume tasks needing this permission
+                    saveimage(uri);
+                } else {
+
+                    break;
+                }
+        }
+    }
+
+    private void saveimage(Uri uri) {
+        DownloadManager.Request r = new DownloadManager.Request(uri);
+
+        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "fileName");
+
+        r.allowScanningByMediaScanner();
+
+        r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+        DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        dm.enqueue(r);
+        addImageToGallery(pic, activity);
+
     }
 
     // TODO : IMAGE LIKE API >>
@@ -417,17 +448,16 @@ public class DisplayImage extends AppCompatActivity {
     // TODO : IMAGE DISLIKE API END >>>>
 
     public void onBackPressed() {
-        if (name.equalsIgnoreCase("featured"))
-        {
+        if (name.equalsIgnoreCase("featured")) {
             Intent it = new Intent(activity, SubCatImage.class);
             it.putExtra("NAME", name);
+            it.putExtra("REALNAME", maincat);
             startActivity(it);
             finish();// close this activity and return to preview activity (if there is any)
-        }
-        else
-            {
+        } else {
             Intent it = new Intent(activity, ImageListActivity.class);
             it.putExtra("NAME", name);
+            it.putExtra("REALNAME", maincat);
             startActivity(it);
             finish();
         }
@@ -486,7 +516,7 @@ public class DisplayImage extends AppCompatActivity {
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, "Share From epsilon infotech");
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_STREAM,uri);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.setType("image/jpeg");
         intent.setPackage("com.whatsapp");
         startActivity(intent);
@@ -494,7 +524,6 @@ public class DisplayImage extends AppCompatActivity {
 
 
     // END SHARE
-
 
 
     // TODO SAVE IMAGE CODE :
@@ -571,6 +600,7 @@ public class DisplayImage extends AppCompatActivity {
         values.put(MediaStore.MediaColumns.DATA, myDir);
 
         context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Toast.makeText(context, "Save Image Successfully", Toast.LENGTH_SHORT).show();
     }
     // TODO END SAVE IMAGE CODE ///////
 

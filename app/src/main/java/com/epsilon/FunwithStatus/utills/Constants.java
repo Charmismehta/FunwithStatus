@@ -25,5 +25,6 @@ public class Constants {
 
 
     public static final String UPLOAD_URL = "https://epsiloninfotech.co.in/funwithstatus/image/upload.php";
+    public static final String UPLOAD_VIDEO = "https://epsiloninfotech.co.in/funwithstatus/video/upload.php";
 
 }

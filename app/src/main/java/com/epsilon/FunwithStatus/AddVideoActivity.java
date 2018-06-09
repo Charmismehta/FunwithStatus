@@ -20,6 +20,7 @@ import android.widget.Toolbar;
 import android.widget.VideoView;
 
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.rockerhieu.emojicon.EmojiconEditText;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
@@ -37,21 +38,23 @@ public class AddVideoActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
     static final int VIDEO_CAPTURE = 3;
-    String selectpath;
+    String selectpath,user;
     EmojiconEditText edit_caption;
     Button button_caption_send;
     String name;
+    Sessionmanager sessionmanager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_video);
         activity = this;
-
+        sessionmanager = new Sessionmanager(this);
         iv_video = (VideoView) findViewById(R.id.iv_video);
         vc_text = (TextView) findViewById(R.id.vc_text);
         edit_caption = (EmojiconEditText) findViewById(R.id.edit_caption);
         button_caption_send = (Button) findViewById(R.id.button_caption_send);
+        user = sessionmanager.getValue(Sessionmanager.Name);
 
         vc_text.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,17 +80,15 @@ public class AddVideoActivity extends AppCompatActivity {
         button_caption_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edit_caption.equals("") && edit_caption == null)
-                {
-                    Toast.makeText(activity, "please Describe the video", Toast.LENGTH_SHORT).show();
+                if ( selectpath.toString().endsWith(".mp4")) {
+                    uploadMultipart();
+                } else {
+                    Toast.makeText(activity, "Please select mp4 video", Toast.LENGTH_SHORT).show();
                 }
-                else
-                {
-                    Toast.makeText(activity, "successfull", Toast.LENGTH_SHORT).show();
-//                    uploadMultipart();
-                }
+                 
             }
         });
+
     }
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA)
@@ -107,32 +108,27 @@ public class AddVideoActivity extends AppCompatActivity {
             }
         }
     }
-//    public void uploadMultipart() {
-//        //getting name for the image
-//        name = edit_caption.getText().toString().trim();
-//        //getting the actual path of the image
-//        String path = getPath(filePath);
-//        //Uploading code
-//        try {
-//            String uploadId = UUID.randomUUID().toString();
-//            //Creating a multi part request
-//            new MultipartUploadRequest(this, uploadId, Constants.UPLOAD_URL)
-//                    .addFileToUpload(path, "video") //Adding file
-//                    .addParameter("subcata", subcat) //Adding text parameter to the request
-//                    .addParameter("name", name) //Adding text parameter to the request
-//                    .addParameter("user", user) //Adding text parameter to the request
-//                    .setNotificationConfig(new UploadNotificationConfig())
-//                    .setMaxRetries(2)
-//                    .startUpload(); //Starting the upload
-//            Toast.makeText(activity, "Add Successfully", Toast.LENGTH_SHORT).show();
-//            Intent it = new Intent(activity,ImageListActivity.class);
-//            it.putExtra("NAME",subcat);
-//            startActivity(it);
-//            finish();
-//        } catch (Exception exc) {
-//            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
+    public void uploadMultipart() {
+        //getting name for the image
+        name = edit_caption.getText().toString().trim();
+        //getting the actual path of the image
+        //Uploading code
+        try {
+            String uploadId = UUID.randomUUID().toString();
+            //Creating a multi part request
+            new MultipartUploadRequest(this, uploadId, Constants.UPLOAD_VIDEO)
+                    .addFileToUpload(selectpath, "image") //Adding file
+                    .addParameter("filename", name) //Adding text parameter to the request
+                    .addParameter("user", user) //Adding text parameter to the request
+                    .addParameter("name", user) //Adding text parameter to the request
+                    .setNotificationConfig(new UploadNotificationConfig())
+                    .setMaxRetries(2)
+                    .startUpload(); //Starting the upload
+            Toast.makeText(activity, "Add video Successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception exc) {
+            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
@@ -163,8 +159,6 @@ public class AddVideoActivity extends AppCompatActivity {
                 android.Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
 
-            //Go ahead with recording audio now
-//            recordAudio();
         }
     }
 
@@ -186,6 +180,7 @@ public class AddVideoActivity extends AppCompatActivity {
         {
             Uri selectedVideoUri = data.getData();
             selectpath = getPath(selectedVideoUri);
+            iv_video.setVideoPath(selectpath);
 
         }
     }

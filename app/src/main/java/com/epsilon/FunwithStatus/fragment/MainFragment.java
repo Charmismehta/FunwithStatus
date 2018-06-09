@@ -40,6 +40,7 @@ import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.File;
 import java.util.Timer;
@@ -68,6 +69,8 @@ public class MainFragment extends Fragment {
     };
     private static int currentPage = 0;
     private static int NUM_PAGES = 0;
+    private InterstitialAd mInterstitialAd;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +88,17 @@ public class MainFragment extends Fragment {
 //       indicator.setRadius(5 * density);
 
         NUM_PAGES = mResources.length;
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
+        mInterstitialAd.loadAd(adRequest);
+        mInterstitialAd.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                showInterstitial();
+            }
+        });
+
 
         // Auto start of viewpager
         final Handler handler = new Handler();
@@ -162,7 +176,6 @@ public class MainFragment extends Fragment {
         });
 
         AdView mAdView =view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
         mAdView.setAdListener(new AdListener() {
@@ -195,6 +208,12 @@ public class MainFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void showInterstitial() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
     }
 
     class CustomPagerAdapter extends PagerAdapter {

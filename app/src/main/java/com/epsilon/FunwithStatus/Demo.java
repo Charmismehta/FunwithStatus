@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -13,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,11 +30,12 @@ import java.util.UUID;
 
 public class Demo extends AppCompatActivity {
 
-    ImageView iv_image,button_caption_send;
+    ImageView iv_image, iv_image_save;
+    Button button_caption_send;
     EditText edit_caption;
     Activity activity;
-    String subcat,user,name;
-    
+    String subcat, user, name;
+
     private int PICK_IMAGE_REQUEST = 1;
 
     //storage permission code
@@ -54,8 +57,9 @@ public class Demo extends AppCompatActivity {
         subcat = getIntent().getStringExtra("subcat");
         sessionmanager = new Sessionmanager(this);
         requestStoragePermission();
-        iv_image = (ImageView)findViewById(R.id.iv_image);
-        button_caption_send = (ImageView)findViewById(R.id.button_caption_send);
+        iv_image = (ImageView) findViewById(R.id.iv_image);
+        iv_image_save = (ImageView) findViewById(R.id.iv_image_save);
+        button_caption_send = (Button) findViewById(R.id.button_caption_send);
         edit_caption = (EditText) findViewById(R.id.edit_caption);
         user = sessionmanager.getValue(Sessionmanager.Name);
 
@@ -63,22 +67,44 @@ public class Demo extends AppCompatActivity {
         iv_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showFileChooser();
+                Toast.makeText(activity, "Clicked", Toast.LENGTH_SHORT).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                            && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                            && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        showFileChooser();
+                    } else {
+                        Toast.makeText(activity, "Please Take Permisstion First", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
             }
         });
+
+//        12:30:01:BE:77:03:33:38:13:E2:D4:72:DE:1F:07:DD:42:C8:3B:1F
+        iv_image_save.setColorFilter(activity.getResources().getColor(R.color.white));
 
         button_caption_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadMultipart();
+                if (!iv_image.equals("") && iv_image !=null) {
+                    uploadMultipart();
+                } else {
+                    Toast.makeText(activity, "Select Photo First", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
     }
 
     public void uploadMultipart() {
+
+        if (edit_caption.getText().toString().equalsIgnoreCase("")) {
+            Toast.makeText(activity, "Describe photo", Toast.LENGTH_SHORT).show();
+        }
         //getting name for the image
-       name = edit_caption.getText().toString().trim();
+        name = edit_caption.getText().toString().trim();
         //getting the actual path of the image
         String path = getPath(filePath);
         //Uploading code
@@ -94,8 +120,8 @@ public class Demo extends AppCompatActivity {
                     .setMaxRetries(2)
                     .startUpload(); //Starting the upload
             Toast.makeText(activity, "Add Successfully", Toast.LENGTH_SHORT).show();
-            Intent it = new Intent(activity,ImageListActivity.class);
-            it.putExtra("NAME",subcat);
+            Intent it = new Intent(activity, ImageListActivity.class);
+            it.putExtra("NAME", subcat);
             startActivity(it);
             finish();
         } catch (Exception exc) {

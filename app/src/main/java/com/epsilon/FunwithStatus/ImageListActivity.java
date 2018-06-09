@@ -79,7 +79,7 @@ public class ImageListActivity extends AppCompatActivity {
     TextView text, title;
     ImageView ileft, iright;
     private RecyclerView recyclerView;
-    String subcat;
+    String subcat,maincat;
     String  user;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     SwipeRefreshLayout swipelayout;
@@ -95,6 +95,7 @@ public class ImageListActivity extends AppCompatActivity {
         idMappings();
 
         subcat = getIntent().getStringExtra("NAME");
+        maincat = getIntent().getStringExtra("REALNAME");
         user = sessionmanager.getValue(Sessionmanager.Name);
 
         if (!Helper.isConnectingToInternet(context)) {
@@ -115,7 +116,7 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-        it.putExtra("NAME",subcat);
+        it.putExtra("NAME",maincat);
         startActivity(it);
         finish();
             }
@@ -171,12 +172,12 @@ public class ImageListActivity extends AppCompatActivity {
             }
         });
     }
-//    public void onBackPressed() {
-//        Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-//        it.putExtra("NAME",subcat);
-//        startActivity(it);
-//        finish();
-//    }
+    public void onBackPressed() {
+        Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
+        it.putExtra("NAME",maincat);
+        startActivity(it);
+        finish();
+    }
 
     private int dpToPx(int dp) {
         Resources r = getResources();
@@ -243,7 +244,7 @@ public class ImageListActivity extends AppCompatActivity {
                         Constants.imageListData.clear();
                     }
                     Constants.imageListData.addAll(response.body().getImages());
-                    ImageListAdapter adapter = new ImageListAdapter(context);
+                    ImageListAdapter adapter = new ImageListAdapter(context,maincat);
                     recyclerView.setAdapter(adapter);
                 }
                 else

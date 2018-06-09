@@ -20,6 +20,7 @@ import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.rockerhieu.emojicon.EmojiconTextView;
+import com.vdurmont.emoji.EmojiParser;
 
 public class TextListAdapter extends RecyclerView.Adapter<TextListAdapter.MyViewHolder> {
     Activity activity;
@@ -44,7 +45,8 @@ public class TextListAdapter extends RecyclerView.Adapter<TextListAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, final int i) {
         String str = Constants.statusData.get(i).getStatus();
         str = str.replaceAll("\n\n",",");
-        holder.tvtext_name.setText(str);
+        String result = EmojiParser.parseToUnicode(str);
+        holder.tvtext_name.setText(result);
 
         holder.like_count.setText(Constants.statusData.get(i).getLiked());
         holder.user_name.setText(Constants.statusData.get(i).getUser());

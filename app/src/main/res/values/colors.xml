@@ -12,7 +12,7 @@
     <color name="foreground_material_light">#ff1111</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
-    <color name="background">#e0e0e0</color>
+    <color name="background">#ececec</color>
     <color name="bg">#712f4e</color>
 
     <color name="viewBg">#f1f5f8</color>

@@ -73,7 +73,7 @@ public class SubCatImage extends AppCompatActivity {
 
 
         albumList = new ArrayList<>();
-        adapter = new SubalbumAdapter(context, albumList);
+        adapter = new SubalbumAdapter(context, albumList,name);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));

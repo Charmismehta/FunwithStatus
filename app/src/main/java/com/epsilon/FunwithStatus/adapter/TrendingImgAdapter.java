@@ -42,7 +42,7 @@ public class TrendingImgAdapter extends RecyclerView.Adapter<TrendingImgAdapter.
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.username.setText(Constants.trendingimgData.get(position).getUser());
         holder.tvlike_count.setText(Constants.trendingimgData.get(position).getLiked());
-        Glide.with(activity).load(Constants.trendingimgData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.loading)).fitCenter().crossFade().into(holder.tvimage);
+        Glide.with(activity).load(Constants.trendingimgData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).fitCenter().crossFade().into(holder.tvimage);
 
         holder.tvimage.setOnClickListener(new View.OnClickListener() {
             @Override

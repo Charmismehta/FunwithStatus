@@ -41,6 +41,7 @@ import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.rockerhieu.emojicon.EmojiconTextView;
+import com.vdurmont.emoji.EmojiParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +72,8 @@ public class DisplayText extends AppCompatActivity {
         u_name = getIntent().getStringExtra("U_NAME");
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
-        display_text.setText(text);
+        String result = EmojiParser.parseToUnicode(text);
+        display_text.setText(result);
 
         if (loginuser.equalsIgnoreCase(u_name)) {
             delete.setVisibility(View.VISIBLE);
@@ -354,10 +356,20 @@ public class DisplayText extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        Intent it = new Intent(DisplayText.this, TextListActivity.class);
-        it.putExtra("NAME", name);
-        startActivity(it);
-        finish();
+        if (name.equalsIgnoreCase("Trending"))
+        {
+            Intent it = new Intent(activity, TextListActivity.class);
+            it.putExtra("NAME", "Trending");
+            startActivity(it);
+            finish();// close this activity and return to preview activity (if there is any)
+        }
+        else
+        {
+            Intent it = new Intent(activity, TextListActivity.class);
+            it.putExtra("NAME", name);
+            startActivity(it);
+            finish();
+        }
     }
 
     public void textstatus(String subcat) {

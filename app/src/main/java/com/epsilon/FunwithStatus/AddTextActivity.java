@@ -30,6 +30,7 @@ import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.rockerhieu.emojicon.EmojiconEditText;
 import com.rockerhieu.emojicon.EmojiconsFragment;
 import com.rockerhieu.emojicon.emoji.Emojicon;
+import com.vdurmont.emoji.EmojiParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -114,7 +115,9 @@ public class AddTextActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.vc_addtext) {
             if (!edit_text.getText().toString().equalsIgnoreCase("")) {
-                addstatus(subcat,u_name, edit_text.getText().toString());
+                String str= edit_text.getText().toString();
+                String result = EmojiParser.parseToAliases(str);
+                addstatus(subcat,u_name, result);
                 Intent it = new Intent(AddTextActivity.this, TextListActivity.class);
                 it.putExtra("NAME",subcat);
                 startActivity(it);

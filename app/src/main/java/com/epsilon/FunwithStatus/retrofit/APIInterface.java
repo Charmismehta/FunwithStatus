@@ -13,6 +13,8 @@ import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
 import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
+import com.epsilon.FunwithStatus.jsonpojo.videodislike.VideoDisLike;
+import com.epsilon.FunwithStatus.jsonpojo.videolike.VideoLike;
 import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoList;
 import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoListDatum;
 import com.epsilon.FunwithStatus.utills.ServerURl;
@@ -47,10 +49,7 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST(ServerURl.REGISTER)
     Call<Registration> registerPojoCall(@Field("name") String name,
-                                        @Field("username") String username,
                                         @Field("email") String email,
-                                        @Field("mobile") String mobile,
-                                        @Field("birthdate") String birthdate,
                                         @Field("password") String password);
 
 
@@ -126,5 +125,20 @@ public interface APIInterface {
 
     @GET(ServerURl.VIDEOLIST)
     Call<VideoList> videolistpojo();
+
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.VIDEOLIKE)
+    Call<VideoLike> videolike(@Field("email") String email,
+                                @Field("video_id") String video_id,
+                                @Field("video") String video);
+
+
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.VIDEODISLIKE)
+    Call<VideoDisLike> videodislike(@Field("email") String email,
+                                    @Field("video_id") String video_id,
+                                    @Field("video") String video);
 
 }

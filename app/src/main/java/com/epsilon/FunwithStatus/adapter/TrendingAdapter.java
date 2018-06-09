@@ -53,7 +53,7 @@ public class TrendingAdapter  extends RecyclerView.Adapter<TrendingAdapter.MyVie
                 Intent it = new Intent(activity, DisplayText.class);
                 it.putExtra("text", Constants.trendingData.get(i).getStatus());
                 it.putExtra("Id", Constants.trendingData.get(i).getId());
-                it.putExtra("NAME", Constants.trendingData.get(i).getSubcata());
+                it.putExtra("NAME","Trending");
                 it.putExtra("U_NAME", Constants.trendingData.get(i).getUser());
                 activity.startActivity(it);
                 activity.finish();

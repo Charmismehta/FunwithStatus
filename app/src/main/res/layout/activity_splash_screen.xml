@@ -4,7 +4,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:orientation="vertical"
-android:background="@drawable/dbbackground"
+android:background="@color/colorAccent"
 android:layout_height="match_parent"
 tools:context=".SplashScreen">
 
@@ -19,20 +19,12 @@ tools:context=".SplashScreen">
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:layout_height="@dimen/_145sdp"
+                android:layout_marginTop="@dimen/_50sdp"
+                android:layout_height="@dimen/_100sdp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/iconrotate"/>
-            <ImageView
-                android:layout_width="@dimen/_125sdp"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:layout_height="@dimen/_145sdp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/play"/>
+                android:src="@drawable/icon"/>
         </RelativeLayout>
     </LinearLayout>
 

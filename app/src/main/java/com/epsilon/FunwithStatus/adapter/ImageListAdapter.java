@@ -35,9 +35,11 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
     Activity activity;
     private LayoutInflater inflater;
     public Resources res;
+    public String maincat;
 
-    public ImageListAdapter(Activity a) {
+    public ImageListAdapter(Activity a,String maincat) {
         this.activity = a;
+        this.maincat = maincat;
         inflater = (LayoutInflater) activity.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -52,7 +54,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        Glide.with(activity).load(Constants.imageListData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.loading)).fitCenter().crossFade().into(holder.tvimage);
+        Glide.with(activity).load(Constants.imageListData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).fitCenter().crossFade().into(holder.tvimage);
         holder.tvlike_count.setText(Constants.imageListData.get(position).getLiked());
         holder.username.setText(Constants.imageListData.get(position).getUser());
 
@@ -64,6 +66,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
                 it.putExtra("NAME",Constants.imageListData.get(position).getSubcata());
                 it.putExtra("Id",Constants.imageListData.get(position).getId());
                 it.putExtra("U_NAME",Constants.imageListData.get(position).getUser());
+                it.putExtra("REALNAME",maincat);
                 activity.startActivity(it);
                 activity.finish();
             }
