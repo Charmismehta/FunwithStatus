@@ -55,6 +55,14 @@ public class LoginPage extends AppCompatActivity {
             }
         });
 
+        login_tforgot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(context,ForgetPassword.class);
+                startActivity(it);
+            }
+        });
+
 
         login_tlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,9 +145,9 @@ public class LoginPage extends AppCompatActivity {
             @Override
             public void onFailure(Call<Login> call, Throwable t) {
                 dialog.dismiss();
+                Toast.makeText(context, "No internet Connection", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
     @Override
     public void onBackPressed() {

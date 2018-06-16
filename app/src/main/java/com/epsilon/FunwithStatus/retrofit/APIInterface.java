@@ -5,7 +5,9 @@ import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.addstatus.AddStatus;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
 import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
+import com.epsilon.FunwithStatus.jsonpojo.deletevideo.DeleteVideo;
 import com.epsilon.FunwithStatus.jsonpojo.dislike.DisLike;
+import com.epsilon.FunwithStatus.jsonpojo.forgetpwd.ForgotPwd;
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
@@ -117,6 +119,11 @@ public interface APIInterface {
     @POST(ServerURl.DELETETEXT)
     Call<DeleteText> deletetext(@Field("id") String id);
 
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.DELETEVIDEO)
+    Call<DeleteVideo> deletevideo(@Field("id") String id);
+
     @GET(ServerURl.TRANDING)
     Call<Trending> trendingpojo();
 
@@ -140,5 +147,10 @@ public interface APIInterface {
     Call<VideoDisLike> videodislike(@Field("email") String email,
                                     @Field("video_id") String video_id,
                                     @Field("video") String video);
+
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.FORGETPWD)
+    Call<ForgotPwd> forgotpwdpojo(@Field("email") String email);
 
 }

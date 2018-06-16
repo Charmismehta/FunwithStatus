@@ -5,15 +5,21 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -43,6 +49,8 @@ import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.rockerhieu.emojicon.EmojiconTextView;
 import com.vdurmont.emoji.EmojiParser;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,7 +59,7 @@ import retrofit2.Response;
 public class DisplayText extends AppCompatActivity {
 
     EmojiconTextView display_text;
-    ImageView share, like, dislike, copy, delete, whatsapp;
+    ImageView share, like, dislike, copy, delete, whatsapp,facebook;
     Activity activity;
     String text, Id, name, email, u_name, loginuser;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
@@ -66,12 +74,12 @@ public class DisplayText extends AppCompatActivity {
         sessionmanager = new Sessionmanager(this);
         idMappings();
         Listners();
-        text = getIntent().getStringExtra("text");
-        Id = getIntent().getStringExtra("Id");
-        name = getIntent().getStringExtra("NAME");
-        u_name = getIntent().getStringExtra("U_NAME");
-        email = sessionmanager.getValue(Sessionmanager.Email);
-        loginuser = sessionmanager.getValue(Sessionmanager.Name);
+         text = getIntent().getStringExtra("text");
+         Id = getIntent().getStringExtra("Id");
+         name = getIntent().getStringExtra("NAME");
+         u_name = getIntent().getStringExtra("U_NAME");
+         email = sessionmanager.getValue(Sessionmanager.Email);
+         loginuser = sessionmanager.getValue(Sessionmanager.Name);
         String result = EmojiParser.parseToUnicode(text);
         display_text.setText(result);
 
@@ -114,7 +122,7 @@ public class DisplayText extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 share.startAnimation(animation_2);
@@ -128,13 +136,11 @@ public class DisplayText extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         share.startAnimation(animation_3);
-                        finish();
-                        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+                        Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("text/plain");
-                        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-                        share.putExtra(Intent.EXTRA_SUBJECT, "Title Of The Post");
+                        share.putExtra(Intent.EXTRA_STREAM, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
                         share.putExtra(Intent.EXTRA_TEXT, display_text.getText().toString());
-                        activity.startActivity(Intent.createChooser(share, "Share link!"));
+                        activity.startActivity(Intent.createChooser(share, "Fun With Status"));
                     }
 
                     @Override
@@ -229,7 +235,7 @@ public class DisplayText extends AppCompatActivity {
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.slide_down);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 whatsapp.startAnimation(animation_2);
@@ -262,7 +268,85 @@ public class DisplayText extends AppCompatActivity {
             }
 
         });
+
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                facebook.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        facebook.startAnimation(animation_3);
+
+                        boolean facebookAppFound = false;
+                        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(text));
+
+                        PackageManager pm = activity.getPackageManager();
+                        List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
+                        for (final ResolveInfo app : activityList) {
+                            if ((app.activityInfo.packageName).contains("com.facebook.katana")) {
+                                final ActivityInfo activityInfo = app.activityInfo;
+                                final ComponentName name = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
+                                shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                                shareIntent.setComponent(name);
+                                facebookAppFound = true;
+                                break;
+                            }
+                        }
+                        if (!facebookAppFound) {
+                            String sharerUrl = "https://www.facebook.com/sharer/sharer.php?u=" + text;
+                            shareIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharerUrl));
+                        }
+                        activity.startActivity(shareIntent);
+                }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+
+        });
     }
+
+    public static void shareFacebook(Activity activity, String url) {
+        boolean facebookAppFound = false;
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, url);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+
+        PackageManager pm = activity.getPackageManager();
+        List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
+        for (final ResolveInfo app : activityList) {
+            if ((app.activityInfo.packageName).contains("com.facebook.katana")) {
+                final ActivityInfo activityInfo = app.activityInfo;
+                final ComponentName name = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
+                shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                shareIntent.setComponent(name);
+                facebookAppFound = true;
+                break;
+            }
+        }
+        if (!facebookAppFound) {
+            String sharerUrl = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+            shareIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharerUrl));
+        }
+        activity.startActivity(shareIntent);
+    }
+
 
     private void idMappings() {
         display_text = (EmojiconTextView) findViewById(R.id.display_text);
@@ -272,6 +356,7 @@ public class DisplayText extends AppCompatActivity {
         share = (ImageView) findViewById(R.id.share);
         delete = (ImageView) findViewById(R.id.delete);
         whatsapp = (ImageView) findViewById(R.id.whatsapp);
+        facebook = (ImageView) findViewById(R.id.facebook);
         rlayout = (RelativeLayout) findViewById(R.id.rlayout);
 
 
@@ -294,7 +379,7 @@ public class DisplayText extends AppCompatActivity {
             @Override
             public void onFailure(Call<AddLike> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -316,7 +401,7 @@ public class DisplayText extends AppCompatActivity {
             @Override
             public void onFailure(Call<DisLike> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -347,7 +432,7 @@ public class DisplayText extends AppCompatActivity {
             @Override
             public void onFailure(Call<DeleteText> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -388,7 +473,7 @@ public class DisplayText extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Status> call, Throwable t) {
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }

@@ -15,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,21 +52,26 @@ import com.epsilon.FunwithStatus.utills.Helper;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import cn.jzvd.JZVideoPlayer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class VideoFragment extends Fragment {
+public class VideoFragment extends Fragment{
 
     Activity context;
     RecyclerView recyclerView;
     FloatingActionButton floatingbtn;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    private InterstitialAd mInterstitialAd;
+    SwipeRefreshLayout swipelayout;
+
 
 
     @Override
@@ -77,7 +83,18 @@ public class VideoFragment extends Fragment {
         context = getActivity();
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
+        swipelayout=(SwipeRefreshLayout)view.findViewById(R.id.swipelayout);
 
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
+        mInterstitialAd.loadAd(adRequest);
+        mInterstitialAd.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                showInterstitial();
+            }
+        });
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity.getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -90,6 +107,14 @@ public class VideoFragment extends Fragment {
         videolist();
         }
 
+        swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                videolist();
+                swipelayout.setRefreshing(false);
+            }
+        });
+
         floatingbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,7 +124,6 @@ public class VideoFragment extends Fragment {
         });
 
         AdView mAdView =view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
         mAdView.setAdListener(new AdListener() {
@@ -133,6 +157,12 @@ public class VideoFragment extends Fragment {
 
 return view;
     }
+
+    private void showInterstitial() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
+    }
     @Override
     public void onResume() {
         super.onResume();
@@ -142,6 +172,9 @@ return view;
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (JZVideoPlayer.backPress()) {
+                        return true;
+                    }
                     Intent it = new Intent(getContext(), Dashboard.class);
                     startActivity(it);
                     getActivity().finish();
@@ -149,7 +182,14 @@ return view;
                 }
                 return false;
             }
+
         });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        JZVideoPlayer.releaseAllVideos();
     }
 
     private void videolist() {
@@ -162,7 +202,6 @@ return view;
             @Override
             public void onResponse(Call<VideoList> call, Response<VideoList> response) {
                 dialog.dismiss();
-
                 if (Constants.videoListData != null) {
                     Constants.videoListData.clear();
                 }
@@ -178,7 +217,7 @@ return view;
             @Override
             public void onFailure(Call<VideoList> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }

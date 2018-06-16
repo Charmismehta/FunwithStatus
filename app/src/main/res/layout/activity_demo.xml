@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Demo"
-    android:background="@drawable/dbbackground"
+    android:background="@color/white"
     >
 
     <LinearLayout
@@ -24,29 +24,12 @@
                 android:layout_gravity="center"
                 android:id="@+id/iv_image"
                 />
-            <ImageView
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/save"
-                android:layout_width="@dimen/_64sdp"
-                android:layout_height="@dimen/_64sdp"
-                android:layout_gravity="center"
-                android:id="@+id/iv_image_save"
-                />
-            <TextView
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/iv_image_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/vc_text"
-                android:textColor="#fff"
-                android:text="Tab to Add Image"/>
         </RelativeLayout>
     </LinearLayout>
 
 
     <LinearLayout
-        android:layout_marginBottom="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_24sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_16sdp"
@@ -54,30 +37,35 @@
         android:layout_marginTop="@dimen/_16sdp"
         android:orientation="horizontal">
 
-        <EditText
-            android:textColor="@color/white"
-            android:id="@+id/edit_caption"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:shadowColor="@color/white"
+        <LinearLayout
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:hint=" Enter the Name"
-            android:inputType="textMultiLine"
-            android:maxLines="5"
-            android:textColorHint="#fff"
-            android:textSize="@dimen/_15sdp" />
-
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:background="@drawable/appcolorsqure"
+            android:layout_height="match_parent">
+            <com.rockerhieu.emojicon.EmojiconEditText
+                android:id="@+id/edit_caption"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint=" Describe the video"
+                android:inputType="textMultiLine"
+                android:shadowColor="@color/white"
+                android:textColor="@color/colorAccent"
+                android:textColorHint="@color/colorAccent"
+                android:textSize="@dimen/_15sdp" />
+        </LinearLayout>
         <Button
-            android:textColor="@color/white"
+            android:textColor="@color/colorAccent"
             android:text="Upload"
-            android:background="@drawable/whitesqure"
+            android:background="@drawable/appcolorsqure"
             android:id="@+id/button_caption_send"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_42sdp"
+            android:layout_height="@dimen/_35sdp"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/_8sdp"
-            android:src="@drawable/send" />
+            android:layout_marginLeft="@dimen/_8sdp" />
     </LinearLayout>
 
 </LinearLayout>

@@ -28,7 +28,7 @@
         <ImageView
             android:layout_width="@dimen/_16sdp"
             android:layout_height="wrap_content"
-            android:src="@drawable/like"
+            android:src="@drawable/vc_thumbup"
             />
 
         <TextView

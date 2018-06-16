@@ -116,7 +116,7 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-        it.putExtra("NAME",maincat);
+                it.putExtra("NAME",maincat);
         startActivity(it);
         finish();
             }
@@ -166,7 +166,8 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(context,Demo.class);
-                it.putExtra("subcat",subcat);
+                it.putExtra("NAME",subcat);
+                it.putExtra("REALNAME",maincat);
                 startActivity(it);
                 finish();
             }
@@ -256,7 +257,6 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ImageList> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

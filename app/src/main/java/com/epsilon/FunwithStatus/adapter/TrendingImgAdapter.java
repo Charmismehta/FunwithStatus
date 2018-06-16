@@ -3,6 +3,7 @@ package com.epsilon.FunwithStatus.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,7 +43,8 @@ public class TrendingImgAdapter extends RecyclerView.Adapter<TrendingImgAdapter.
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.username.setText(Constants.trendingimgData.get(position).getUser());
         holder.tvlike_count.setText(Constants.trendingimgData.get(position).getLiked());
-        Glide.with(activity).load(Constants.trendingimgData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).fitCenter().crossFade().into(holder.tvimage);
+        holder.like.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
+        Glide.with(activity).load(Constants.trendingimgData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).into(holder.tvimage);
 
         holder.tvimage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +70,7 @@ public class TrendingImgAdapter extends RecyclerView.Adapter<TrendingImgAdapter.
         public TextView tvlike_count,username;
         public ImageView tvimage;
         CardView card_view;
+        ImageView like;
 
         public MyViewHolder(View view) {
             super(view);
@@ -75,6 +78,7 @@ public class TrendingImgAdapter extends RecyclerView.Adapter<TrendingImgAdapter.
             tvimage = (ImageView) view.findViewById(R.id.tvimage);
             username = (TextView) view.findViewById(R.id.username);
             card_view = (CardView) view.findViewById(R.id.card_view);
+            like = (ImageView) view.findViewById(R.id.like);
         }
     }
 }

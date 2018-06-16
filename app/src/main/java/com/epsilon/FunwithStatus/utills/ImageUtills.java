@@ -18,7 +18,7 @@ public class ImageUtills {
             else
                 mediaMetadataRetriever.setDataSource(videoPath);
 
-            bitmap = mediaMetadataRetriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST);
+            bitmap = mediaMetadataRetriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Throwable(

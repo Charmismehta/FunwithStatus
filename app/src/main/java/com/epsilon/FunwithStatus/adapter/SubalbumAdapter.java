@@ -64,7 +64,7 @@ public class SubalbumAdapter extends RecyclerView.Adapter<SubalbumAdapter.MyView
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final SubAlbum album = albumList.get(position);
         holder.title.setText(album.getName());
-        Glide.with(mContext).load(album.getThumbnail()).thumbnail(Glide.with(mContext).load(R.drawable.load)).fitCenter().crossFade().into(holder.thumbnail);
+        Glide.with(mContext).load(album.getThumbnail()).thumbnail(Glide.with(mContext).load(R.drawable.load)).into(holder.thumbnail);
 
         holder.thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override

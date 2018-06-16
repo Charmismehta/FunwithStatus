@@ -90,14 +90,14 @@ public class MainFragment extends Fragment {
         NUM_PAGES = mResources.length;
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
-        mInterstitialAd = new InterstitialAd(getActivity());
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
-        mInterstitialAd.loadAd(adRequest);
-        mInterstitialAd.setAdListener(new AdListener() {
-            public void onAdLoaded() {
-                showInterstitial();
-            }
-        });
+//        mInterstitialAd = new InterstitialAd(getActivity());
+//        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
+//        mInterstitialAd.loadAd(adRequest);
+//        mInterstitialAd.setAdListener(new AdListener() {
+//            public void onAdLoaded() {
+//                showInterstitial();
+//            }
+//        });
 
 
         // Auto start of viewpager

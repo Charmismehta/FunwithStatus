@@ -13,10 +13,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.utills.Constants;
@@ -30,16 +32,18 @@ import java.util.UUID;
 
 public class Demo extends AppCompatActivity {
 
-    ImageView iv_image, iv_image_save;
+    ImageView iv_image;
     Button button_caption_send;
     EditText edit_caption;
     Activity activity;
-    String subcat, user, name;
+    String subcat, user, name,maincat;
 
     private int PICK_IMAGE_REQUEST = 1;
 
     //storage permission code
     private static final int STORAGE_PERMISSION_CODE = 123;
+    public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
+    private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
 
     //Bitmap to get image from gallery
     private Bitmap bitmap;
@@ -54,36 +58,52 @@ public class Demo extends AppCompatActivity {
         setContentView(R.layout.activity_demo);
 
         activity = this;
-        subcat = getIntent().getStringExtra("subcat");
+        subcat = getIntent().getStringExtra("NAME");
+        maincat = getIntent().getStringExtra("REALNAME");
         sessionmanager = new Sessionmanager(this);
         requestStoragePermission();
         iv_image = (ImageView) findViewById(R.id.iv_image);
-        iv_image_save = (ImageView) findViewById(R.id.iv_image_save);
         button_caption_send = (Button) findViewById(R.id.button_caption_send);
         edit_caption = (EditText) findViewById(R.id.edit_caption);
         user = sessionmanager.getValue(Sessionmanager.Name);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                showFileChooser();
+            }  else {
+                //Request Location Permission
+                checkCameraPermission();
+                requestAudioPermissions();
+            }
+        } else {
+            showFileChooser();
+        }
 
 
         iv_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(activity, "Clicked", Toast.LENGTH_SHORT).show();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                             && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                             && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                         showFileChooser();
-                    } else {
-                        Toast.makeText(activity, "Please Take Permisstion First", Toast.LENGTH_SHORT).show();
+                    }  else {
+                        //Request Location Permission
+                        checkCameraPermission();
+                        requestAudioPermissions();
                     }
-
+                } else {
+                    showFileChooser();
                 }
-
             }
         });
 
+
+
 //        12:30:01:BE:77:03:33:38:13:E2:D4:72:DE:1F:07:DD:42:C8:3B:1F
-        iv_image_save.setColorFilter(activity.getResources().getColor(R.color.white));
 
         button_caption_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +115,55 @@ public class Demo extends AppCompatActivity {
                 }
             }
         });
+    }
 
+    private void requestAudioPermissions() {
+        if (ContextCompat.checkSelfPermission(activity,
+                android.Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            //When permission is not granted by user, show them message why this permission is needed.
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    android.Manifest.permission.RECORD_AUDIO)) {
+                Toast.makeText(activity, "Please grant permissions to record audio", Toast.LENGTH_LONG).show();
+
+                //Give user option to still opt-in the permissions
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.RECORD_AUDIO},
+                        MY_PERMISSIONS_RECORD_AUDIO);
+
+            } else {
+                // Show user dialog to grant permission to record audio
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.RECORD_AUDIO},
+                        MY_PERMISSIONS_RECORD_AUDIO);
+            }
+        }
+        //If permission is granted, then go ahead recording
+        else if (ContextCompat.checkSelfPermission(activity,
+                android.Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+
+        }
+    }
+
+    private void checkCameraPermission() {
+            if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED
+                    ) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                        android.Manifest.permission.CAMERA)
+                        ) {
+                    ActivityCompat.requestPermissions(activity,
+                            new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+                } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions( activity,
+                            new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+                }
+            }
     }
 
     public void uploadMultipart() {
@@ -122,10 +190,11 @@ public class Demo extends AppCompatActivity {
             Toast.makeText(activity, "Add Successfully", Toast.LENGTH_SHORT).show();
             Intent it = new Intent(activity, ImageListActivity.class);
             it.putExtra("NAME", subcat);
+            it.putExtra("REALNAME", maincat);
             startActivity(it);
             finish();
         } catch (Exception exc) {
-            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -142,10 +211,10 @@ public class Demo extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
+
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 iv_image.setImageBitmap(bitmap);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

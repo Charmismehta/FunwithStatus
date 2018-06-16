@@ -13,6 +13,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,9 +62,9 @@ public class SubCatImage extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
 
-        toolbar=(Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -73,50 +74,42 @@ public class SubCatImage extends AppCompatActivity {
 
 
         albumList = new ArrayList<>();
-        adapter = new SubalbumAdapter(context, albumList,name);
+        adapter = new SubalbumAdapter(context, albumList, name);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
-        if(name.equalsIgnoreCase("Featured"))
-        {
+        if (name.equalsIgnoreCase("Featured")) {
             TrandingAlbums();
         }
 
-        if(name.equalsIgnoreCase("Laughter"))
-        {
+        if (name.equalsIgnoreCase("Laughter")) {
             LaughterAlbums();
         }
 
-        if(name.equalsIgnoreCase("Emotions"))
-        {
+        if (name.equalsIgnoreCase("Emotions")) {
             EmotionsAlbums();
         }
 
-        if(name.equalsIgnoreCase("Life"))
-        {
+        if (name.equalsIgnoreCase("Life")) {
             LifeAlbums();
         }
 
-        if(name.equalsIgnoreCase("Wishes"))
-        {
+        if (name.equalsIgnoreCase("Wishes")) {
             WishAlbums();
         }
 
-        if(name.equalsIgnoreCase("Sports"))
-        {
+        if (name.equalsIgnoreCase("Sports")) {
             SportsAlbums();
         }
 
-        if(name.equalsIgnoreCase("Language"))
-        {
+        if (name.equalsIgnoreCase("Language")) {
             LanguageAlbums();
         }
 
-        if(name.equalsIgnoreCase("Entertainment"))
-        {
+        if (name.equalsIgnoreCase("Entertainment")) {
             EntertainmentAlbums();
         }
 
@@ -156,11 +149,9 @@ public class SubCatImage extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
-        {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
-        } else
-        {
+        } else {
             this.finish();
         }
     }
@@ -204,44 +195,53 @@ public class SubCatImage extends AppCompatActivity {
             }
         }
     }
+
     private void TrandingAlbums() {
-            final ProgressDialog dialog = new ProgressDialog(context);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setMessage("Please Wait...");
-            dialog.show();
-            final Call<TrendingImg> countrycall = apiInterface.trendingimgpojo();
-            countrycall.enqueue(new Callback<TrendingImg>() {
-                @Override
-                public void onResponse(Call<TrendingImg> call, Response<TrendingImg> response) {
-                    dialog.dismiss();
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<TrendingImg> countrycall = apiInterface.trendingimgpojo();
+        countrycall.enqueue(new Callback<TrendingImg>() {
+            @Override
+            public void onResponse(Call<TrendingImg> call, Response<TrendingImg> response) {
+                dialog.dismiss();
 
-                    if (Constants.trendingimgData != null) {
-                        Constants.trendingimgData.clear();
-                    }
-                    if (!Constants.trendingimgData.equals("") && Constants.trendingimgData != null) {
-                        Constants.trendingimgData.addAll(response.body().getData());
-                        TrendingImgAdapter adapter = new TrendingImgAdapter(context);
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
-                    }
+                if (Constants.trendingimgData != null) {
+                    Constants.trendingimgData.clear();
                 }
-
-                @Override
-                public void onFailure(Call<TrendingImg> call, Throwable t) {
-                    dialog.dismiss();
-                    Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+                if (!Constants.trendingimgData.equals("") && Constants.trendingimgData != null) {
+                    Constants.trendingimgData.addAll(response.body().getData());
+                    TrendingImgAdapter adapter = new TrendingImgAdapter(context);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
                 }
-            });
             }
+
+            @Override
+            public void onFailure(Call<TrendingImg> call, Throwable t) {
+                dialog.dismiss();
+            }
+        });
+    }
+
     private void LaughterAlbums() {
         int[] covers = new int[]{
-                R.drawable.politics};
+                R.drawable.politics,
+                R.drawable.funny,
+                R.drawable.troll};
 
-        SubAlbum a = new SubAlbum("Politics",  covers[0]);
+        SubAlbum a = new SubAlbum("Politics", covers[0]);
+        albumList.add(a);
+
+        a = new SubAlbum("Funny", covers[1]);
+        albumList.add(a);
+        a = new SubAlbum("Troll", covers[2]);
         albumList.add(a);
         adapter.notifyDataSetChanged();
     }
+
     private void EmotionsAlbums() {
         int[] covers = new int[]{
                 R.drawable.love,
@@ -253,20 +253,21 @@ public class SubCatImage extends AppCompatActivity {
         SubAlbum a = new SubAlbum("Love", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("Flirt",  covers[1]);
+        a = new SubAlbum("Flirt", covers[1]);
         albumList.add(a);
 
         a = new SubAlbum("Sad", covers[2]);
         albumList.add(a);
 
-        a = new SubAlbum("Happy",  covers[3]);
+        a = new SubAlbum("Happy", covers[3]);
         albumList.add(a);
 
-        a = new SubAlbum("Miss You",  covers[4]);
+        a = new SubAlbum("Miss You", covers[4]);
         albumList.add(a);
 
         adapter.notifyDataSetChanged();
     }
+
     private void LifeAlbums() {
         int[] covers = new int[]{
                 R.drawable.family,
@@ -277,10 +278,10 @@ public class SubCatImage extends AppCompatActivity {
         SubAlbum a = new SubAlbum("Family", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("Couple",  covers[1]);
+        a = new SubAlbum("Couple", covers[1]);
         albumList.add(a);
 
-        a = new SubAlbum("Student",  covers[2]);
+        a = new SubAlbum("Student", covers[2]);
         albumList.add(a);
 
         a = new SubAlbum("Friend", covers[3]);
@@ -296,7 +297,7 @@ public class SubCatImage extends AppCompatActivity {
                 R.drawable.anniversary,
                 R.drawable.birthday};
 
-        SubAlbum a = new SubAlbum("Good Morning",  covers[0]);
+        SubAlbum a = new SubAlbum("Good Morning", covers[0]);
         albumList.add(a);
 
         a = new SubAlbum("Good Night", covers[1]);
@@ -319,10 +320,10 @@ public class SubCatImage extends AppCompatActivity {
                 R.drawable.cricket,
                 R.drawable.othersports};
 
-        SubAlbum a = new SubAlbum("Cricket",  covers[0]);
+        SubAlbum a = new SubAlbum("Cricket", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("Other Sports",  covers[1]);
+        a = new SubAlbum("Other Sports", covers[1]);
         albumList.add(a);
         adapter.notifyDataSetChanged();
     }
@@ -334,16 +335,16 @@ public class SubCatImage extends AppCompatActivity {
                 R.drawable.hindi,
                 R.drawable.marathi};
 
-        SubAlbum a = new SubAlbum("Gujarati",  covers[0]);
+        SubAlbum a = new SubAlbum("Gujarati", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("English",  covers[1]);
+        a = new SubAlbum("English", covers[1]);
         albumList.add(a);
 
-        a = new SubAlbum("Hindi",  covers[2]);
+        a = new SubAlbum("Hindi", covers[2]);
         albumList.add(a);
 
-        a = new SubAlbum("Marathi",  covers[3]);
+        a = new SubAlbum("Marathi", covers[3]);
         albumList.add(a);
         adapter.notifyDataSetChanged();
     }
@@ -354,16 +355,17 @@ public class SubCatImage extends AppCompatActivity {
                 R.drawable.hollywood,
                 R.drawable.tollywood};
 
-        SubAlbum a = new SubAlbum("BollyWood",  covers[0]);
+        SubAlbum a = new SubAlbum("BollyWood", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("HollyWood",  covers[1]);
+        a = new SubAlbum("HollyWood", covers[1]);
         albumList.add(a);
 
-        a = new SubAlbum("TollyWood",  covers[2]);
+        a = new SubAlbum("TollyWood", covers[2]);
         albumList.add(a);
         adapter.notifyDataSetChanged();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

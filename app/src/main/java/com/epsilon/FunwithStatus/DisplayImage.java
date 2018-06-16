@@ -1,12 +1,16 @@
 package com.epsilon.FunwithStatus;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -41,6 +45,7 @@ import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -49,10 +54,10 @@ import retrofit2.Response;
 
 public class DisplayImage extends AppCompatActivity {
 
-    Context activity;
+    Activity activity;
     LinearLayout layout_content;
     RelativeLayout mainlayout;
-    ImageView display_image, download, like, dislike, share, delete, whatsapp;
+    ImageView display_image, download, like, dislike, share, delete, whatsapp,facebook;
     String pic, name, root, Id, email, u_name, loginuser, maincat;
     InputStream is = null;
     Sessionmanager sessionmanager;
@@ -90,9 +95,7 @@ public class DisplayImage extends AppCompatActivity {
         download.setColorFilter(getResources().getColor(R.color.colorAccent));
 
         Glide.with(activity).load(pic)
-                .thumbnail(Glide.with(activity).load(R.drawable.load))
-                .fitCenter()
-                .crossFade()
+                .thumbnail(Glide.with(activity).load(R.drawable.loadding))
                 .into(display_image);
 //        Glide.with(activity).load(pic).into(display_image);
         setSupportActionBar(toolbar);
@@ -118,6 +121,7 @@ public class DisplayImage extends AppCompatActivity {
         share = (ImageView) findViewById(R.id.share);
         delete = (ImageView) findViewById(R.id.delete);
         whatsapp = (ImageView) findViewById(R.id.whatsapp);
+        facebook = (ImageView) findViewById(R.id.facebook);
         layout_content = (LinearLayout) findViewById(R.id.layout_content);
         mainlayout = (RelativeLayout) findViewById(R.id.mainlayout);
     }
@@ -127,7 +131,7 @@ public class DisplayImage extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 download.startAnimation(animation_2);
@@ -188,7 +192,7 @@ public class DisplayImage extends AppCompatActivity {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_1 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
+                final Animation animation_1 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 like.startAnimation(animation_1);
@@ -216,7 +220,7 @@ public class DisplayImage extends AppCompatActivity {
         dislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.antirotate);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 dislike.startAnimation(animation_2);
@@ -273,7 +277,7 @@ public class DisplayImage extends AppCompatActivity {
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.slide_down);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 whatsapp.startAnimation(animation_2);
@@ -299,6 +303,36 @@ public class DisplayImage extends AppCompatActivity {
 
         });
 
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
+                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+
+                facebook.startAnimation(animation_2);
+
+                animation_2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        facebook.startAnimation(animation_3);
+                        new sharefacebookImage().execute(pic);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+
+        });
+
+
         display_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -315,6 +349,7 @@ public class DisplayImage extends AppCompatActivity {
             }
         });
     }
+
 
     private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -380,7 +415,7 @@ public class DisplayImage extends AppCompatActivity {
             @Override
             public void onFailure(Call<ImageLike> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -400,10 +435,11 @@ public class DisplayImage extends AppCompatActivity {
             public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
                 dialog.dismiss();
                 if (response.body().getStatus().equals("Succ")) {
-                    Intent it = new Intent(activity, ImageListActivity.class);
-                    it.putExtra("NAME", name);
-                    startActivity(it);
-                    finish();
+                        Intent it = new Intent(activity, ImageListActivity.class);
+                        it.putExtra("NAME", name);
+                        it.putExtra("REALNAME", maincat);
+                        startActivity(it);
+                        finish();
                     Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(activity, "Try Again", Toast.LENGTH_SHORT).show();
@@ -413,7 +449,7 @@ public class DisplayImage extends AppCompatActivity {
             @Override
             public void onFailure(Call<DeleteImage> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -440,28 +476,28 @@ public class DisplayImage extends AppCompatActivity {
             @Override
             public void onFailure(Call<ImageDislike> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
 
     // TODO : IMAGE DISLIKE API END >>>>
 
-    public void onBackPressed() {
-        if (name.equalsIgnoreCase("featured")) {
-            Intent it = new Intent(activity, SubCatImage.class);
-            it.putExtra("NAME", name);
-            it.putExtra("REALNAME", maincat);
-            startActivity(it);
-            finish();// close this activity and return to preview activity (if there is any)
-        } else {
-            Intent it = new Intent(activity, ImageListActivity.class);
-            it.putExtra("NAME", name);
-            it.putExtra("REALNAME", maincat);
-            startActivity(it);
-            finish();
-        }
-    }
+//    public void onBackPressed() {
+//        if (name.equalsIgnoreCase("featured")) {
+//            Intent it = new Intent(activity, SubCatImage.class);
+//            it.putExtra("NAME", name);
+//            it.putExtra("REALNAME", maincat);
+//            startActivity(it);
+//            finish();// close this activity and return to preview activity (if there is any)
+//        } else {
+//            Intent it = new Intent(activity, ImageListActivity.class);
+//            it.putExtra("NAME", name);
+//            it.putExtra("REALNAME", maincat);
+//            startActivity(it);
+//            finish();
+//        }
+//    }
 
     // TODO : SHARE ON WHATSAPP
 
@@ -502,7 +538,6 @@ public class DisplayImage extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             SharewhatsappImage(result);
             mProgressDialog.dismiss();
-            Toast.makeText(activity, "Image Share Successfully", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -514,14 +549,84 @@ public class DisplayImage extends AppCompatActivity {
         Uri uri = Uri.parse(path);
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, "Share From epsilon infotech");
+        intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.setType("image/jpeg");
         intent.setPackage("com.whatsapp");
         startActivity(intent);
+
     }
 
+
+     // TODO : SHARE ON FACEBOOK
+    private class sharefacebookImage extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(DisplayImage.this);
+            // Set progressdialog title
+            mProgressDialog.setTitle("Share Image");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... URL) {
+
+            String imageURL = URL[0];
+
+            Bitmap bitmap = null;
+            try {
+                // Download Image from URL
+                InputStream input = new java.net.URL(imageURL).openStream();
+                // Decode Bitmap
+                bitmap = BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            shareFacebook(activity,result);
+            mProgressDialog.dismiss();
+        }
+    }
+
+    public static void shareFacebook(Activity activity, Bitmap url) {
+        String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
+                url, "Design", null);
+        boolean facebookAppFound = false;
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("image/*");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+
+        PackageManager pm = activity.getPackageManager();
+        List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
+        for (final ResolveInfo app : activityList) {
+            if ((app.activityInfo.packageName).contains("com.facebook.katana")) {
+                final ActivityInfo activityInfo = app.activityInfo;
+                final ComponentName name = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
+                shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                shareIntent.setComponent(name);
+                facebookAppFound = true;
+                break;
+            }
+        }
+        if (!facebookAppFound) {
+            String sharerUrl = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+            shareIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharerUrl));
+        }
+        activity.startActivity(shareIntent);
+    }
 
     // END SHARE
 
@@ -637,7 +742,6 @@ public class DisplayImage extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             ShareImage(result);
             mProgressDialog.dismiss();
-            addImageToGallery(pic, activity);
         }
     }
 
@@ -650,7 +754,7 @@ public class DisplayImage extends AppCompatActivity {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/*");
         share.putExtra(Intent.EXTRA_STREAM, uri);
-        share.putExtra(Intent.EXTRA_TEXT, "Share by Fun With Status");
+        share.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
         activity.startActivity(Intent.createChooser(share, "Fun With Status"));
     }
 

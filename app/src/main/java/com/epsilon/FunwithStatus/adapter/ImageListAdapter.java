@@ -54,9 +54,10 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        Glide.with(activity).load(Constants.imageListData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).fitCenter().crossFade().into(holder.tvimage);
+        Glide.with(activity).load(Constants.imageListData.get(position).getImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).into(holder.tvimage);
         holder.tvlike_count.setText(Constants.imageListData.get(position).getLiked());
         holder.username.setText(Constants.imageListData.get(position).getUser());
+        holder.like.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
 
         holder.tvimage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +69,6 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
                 it.putExtra("U_NAME",Constants.imageListData.get(position).getUser());
                 it.putExtra("REALNAME",maincat);
                 activity.startActivity(it);
-                activity.finish();
             }
         });
 
@@ -87,7 +87,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
 
    public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView username,tvlike_count;
-        public ImageView tvimage;
+        public ImageView tvimage,like;
 
 
         public MyViewHolder(View item) {
@@ -95,6 +95,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
             username = (TextView) item.findViewById(R.id.username);
             tvlike_count = (TextView) item.findViewById(R.id.tvlike_count);
             tvimage = (ImageView) item.findViewById(R.id.tvimage);
+            like = (ImageView) item.findViewById(R.id.like);
         }
     }
 }

@@ -162,7 +162,6 @@ public class TextListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Trending> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

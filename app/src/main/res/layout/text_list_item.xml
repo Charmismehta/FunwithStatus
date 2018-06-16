@@ -61,7 +61,7 @@
                             android:layout_width="@dimen/_16sdp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_8sdp"
-                            android:src="@drawable/like" />
+                            android:src="@drawable/vc_thumbup" />
 
                         <TextView
                             android:id="@+id/like_count"

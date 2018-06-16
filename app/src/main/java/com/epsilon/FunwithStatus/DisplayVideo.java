@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -141,8 +143,31 @@ public class DisplayVideo extends AppCompatActivity {
                         download.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
-                            saveimage(uri);
+//                            saveimage(uri);
+                            Bitmap finalBitmap = null;
+                            try {
+                                finalBitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), uri);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            File file=null;
+                            FileOutputStream outputStream;
+                            try {
+                                Random generator = new Random();
+                                int n = 10000;
+                                n = generator.nextInt(n);
+                                file = new File(getCacheDir(), "MyCache"+n);
+
+                                FileOutputStream out = new FileOutputStream(file);
+                                finalBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                                out.flush();
+                                out.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                         }
+
 
                     }
 
@@ -157,27 +182,34 @@ public class DisplayVideo extends AppCompatActivity {
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = Uri.parse(video);
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_TEXT, "Share From epsilon infotech");
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_STREAM, uri);
-                intent.setType("image/jpeg");
-                intent.setPackage("com.whatsapp");
-                startActivity(intent);
+                saveimage(uri);
+                String path = Environment.getExternalStorageDirectory().toString();
+                // String path = "Environment.getExternalStorageDirectory().toString()+"/myvideo";
+
+                ArrayList<String> alPath = new ArrayList<String>();
+                ArrayList<String> alName = new ArrayList<String>();
+
+                File directory = new File(path);
+                File[] file = directory.listFiles();
+                for (int i = 0; i < file.length; i++) {
+
+                    alName.add(file[i].getName());
+                    alPath.add(file[i].getAbsolutePath());
+
+                    Log.e("ALPATH",":"+alPath);
+                }
             }
         });
 
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = Uri.parse(video);
-                Intent share = new Intent(Intent.ACTION_SEND);
-                share.setType("image/*");
-                share.putExtra(Intent.EXTRA_STREAM, uri);
-                share.putExtra(Intent.EXTRA_TEXT, "Share by Fun With Status");
-                activity.startActivity(Intent.createChooser(share, "Fun With Status"));
+                Uri intentUri = Uri.parse(video);
+
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(intentUri, "video/mp4");
+                startActivity(intent);
             }
         });
 
@@ -213,7 +245,6 @@ public class DisplayVideo extends AppCompatActivity {
             @Override
             public void onFailure(Call<VideoLike> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -234,7 +265,7 @@ public class DisplayVideo extends AppCompatActivity {
             @Override
             public void onFailure(Call<VideoDisLike> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -354,13 +385,9 @@ public class DisplayVideo extends AppCompatActivity {
 
     private void saveimage(Uri uri) {
         DownloadManager.Request r = new DownloadManager.Request(uri);
-
         r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "fileName");
-
         r.allowScanningByMediaScanner();
-
         r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(r);
         addImageToGallery(video, activity);
@@ -371,7 +398,7 @@ public class DisplayVideo extends AppCompatActivity {
         ContentValues values = new ContentValues();
 
         values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/*");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "video/*");
         values.put(MediaStore.MediaColumns.DATA, myDir);
 
         context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);

@@ -52,14 +52,15 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/like"
                 android:layout_marginLeft="@dimen/_8sdp"
                 android:layout_gravity="center_vertical"
                 android:layout_width="@dimen/_16sdp"
                 android:layout_height="@dimen/_16sdp"
-                android:src="@drawable/like" />
+                android:src="@drawable/vc_thumbup" />
 
             <TextView
-                android:layout_marginLeft="@dimen/_2sdp"
+                android:layout_marginLeft="@dimen/_5sdp"
                 android:id="@+id/tvlike_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

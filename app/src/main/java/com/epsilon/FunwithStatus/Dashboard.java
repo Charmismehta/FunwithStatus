@@ -2,6 +2,7 @@ package com.epsilon.FunwithStatus;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         setContentView(R.layout.activity_dashboard);
         activity = this;
         sessionmanager = new Sessionmanager(activity);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_navigation);
@@ -158,7 +160,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(i);
                 finish();
                 break;
-
         }
 
         //replacing the fragment

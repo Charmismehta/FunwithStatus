@@ -120,7 +120,7 @@ public class ImageFragment extends Fragment {
         Album a = new Album("Featured", 1, covers[0]);
         albumList.add(a);
 
-        a = new Album("Laughter", 2, covers[1]);
+        a = new Album("Laughter", 3, covers[1]);
         albumList.add(a);
 
         a = new Album("Emotions", 5, covers[2]);
@@ -135,10 +135,10 @@ public class ImageFragment extends Fragment {
         a = new Album("Sports", 2, covers[5]);
         albumList.add(a);
 
-        a = new Album("Language", 3, covers[6]);
+        a = new Album("Language", 4, covers[6]);
         albumList.add(a);
 
-        a = new Album("Entertainment", 14, covers[7]);
+        a = new Album("Entertainment", 3, covers[7]);
         albumList.add(a);
         adapter.notifyDataSetChanged();
     }
