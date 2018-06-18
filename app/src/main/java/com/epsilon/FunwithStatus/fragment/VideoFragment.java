@@ -209,6 +209,8 @@ return view;
                     Constants.videoListData.addAll(response.body().getImages());
                     VideoAdapter adapter = new VideoAdapter(context);
                     recyclerView.setAdapter(adapter);
+                    if (adapter != null)
+                        adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(context, "No Video Found", Toast.LENGTH_SHORT).show();
                 }

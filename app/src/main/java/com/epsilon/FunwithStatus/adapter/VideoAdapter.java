@@ -28,6 +28,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -92,7 +93,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
     Activity activity;
     private LayoutInflater inflater;
     public Resources res;
-    String video_id;
     //String video, email, video_id, name,u_name;
     //   Uri uri;
     //   int count = 0;
@@ -120,7 +120,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         final String email = sessionmanager.getValue(Sessionmanager.Email);
-         video_id = Constants.videoListData.get(position).getId();
+       final String  video_id = Constants.videoListData.get(position).getId();
         final String video = Constants.videoListData.get(position).getImage();
         final Uri uri = Uri.parse(video);
         final String name = Constants.videoListData.get(position).getFilename();
@@ -165,7 +165,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         holder.delete.startAnimation(animation_3);
-                        delete(video_id);
+                        delete(Constants.videoListData.get(position).getId());
                     }
 
                     @Override
@@ -194,7 +194,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
 
                 File extStore = Environment.getExternalStorageDirectory();
                 final File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
-                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.abc_fade_out);
 
                 holder.download.startAnimation(animation_2);
@@ -232,7 +232,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         holder.whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.abc_fade_out);
 
                 holder.whatsapp.startAnimation(animation_2);
@@ -263,7 +263,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         holder.facebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.abc_fade_out);
 
                 holder.facebook.startAnimation(animation_2);
@@ -291,7 +291,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         holder.share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(activity.getBaseContext(), R.anim.abc_fade_out);
 
                 holder.share.startAnimation(animation_2);
@@ -439,7 +439,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             @Override
             public void onResponse(Call<DeleteVideo> call, Response<DeleteVideo> response) {
                 dialog.dismiss();
-                if (response.body().getStatus().equals("Succ")) {
+                if(response.body().getStatus().equals("Succ")) {
                     videolist();
                     Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
                 } else {
@@ -470,6 +470,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                 }
                 if (!Constants.videoListData.equals("") && Constants.videoListData != null) {
                     Constants.videoListData.addAll(response.body().getImages());
+                    notifyDataSetChanged();
                 } else {
                     Toast.makeText(activity, "No Video Found", Toast.LENGTH_SHORT).show();
                 }
@@ -529,6 +530,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             }
         }
     }
+
+
 
     public void shareFacebook(int position) {
         {

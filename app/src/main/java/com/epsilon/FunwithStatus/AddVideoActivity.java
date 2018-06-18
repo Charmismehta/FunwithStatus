@@ -2,11 +2,13 @@ package com.epsilon.FunwithStatus;
 
 import android.app.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -18,12 +20,15 @@ import android.support.v4.app.FragmentTransaction;
 
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,10 +39,12 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.fragment.ImageFragment;
 import com.epsilon.FunwithStatus.fragment.MainFragment;
 import com.epsilon.FunwithStatus.fragment.VideoFragment;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.rockerhieu.emojicon.EmojiconEditText;
 
@@ -56,7 +63,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class AddVideoActivity extends AppCompatActivity {
+public class AddVideoActivity extends AppCompatActivity implements SingleUploadBroadcastReceiver.Delegate{
 
     Activity activity;
     VideoView iv_video;
@@ -71,8 +78,18 @@ public class AddVideoActivity extends AppCompatActivity {
     Button button_caption_send,vc_camera,vc_album;
     String name;
     Sessionmanager sessionmanager;
-    File fileGallery;
-    Fragment fragment=null;
+    private static final String TAG = "AndroidUploadService";
+    ProgressDialog dialog;
+    private Toast mToastToShow;
+
+    private final SingleUploadBroadcastReceiver uploadReceiver =
+            new SingleUploadBroadcastReceiver();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        uploadReceiver.register(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,14 +112,11 @@ public class AddVideoActivity extends AppCompatActivity {
         button_caption_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadMultipart();
-                main.setVisibility(View.GONE);
-                Fragment fragment = new VideoFragment();
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.containers, fragment);
-                transaction.commit();
+                iv_video.stopPlayback();
+                uploadMultipart(v);
             }
         });
+
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -197,13 +211,16 @@ public class AddVideoActivity extends AppCompatActivity {
             }
         }
     }
-    public void uploadMultipart() {
+    public void uploadMultipart(View view) {
+        Helper.hideSoftKeyboard(activity);
         //getting name for the image
         name = edit_caption.getText().toString().trim();
         //getting the actual path of the image
         //Uploading code
         try {
             String uploadId = UUID.randomUUID().toString();
+            uploadReceiver.setDelegate(this);
+            uploadReceiver.setUploadID(uploadId);
             //Creating a multi part request
             new MultipartUploadRequest(this, uploadId, Constants.UPLOAD_VIDEO)
                     .addFileToUpload(selectpath, "image") //Adding file
@@ -213,13 +230,11 @@ public class AddVideoActivity extends AppCompatActivity {
                     .setNotificationConfig(new UploadNotificationConfig())
                     .setMaxRetries(2)
                     .startUpload(); //Starting the upload
-            Toast.makeText(activity, "Add video Successfully", Toast.LENGTH_SHORT).show();
+            showToast(view);
         } catch (Exception exc) {
 
         }
     }
-
-
 
     private void requestAudioPermissions() {
         if (ContextCompat.checkSelfPermission(activity,
@@ -299,5 +314,65 @@ public class AddVideoActivity extends AppCompatActivity {
         int fileSize = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
         long duration = TimeUnit.MILLISECONDS.toSeconds(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)));
         return filePath;
+    }
+
+    @Override
+    public void onProgress(int progress) {
+    }
+
+    @Override
+    public void onProgress(long uploadedBytes, long totalBytes) {
+    }
+
+    @Override
+    public void onError(Exception exception) {
+
+    }
+
+    @Override
+    public void onCompleted(int serverResponseCode, byte[] serverResponseBody) {
+        main.setVisibility(View.GONE);
+        Fragment fragment = new VideoFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.containers, fragment);
+        transaction.commit();
+    }
+
+    @Override
+    public void onCancelled() {
+
+    }
+
+    public void showToast(View view) {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        // Set the toast and duration
+        int toastDurationInMilliSeconds = 15000;
+        dialog.show();
+//        custom_layout.setVisibility(View.VISIBLE);
+
+//        mToastToShow = Toast.makeText(this, "Please Wait for a Moment.", Toast.LENGTH_LONG);
+
+        // Set the countdown to display the toast
+        CountDownTimer toastCountDown;
+        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
+            public void onTick(long millisUntilFinished) {
+                dialog.show();
+//                custom_layout.setVisibility(View.VISIBLE);
+//                mToastToShow.show();
+            }
+            public void onFinish() {
+                dialog.dismiss();
+//                custom_layout.setVisibility(View.GONE);
+
+//                mToastToShow.cancel();
+            }
+        };
+
+        // Show the toast and starts the countdown
+        dialog.show();
+        toastCountDown.start();
     }
 }

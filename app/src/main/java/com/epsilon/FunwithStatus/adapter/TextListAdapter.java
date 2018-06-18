@@ -62,7 +62,6 @@ public class TextListAdapter extends RecyclerView.Adapter<TextListAdapter.MyView
                     it.putExtra("NAME", Constants.statusData.get(i).getSubcata());
                     it.putExtra("U_NAME", Constants.statusData.get(i).getUser());
                     activity.startActivity(it);
-                    activity.finish();
                 }
         });
 

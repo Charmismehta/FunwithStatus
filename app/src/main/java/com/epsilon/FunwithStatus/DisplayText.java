@@ -180,7 +180,7 @@ public class DisplayText extends AppCompatActivity {
         dislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.antirotate);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 dislike.startAnimation(animation_2);
@@ -440,22 +440,22 @@ public class DisplayText extends AppCompatActivity {
     // TODO TEXT DELETE API END
 
 
-    public void onBackPressed() {
-        if (name.equalsIgnoreCase("Trending"))
-        {
-            Intent it = new Intent(activity, TextListActivity.class);
-            it.putExtra("NAME", "Trending");
-            startActivity(it);
-            finish();// close this activity and return to preview activity (if there is any)
-        }
-        else
-        {
-            Intent it = new Intent(activity, TextListActivity.class);
-            it.putExtra("NAME", name);
-            startActivity(it);
-            finish();
-        }
-    }
+//    public void onBackPressed() {
+//        if (name.equalsIgnoreCase("Trending"))
+//        {
+//            Intent it = new Intent(activity, TextListActivity.class);
+//            it.putExtra("NAME", "Trending");
+//            startActivity(it);
+//            finish();// close this activity and return to preview activity (if there is any)
+//        }
+//        else
+//        {
+//            Intent it = new Intent(activity, TextListActivity.class);
+//            it.putExtra("NAME", name);
+//            startActivity(it);
+//            finish();
+//        }
+//    }
 
     public void textstatus(String subcat) {
         final Call<Status> countrycall = apiInterface.textstatuspojo(subcat);

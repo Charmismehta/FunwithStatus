@@ -127,7 +127,7 @@ public class DisplayVideo extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.fadein);
+                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
                 final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
                 download.startAnimation(animation_2);

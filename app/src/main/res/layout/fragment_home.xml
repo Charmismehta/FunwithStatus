@@ -385,7 +385,7 @@
                             android:orientation="horizontal">
 
                             <LinearLayout
-                                android:id="@+id/ic_Anniversary"
+                                android:id="@+id/ic_congratulation"
                                 android:layout_width="@dimen/_64sdp"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
@@ -411,7 +411,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:id="@+id/ic_congratulation"
+                                android:id="@+id/ic_Anniversary"
                                 android:layout_width="@dimen/_64sdp"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
@@ -980,7 +980,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="0dp"
             ads:adSize="SMART_BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>
+            ads:adUnitId="@string/banner_add"></com.google.android.gms.ads.AdView>
 
     </LinearLayout>
 </FrameLayout>
