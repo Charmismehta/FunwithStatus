@@ -1,68 +1,43 @@
 package com.epsilon.FunwithStatus.fragment;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
+
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
+
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
-import com.epsilon.FunwithStatus.AddTextActivity;
-import com.epsilon.FunwithStatus.GallaryUtils;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAd;
-import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 
-import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-
 
 
 public class MainFragment extends Fragment {
 
     Context context;
-    CircleImageView text,image,video,plus,help;
+    CircleImageView text, image, video, plus, help;
     Fragment fragment = null;
     Sessionmanager sessionmanager;
     ViewPager mViewPager;
@@ -89,7 +64,7 @@ public class MainFragment extends Fragment {
 
         CustomPagerAdapter mCustomPagerAdapter = new CustomPagerAdapter(context);
 
-        mViewPager = (ViewPager)view.findViewById(R.id.pager);
+        mViewPager = (ViewPager) view.findViewById(R.id.pager);
         mViewPager.setAdapter(mCustomPagerAdapter);
 
 //       indicator.setRadius(5 * density);
@@ -97,7 +72,37 @@ public class MainFragment extends Fragment {
         NUM_PAGES = mResources.length;
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
-        
+        AdView mAdView = view.findViewById(R.id.adView);
+        mAdView.loadAd(adRequest);
+
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when when the user is about to return
+                // to the app after tapping on an ad.
+            }
+        });
 
 
         // Auto start of viewpager
@@ -118,10 +123,10 @@ public class MainFragment extends Fragment {
             }
         }, 3000, 3000);
 
-        text = (CircleImageView)view.findViewById(R.id.text);
-        image = (CircleImageView)view.findViewById(R.id.image);
-        video = (CircleImageView)view.findViewById(R.id.video);
-        help = (CircleImageView)view.findViewById(R.id.help);
+        text = (CircleImageView) view.findViewById(R.id.text);
+        image = (CircleImageView) view.findViewById(R.id.image);
+        video = (CircleImageView) view.findViewById(R.id.video);
+        help = (CircleImageView) view.findViewById(R.id.help);
 
 
         text.setOnClickListener(new View.OnClickListener() {
@@ -175,39 +180,6 @@ public class MainFragment extends Fragment {
                 }
             }
         });
-
-        AdView mAdView =view.findViewById(R.id.adView);
-        mAdView.loadAd(adRequest);
-
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the user is about to return
-                // to the app after tapping on an ad.
-            }
-        });
-
 
         // Set listeners for the Interstitial Add
         return view;

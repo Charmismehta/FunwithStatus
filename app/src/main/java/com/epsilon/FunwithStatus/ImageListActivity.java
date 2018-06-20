@@ -54,6 +54,7 @@ import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.UploadNotificationConfig;
@@ -85,6 +86,7 @@ public class ImageListActivity extends AppCompatActivity {
     SwipeRefreshLayout swipelayout;
     Sessionmanager sessionmanager;
     EditText edit_caption;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,16 @@ public class ImageListActivity extends AppCompatActivity {
         context = this;
         sessionmanager = new Sessionmanager(this);
         idMappings();
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        mInterstitialAd = new InterstitialAd(context);
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
+        mInterstitialAd.loadAd(adRequest);
+        mInterstitialAd.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                showInterstitial();
+            }
+        });
 
         subcat = getIntent().getStringExtra("NAME");
         maincat = getIntent().getStringExtra("REALNAME");
@@ -130,7 +142,6 @@ public class ImageListActivity extends AppCompatActivity {
         title.setText(subcat);
 
         AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
         mAdView.setAdListener(new AdListener() {
@@ -228,6 +239,11 @@ public class ImageListActivity extends AppCompatActivity {
         title=(TextView) findViewById(R.id.title);
         ileft=(ImageView) findViewById(R.id.ileft);
         iright=(ImageView) findViewById(R.id.iright);
+    }
+    private void showInterstitial() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
     }
 
     public void Imagecategory(String subcat) {

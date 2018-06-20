@@ -16,10 +16,6 @@ import android.widget.TextView;
 import com.epsilon.FunwithStatus.Dashboard;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
-
-import com.epsilon.FunwithStatus.retrofit.APIClient;
-import com.epsilon.FunwithStatus.retrofit.APIInterface;
-import com.epsilon.FunwithStatus.utills.Helper;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -44,8 +40,9 @@ public class HomeFragment extends Fragment {
         context = getContext();
         IpMappings(view);
         Lisnter();
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
         AdView mAdView = view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
         mAdView.setAdListener(new AdListener() {
@@ -76,6 +73,8 @@ public class HomeFragment extends Fragment {
                 // to the app after tapping on an ad.
             }
         });
+
+
         return view;
 
     }
@@ -279,7 +278,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME","Lyrics");
+                it.putExtra("NAME",tv_lyrics.getText().toString());
                 startActivity(it);
 
             }

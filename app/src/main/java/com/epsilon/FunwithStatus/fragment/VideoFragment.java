@@ -15,7 +15,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -54,6 +53,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
@@ -70,7 +70,6 @@ public class VideoFragment extends Fragment{
     FloatingActionButton floatingbtn;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     private InterstitialAd mInterstitialAd;
-    SwipeRefreshLayout swipelayout;
 
 
 
@@ -83,7 +82,6 @@ public class VideoFragment extends Fragment{
         context = getActivity();
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        swipelayout=(SwipeRefreshLayout)view.findViewById(R.id.swipelayout);
 
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
@@ -104,16 +102,8 @@ public class VideoFragment extends Fragment{
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");
         } else {
-        videolist();
+            videolist();
         }
-
-        swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                videolist();
-                swipelayout.setRefreshing(false);
-            }
-        });
 
         floatingbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +145,7 @@ public class VideoFragment extends Fragment{
             }
         });
 
-return view;
+        return view;
     }
 
     private void showInterstitial() {
@@ -193,15 +183,11 @@ return view;
     }
 
     private void videolist() {
-        final ProgressDialog dialog = new ProgressDialog(context);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
         final Call<VideoList> countrycall = apiInterface.videolistpojo();
         countrycall.enqueue(new Callback<VideoList>() {
             @Override
             public void onResponse(Call<VideoList> call, Response<VideoList> response) {
-                dialog.dismiss();
+
                 if (Constants.videoListData != null) {
                     Constants.videoListData.clear();
                 }
@@ -209,8 +195,6 @@ return view;
                     Constants.videoListData.addAll(response.body().getImages());
                     VideoAdapter adapter = new VideoAdapter(context);
                     recyclerView.setAdapter(adapter);
-                    if (adapter != null)
-                        adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(context, "No Video Found", Toast.LENGTH_SHORT).show();
                 }
@@ -218,8 +202,6 @@ return view;
 
             @Override
             public void onFailure(Call<VideoList> call, Throwable t) {
-                dialog.dismiss();
-
             }
         });
     }

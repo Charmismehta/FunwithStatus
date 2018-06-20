@@ -62,5 +62,4 @@ dependencies {
     implementation 'net.gotev:uploadservice:2.1'
     implementation 'com.vdurmont:emoji-java:4.0.0'
     implementation 'cn.jzvd:jiaozivideoplayer:6.2.10'
-    implementation 'com.facebook.android:audience-network-sdk:4.+'
 }
