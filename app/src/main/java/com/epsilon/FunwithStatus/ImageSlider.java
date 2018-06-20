@@ -20,11 +20,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -33,18 +33,23 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-
-import com.bumptech.glide.Glide;
+import com.epsilon.FunwithStatus.adapter.FullScreenImageAdapter;
+import com.epsilon.FunwithStatus.adapter.FullScreenTrenImageAdapter;
+import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
+import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
+import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageListDatum;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
+import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -52,69 +57,44 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DisplayImage extends AppCompatActivity {
+public class ImageSlider extends AppCompatActivity {
 
+    ViewPager pager;
     Activity activity;
-    LinearLayout layout_content;
+    String name,maincat,pic;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    LinearLayout layout_content,ll;
     RelativeLayout mainlayout;
     ImageView display_image, download, like, dislike, share, delete, whatsapp,facebook;
-    String pic, name, root, Id, email, u_name, loginuser, maincat;
     InputStream is = null;
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
     File myDir;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Toolbar toolbar;
     InputStream stream = null;
     Uri uri;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_image);
+        setContentView(R.layout.activity_image_slider);
 
         activity = this;
-        idMappings();
-        Listners();
-        sessionmanager = new Sessionmanager(this);
-        Id = getIntent().getStringExtra("Id");
+        sessionmanager = new Sessionmanager(activity);
+        pager = (ViewPager)findViewById(R.id.pager);
+        Intent mIntent = getIntent();
+        final int position = mIntent.getIntExtra("position", 0);
+        final String Id = getIntent().getStringExtra("Id");
         name = getIntent().getStringExtra("NAME");
-        u_name = getIntent().getStringExtra("U_NAME");
-        maincat = getIntent().getStringExtra("REALNAME");
+        String u_name = getIntent().getStringExtra("U_NAME");
+        String maincat = getIntent().getStringExtra("REALNAME");
         Log.e("##########NAME", name);
-        email = sessionmanager.getValue(Sessionmanager.Email);
-        loginuser = sessionmanager.getValue(Sessionmanager.Name);
+        final String email = sessionmanager.getValue(Sessionmanager.Email);
+        final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
-        uri = Uri.parse(pic);
-        share.setColorFilter(getResources().getColor(R.color.colorAccent));
-        like.setColorFilter(getResources().getColor(R.color.colorAccent));
-        dislike.setColorFilter(getResources().getColor(R.color.colorAccent));
-        delete.setColorFilter(getResources().getColor(R.color.colorAccent));
-        download.setColorFilter(getResources().getColor(R.color.colorAccent));
+        final Uri uri = Uri.parse(pic);
 
-        Glide.with(activity).load(pic)
-                .thumbnail(Glide.with(activity).load(R.drawable.loadding))
-                .into(display_image);
-//        Glide.with(activity).load(pic).into(display_image);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        if (u_name.equalsIgnoreCase(loginuser)) {
-            delete.setVisibility(View.VISIBLE);
-        }
-
-
-    }
-
-    private void idMappings() {
-        display_image = (ImageView) findViewById(R.id.display_image);
+        display_image = (ImageView)findViewById(R.id.display_image);
         download = (ImageView) findViewById(R.id.download);
         like = (ImageView) findViewById(R.id.like);
         dislike = (ImageView) findViewById(R.id.dislike);
@@ -123,11 +103,35 @@ public class DisplayImage extends AppCompatActivity {
         whatsapp = (ImageView) findViewById(R.id.whatsapp);
         facebook = (ImageView) findViewById(R.id.facebook);
         layout_content = (LinearLayout) findViewById(R.id.layout_content);
-        mainlayout = (RelativeLayout) findViewById(R.id.mainlayout);
-    }
+        ll = (LinearLayout) findViewById(R.id.ll);
+        mainlayout = (RelativeLayout)findViewById(R.id.mainlayout);
+        share.setColorFilter(getResources().getColor(R.color.colorAccent));
+        like.setColorFilter(getResources().getColor(R.color.colorAccent));
+        dislike.setColorFilter(getResources().getColor(R.color.colorAccent));
+        delete.setColorFilter(getResources().getColor(R.color.colorAccent));
+        download.setColorFilter(getResources().getColor(R.color.colorAccent));
 
-    private void Listners() {
-
+        if(name.equalsIgnoreCase("Featured"))
+        {
+            FullScreenTrenImageAdapter adapter = new FullScreenTrenImageAdapter(activity);
+            pager.setAdapter(adapter);
+            pager.post(new Runnable() {
+                @Override
+                public void run() {
+                    pager.setCurrentItem(position,true);
+                }
+            });
+        }
+        else {
+            FullScreenImageAdapter adapter = new FullScreenImageAdapter(activity);
+            pager.setAdapter(adapter);
+            pager.post(new Runnable() {
+                @Override
+                public void run() {
+                    pager.setCurrentItem(position, true);
+                }
+            });
+        }
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,7 +161,7 @@ public class DisplayImage extends AppCompatActivity {
 
                     }
                 });
-               }
+            }
 
         });
 
@@ -182,7 +186,8 @@ public class DisplayImage extends AppCompatActivity {
                         if (result) {
                             new ShareImage().execute(pic);
                         }
-                        }
+
+                    }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
@@ -331,31 +336,28 @@ public class DisplayImage extends AppCompatActivity {
                         if (result) {
                             new sharefacebookImage().execute(pic);
                         }
-
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
-
                     }
                 });
             }
-
         });
 
 
-        display_image.setOnClickListener(new View.OnClickListener() {
+        mainlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (layout_content.getVisibility() == View.VISIBLE) {
                     layout_content.setVisibility(View.GONE);
-                    mainlayout.setBackgroundColor(Color.BLACK);
+                    mainlayout.setBackgroundColor(Color.WHITE);
                 } else if (layout_content.getVisibility() == View.GONE) {
                     layout_content.setVisibility(View.VISIBLE);
                     mainlayout.setBackgroundColor(Color.WHITE);
                 } else {
                     layout_content.setVisibility(View.GONE);
-                    mainlayout.setBackgroundColor(Color.BLACK);
+                    mainlayout.setBackgroundColor(Color.WHITE);
                 }
             }
         });
@@ -446,11 +448,11 @@ public class DisplayImage extends AppCompatActivity {
             public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
                 dialog.dismiss();
                 if (response.body().getStatus().equals("Succ")) {
-                        Intent it = new Intent(activity, ImageListActivity.class);
-                        it.putExtra("NAME", name);
-                        it.putExtra("REALNAME", maincat);
-                        startActivity(it);
-                        finish();
+                    Intent it = new Intent(activity, ImageListActivity.class);
+                    it.putExtra("NAME", name);
+                    it.putExtra("REALNAME", maincat);
+                    startActivity(it);
+                    finish();
                     Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(activity, "Try Again", Toast.LENGTH_SHORT).show();
@@ -518,7 +520,7 @@ public class DisplayImage extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(DisplayImage.this);
+            mProgressDialog = new ProgressDialog(activity);
             // Set progressdialog title
             mProgressDialog.setTitle("Share Image");
             // Set progressdialog message
@@ -570,14 +572,14 @@ public class DisplayImage extends AppCompatActivity {
     }
 
 
-     // TODO : SHARE ON FACEBOOK
+    // TODO : SHARE ON FACEBOOK
     private class sharefacebookImage extends AsyncTask<String, Void, Bitmap> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(DisplayImage.this);
+            mProgressDialog = new ProgressDialog(activity);
             // Set progressdialog title
             mProgressDialog.setTitle("Share Image");
             // Set progressdialog message
@@ -649,7 +651,7 @@ public class DisplayImage extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(DisplayImage.this);
+            mProgressDialog = new ProgressDialog(activity);
             // Set progressdialog title
             mProgressDialog.setTitle("Download Image");
             // Set progressdialog message
@@ -687,7 +689,7 @@ public class DisplayImage extends AppCompatActivity {
 
     private void SaveImage(Bitmap finalBitmap) {
 
-        root = Environment.getExternalStorageDirectory().toString();
+        String root = Environment.getExternalStorageDirectory().toString();
         myDir = new File(root + "/saved_images");
         myDir.mkdirs();
         Random generator = new Random();
@@ -727,7 +729,7 @@ public class DisplayImage extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(DisplayImage.this);
+            mProgressDialog = new ProgressDialog(activity);
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.show();
         }
@@ -772,26 +774,4 @@ public class DisplayImage extends AppCompatActivity {
     // TODO : END SHARE IMAGE CODE ////////////////
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (item.getItemId() == android.R.id.home) {
-            if (name.equalsIgnoreCase("featured")) {
-                Intent it = new Intent(activity, SubCatImage.class);
-                it.putExtra("NAME", name);
-                startActivity(it);
-                finish();// close this activity and return to preview activity (if there is any)
-            } else {
-                Intent it = new Intent(activity, ImageListActivity.class);
-                it.putExtra("NAME", name);
-                startActivity(it);
-                finish();
-            }
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

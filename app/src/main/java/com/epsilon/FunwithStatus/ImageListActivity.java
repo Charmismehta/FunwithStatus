@@ -257,6 +257,7 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ImageList> call, Throwable t) {
                 dialog.dismiss();
+                Toast.makeText(context, "No Internet", Toast.LENGTH_SHORT).show();
             }
         });
     }

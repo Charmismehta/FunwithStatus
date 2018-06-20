@@ -272,4 +272,11 @@ public class Demo extends AppCompatActivity {
             }
         }
     }
+    public void onBackPressed() {
+        Intent it = new Intent(Demo.this, ImageListActivity.class);
+        it.putExtra("NAME",subcat);
+        it.putExtra("REALNAME",maincat);
+        startActivity(it);
+        finish();
+    }
 }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.DisplayImage;
 import com.epsilon.FunwithStatus.ImageListActivity;
+import com.epsilon.FunwithStatus.ImageSlider;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.ImageConverter;
@@ -59,11 +60,20 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
         holder.username.setText(Constants.imageListData.get(position).getUser());
         holder.like.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
 
+//        holder.tvimage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+
         holder.tvimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity, DisplayImage.class);
+                Intent it = new Intent(activity, ImageSlider.class);
+                Log.e("POSITION",position+"");
                 it.putExtra("pic",Constants.imageListData.get(position).getImage());
+                it.putExtra("position",position);
                 it.putExtra("NAME",Constants.imageListData.get(position).getSubcata());
                 it.putExtra("Id",Constants.imageListData.get(position).getId());
                 it.putExtra("U_NAME",Constants.imageListData.get(position).getUser());
@@ -71,8 +81,8 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
                 activity.startActivity(it);
             }
         });
-
     }
+
 
     @Override
     public long getItemId(int i) {

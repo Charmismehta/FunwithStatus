@@ -271,7 +271,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_music.getText().toString());
+                it.putExtra("NAME","Music");
                 startActivity(it);
             }
         });
@@ -279,7 +279,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_lyrics.getText().toString());
+                it.putExtra("NAME","Lyrics");
                 startActivity(it);
 
             }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.epsilon.FunwithStatus.DisplayText;
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.TextSlider;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.rockerhieu.emojicon.EmojiconTextView;
 
@@ -50,11 +51,12 @@ public class TrendingAdapter  extends RecyclerView.Adapter<TrendingAdapter.MyVie
         holder.rlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity, DisplayText.class);
+                Intent it = new Intent(activity, TextSlider.class);
                 it.putExtra("text", Constants.trendingData.get(i).getStatus());
                 it.putExtra("Id", Constants.trendingData.get(i).getId());
                 it.putExtra("NAME","Trending");
                 it.putExtra("U_NAME", Constants.trendingData.get(i).getUser());
+                it.putExtra("position", i);
                 activity.startActivity(it);
 
             }

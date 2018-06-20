@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.DisplayImage;
 import com.epsilon.FunwithStatus.ImageListActivity;
+import com.epsilon.FunwithStatus.ImageSlider;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.SubAlbum;
@@ -49,9 +50,10 @@ public class TrendingImgAdapter extends RecyclerView.Adapter<TrendingImgAdapter.
         holder.tvimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity, DisplayImage.class);
+                Intent it = new Intent(activity, ImageSlider.class);
                 it.putExtra("Id",Constants.trendingimgData.get(position).getId());
                 it.putExtra("NAME","Featured");
+                it.putExtra("position",position);
                 it.putExtra("U_NAME",Constants.trendingimgData.get(position).getUser());
                 it.putExtra("pic",Constants.trendingimgData.get(position).getImage());
                 activity.startActivity(it);

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.epsilon.FunwithStatus.DisplayText;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
+import com.epsilon.FunwithStatus.TextSlider;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.rockerhieu.emojicon.EmojiconTextView;
 import com.vdurmont.emoji.EmojiParser;
@@ -56,11 +57,12 @@ public class TextListAdapter extends RecyclerView.Adapter<TextListAdapter.MyView
         holder.rlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Intent it = new Intent(activity, DisplayText.class);
+                    Intent it = new Intent(activity, TextSlider.class);
                     it.putExtra("text", Constants.statusData.get(i).getStatus());
                     it.putExtra("Id", Constants.statusData.get(i).getId());
                     it.putExtra("NAME", Constants.statusData.get(i).getSubcata());
                     it.putExtra("U_NAME", Constants.statusData.get(i).getUser());
+                    it.putExtra("position", i);
                     activity.startActivity(it);
                 }
         });

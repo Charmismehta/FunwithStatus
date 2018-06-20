@@ -123,8 +123,10 @@ public class TextListActivity extends AppCompatActivity {
                     Constants.statusData.addAll(response.body().getData());
                     TextListAdapter adapter = new TextListAdapter(context);
                     recyclerView.setAdapter(adapter);
+                    if (adapter != null)
+                        adapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "No Video Found", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -211,7 +213,6 @@ public class TextListActivity extends AppCompatActivity {
             finish();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

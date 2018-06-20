@@ -114,6 +114,10 @@ public class AddTextActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (item.getItemId() == android.R.id.home) {
+            Intent it = new Intent(AddTextActivity.this, TextListActivity.class);
+            it.putExtra("NAME",subcat);
+            startActivity(it);
+            finish();
             finish(); // close this activity and return to preview activity (if there is any)
         }
         //noinspection SimplifiableIfStatement

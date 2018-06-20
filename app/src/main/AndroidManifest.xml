@@ -13,14 +13,15 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
+        android:extractNativeLibs="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:extractNativeLibs="false"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -76,7 +77,7 @@
             android:name=".DisplayText"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ImageListActivity"
             android:screenOrientation="portrait"
@@ -87,26 +88,33 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".SubCatImage"
+        <activity
+            android:name=".SubCatImage"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".Demo"
+        <activity
+            android:name=".Demo"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".AddVideoActivity"
+        <activity
+            android:name=".AddVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".DisplayVideo"
+        <activity
+            android:name=".DisplayVideo"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".ForgetPassword"
+        <activity
+            android:name=".ForgetPassword"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden" ></activity>
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".ImageSlider" />
+        <activity android:name=".TextSlider"></activity>
     </application>
 
 </manifest>
