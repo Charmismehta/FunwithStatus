@@ -357,7 +357,6 @@ public class TextSlideAdapter extends PagerAdapter{
             public void onResponse(Call<AddLike> call, Response<AddLike> response) {
                 dialog.dismiss();
                 Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                textstatus(name);
             }
 
             @Override
@@ -378,7 +377,6 @@ public class TextSlideAdapter extends PagerAdapter{
             public void onResponse(Call<DisLike> call, Response<DisLike> response) {
                 dialog.dismiss();
                 Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                textstatus(name);
             }
 
             @Override

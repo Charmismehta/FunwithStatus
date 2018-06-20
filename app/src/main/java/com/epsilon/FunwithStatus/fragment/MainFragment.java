@@ -21,6 +21,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +39,15 @@ import com.epsilon.FunwithStatus.AddTextActivity;
 import com.epsilon.FunwithStatus.GallaryUtils;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
+
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAd;
+import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
+
 
 import java.io.File;
 import java.util.Timer;
@@ -48,6 +55,8 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+
 
 
 public class MainFragment extends Fragment {
@@ -69,15 +78,13 @@ public class MainFragment extends Fragment {
     };
     private static int currentPage = 0;
     private static int NUM_PAGES = 0;
-    private InterstitialAd mInterstitialAd;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        context = getContext();
+        context = getActivity();
         sessionmanager = new Sessionmanager(context);
 
         CustomPagerAdapter mCustomPagerAdapter = new CustomPagerAdapter(context);
@@ -90,14 +97,7 @@ public class MainFragment extends Fragment {
         NUM_PAGES = mResources.length;
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
-//        mInterstitialAd = new InterstitialAd(getActivity());
-//        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
-//        mInterstitialAd.loadAd(adRequest);
-//        mInterstitialAd.setAdListener(new AdListener() {
-//            public void onAdLoaded() {
-//                showInterstitial();
-//            }
-//        });
+        
 
 
         // Auto start of viewpager
@@ -122,6 +122,7 @@ public class MainFragment extends Fragment {
         image = (CircleImageView)view.findViewById(R.id.image);
         video = (CircleImageView)view.findViewById(R.id.video);
         help = (CircleImageView)view.findViewById(R.id.help);
+
 
         text.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,16 +209,10 @@ public class MainFragment extends Fragment {
         });
 
 
-
-
+        // Set listeners for the Interstitial Add
         return view;
     }
 
-    private void showInterstitial() {
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
-    }
 
     class CustomPagerAdapter extends PagerAdapter {
 

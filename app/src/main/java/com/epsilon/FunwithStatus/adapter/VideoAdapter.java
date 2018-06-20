@@ -95,7 +95,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
     public Resources res;
     //String video, email, video_id, name,u_name;
     //   Uri uri;
-    //   int count = 0;
+       int count = 0;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
 
@@ -137,7 +137,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                 .into(holder.JZVideoPlayerStandard.thumbImageView);
 
         holder.user_name.setText(Constants.videoListData.get(position).getUser());
-//        holder.like_count.setText(Constants.videoListData.get(position).getLiked());
+        holder.like_count.setText(Constants.videoListData.get(position).getLiked());
         holder.share.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
         holder.like.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
         holder.dislike.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
@@ -338,12 +338,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                     @Override
                     public void onResponse(Call<VideoLike> call, Response<VideoLike> response) {
                         dialog.dismiss();
-//                        if (!Constants.videoListData.get(position).getLiked().equalsIgnoreCase("") && Constants.videoListData.get(position).getLiked() != null) {
-//                            count = Integer.valueOf(1 + Constants.videoListData.get(position).getLiked());
-//                        } else {
-//                            count = count + 1;
-//                        }
-//                        holder.like_count.setText(Constants.videoListData.get(position).getLiked());
+                        if (!Constants.videoListData.get(position).getLiked().equalsIgnoreCase("") && Constants.videoListData.get(position).getLiked() != null) {
+                            count = Integer.valueOf(1 + Constants.videoListData.get(position).getLiked());
+                        } else {
+                            count = count + 1;
+                        }
+                        holder.like_count.setText(Constants.videoListData.get(position).getLiked());
                         Toast.makeText(activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
