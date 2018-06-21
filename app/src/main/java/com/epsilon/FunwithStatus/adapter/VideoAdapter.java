@@ -95,7 +95,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
     public Resources res;
     //String video, email, video_id, name,u_name;
     //   Uri uri;
-       int count = 0;
+    int count = 0;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
 
@@ -120,14 +120,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         final String email = sessionmanager.getValue(Sessionmanager.Email);
-       final String  video_id = Constants.videoListData.get(position).getId();
+        final String video_id = Constants.videoListData.get(position).getId();
         final String video = Constants.videoListData.get(position).getImage();
         final Uri uri = Uri.parse(video);
         final String name = Constants.videoListData.get(position).getFilename();
         final String u_name = sessionmanager.getValue(Sessionmanager.Name);
+        String uname = Constants.videoListData.get(position).getUser();
 
         RequestOptions options = new RequestOptions().frame(10000);
-        holder.JZVideoPlayerStandard.releaseAllVideos();
+//        holder.JZVideoPlayerStandard.releaseAllVideos();
         holder.JZVideoPlayerStandard.setUp(video,
                 JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL,
                 name);
@@ -144,8 +145,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         holder.delete.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
         holder.download.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
 
-        if (Constants.videoListData.get(position).getUser().equalsIgnoreCase(u_name)) {
+        if (uname.equalsIgnoreCase(u_name))
+        {
             holder.delete.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            holder.delete.setVisibility(View.GONE);
         }
 
         holder.delete.setOnClickListener(new View.OnClickListener() {
@@ -214,7 +220,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                                 Toast.makeText(activity, "Already Downloaded", Toast.LENGTH_SHORT).show();
                             } else {
                                 downloadonly(video, position);
-//                                downloadFile(video, position);
+//
                             }
 
                         }
@@ -248,8 +254,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                         Log.e("URI", ":" + uri);
 
                         new Download(activity, video, position).execute();
-
-
                     }
 
                     @Override
@@ -307,7 +311,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                         Log.e("URI", ":" + uri);
 
                         File extStore = Environment.getExternalStorageDirectory();
-                        File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
+                        File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(video)  + ".mp4");
 
                         if (myFile.exists()) {
                             sharevideo(position);
@@ -439,7 +443,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             @Override
             public void onResponse(Call<DeleteVideo> call, Response<DeleteVideo> response) {
                 dialog.dismiss();
-                if(response.body().getStatus().equals("Succ")) {
+                if (response.body().getStatus().equals("Succ")) {
                     videolist();
                     Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
                 } else {
@@ -507,7 +511,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         @Override
         protected String doInBackground(Void... voids) {
             File extStore = Environment.getExternalStorageDirectory();
-            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
+            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
 
             if (!myFile.exists()) {
                 downloadFile(video, position);
@@ -530,7 +534,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             }
         }
     }
-
 
 
     public void shareFacebook(int position) {
@@ -583,48 +586,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         }
     }
 
-//        boolean facebookAppFound = false;
-//        File extStore = Environment.getExternalStorageDirectory();
-//        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
-//        if (file.exists()) {
-//            Uri uri = Uri.parse(file.getPath());
-//            try {
-//
-//                Intent videoshare = new Intent(Intent.ACTION_SEND);
-//                videoshare.putExtra(Intent.EXTRA_STREAM, uri);
-//                videoshare.setType("video/*");
-//                videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                activity.startActivity(videoshare);
-//                PackageManager pm = activity.getPackageManager();
-//                List<ResolveInfo> activityList = pm.queryIntentActivities(videoshare, 0);
-//                for (final ResolveInfo app : activityList) {
-//                    if ((app.activityInfo.packageName).contains("com.facebook.katana")) {
-//                        final ActivityInfo activityInfo = app.activityInfo;
-//                        final ComponentName name = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
-//                        videoshare.addCategory(Intent.CATEGORY_LAUNCHER);
-//                        videoshare.setComponent(name);
-//                        facebookAppFound = true;
-//                        break;
-//                    }
-//                    if (!facebookAppFound) {
-//                        String sharerUrl = "https://www.facebook.com/sharer/sharer.php?u=" + uri;
-//                        videoshare = new Intent(Intent.ACTION_VIEW, Uri.parse(sharerUrl));
-//                    }
-//                    activity.startActivity(videoshare);
-//                }
-//            }catch (Exception e) {
-//                Log.e("Error....", e.toString());
-//                e.printStackTrace();
-//
-//                Intent videoshare = new Intent(Intent.ACTION_SEND);
-//                videoshare.putExtra(Intent.EXTRA_STREAM,uri);
-//                videoshare.setType("video/*");
-//                videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                activity.startActivity(Intent.createChooser(videoshare, "Share video by..."));
-//
-//            }
-//        }
-
 
     public void sharevideo(int position) {
         File extStore = Environment.getExternalStorageDirectory();
@@ -652,27 +613,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             }
 
         }
-//        File file = new File(Environment.getExternalStorageDirectory(),
-//                Constants.videoListData.get(position).getFilename() + ".mp4");
-//        Uri uri = Uri.fromFile(file);
-//        Intent share = new Intent();
-//        share.setAction(Intent.ACTION_SEND);
-//        share.setType("video/mp4");
-//        share.putExtra(Intent.EXTRA_STREAM, uri);
-//        activity.startActivity(share);
     }
 
 
     public void sharewhatupp(int position) {
 
         File extStore = Environment.getExternalStorageDirectory();
-        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
+        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage())+ ".mp4");
         if (file.exists()) {
             Log.e("downloadFile", "file:" + file.getAbsolutePath());
             Uri uri = Uri.parse(file.getPath());
             try {
 
                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                videoshare.setType("text/plain");
                 videoshare.putExtra(Intent.EXTRA_STREAM, uri);
                 videoshare.setType("video/*");
                 videoshare.setPackage("com.whatsapp");
@@ -681,8 +636,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             } catch (Exception e) {
                 Log.e("Error....", e.toString());
                 e.printStackTrace();
-
                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                videoshare.setType("text/plain");
                 videoshare.putExtra(Intent.EXTRA_STREAM, uri);
                 videoshare.setType("video/*");
                 videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -709,7 +665,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                 DownloadManager.Request.NETWORK_WIFI
                         | DownloadManager.Request.NETWORK_MOBILE)
                 .setAllowedOverRoaming(false).setTitle("Download")
-                .setDestinationInExternalPublicDir("/FunwithStatus", Constants.videoListData.get(position).getFilename() + ".mp4");
+                .setDestinationInExternalPublicDir("/FunwithStatus", Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
 
         mgr.enqueue(request);
         addImageToGallery(url, activity);
@@ -729,7 +685,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             c.setDoOutput(true);
             c.connect();
             FileOutputStream f = new FileOutputStream(new File(rootFile,
-                    Constants.videoListData.get(position).getFilename() + ".mp4"));
+                    Constants.getFileName(uRl)+ ".mp4"));
             InputStream in = c.getInputStream();
             byte[] buffer = new byte[1024];
             int len1 = 0;

@@ -111,6 +111,10 @@ public class ImageSlider extends AppCompatActivity {
         delete.setColorFilter(getResources().getColor(R.color.colorAccent));
         download.setColorFilter(getResources().getColor(R.color.colorAccent));
 
+        if (u_name.equalsIgnoreCase(loginuser)) {
+            delete.setVisibility(View.VISIBLE);
+        }
+
         if (name.equalsIgnoreCase("Featured")) {
             FullScreenTrenImageAdapter adapter = new FullScreenTrenImageAdapter(activity);
             pager.setAdapter(adapter);
@@ -348,13 +352,13 @@ public class ImageSlider extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (layout_content.getVisibility() == View.VISIBLE) {
-                    layout_content.setVisibility(View.GONE);
+                    layout_content.setVisibility(View.VISIBLE);
                     mainlayout.setBackgroundColor(Color.WHITE);
                 } else if (layout_content.getVisibility() == View.GONE) {
                     layout_content.setVisibility(View.VISIBLE);
                     mainlayout.setBackgroundColor(Color.WHITE);
                 } else {
-                    layout_content.setVisibility(View.GONE);
+                    layout_content.setVisibility(View.VISIBLE);
                     mainlayout.setBackgroundColor(Color.WHITE);
                 }
             }

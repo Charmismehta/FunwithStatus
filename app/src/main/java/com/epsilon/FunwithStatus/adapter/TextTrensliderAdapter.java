@@ -201,9 +201,10 @@ public class TextTrensliderAdapter extends PagerAdapter {
                     public void onAnimationEnd(Animation animation) {
                         share.startAnimation(animation_3);
                         Intent share = new Intent(Intent.ACTION_SEND);
+                        share.putExtra(Intent.EXTRA_TEXT,"https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
                         share.setType("text/plain");
-                        share.putExtra(Intent.EXTRA_STREAM, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
-                        share.putExtra(Intent.EXTRA_TEXT, display_text.getText().toString());
+                        share.putExtra(Intent.EXTRA_STREAM, display_text.getText().toString());
+                        share.setType("text/plain");
                         _activity.startActivity(Intent.createChooser(share, "Fun With Status"));
                     }
 
@@ -264,14 +265,17 @@ public class TextTrensliderAdapter extends PagerAdapter {
                         if (result) {
                             whatsapp.startAnimation(animation_3);
                             Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+                            whatsappIntent.putExtra(Intent.EXTRA_TEXT,"https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                            whatsappIntent.setType("text/plain");
+                            whatsappIntent.putExtra(Intent.EXTRA_STREAM, display_text.getText().toString());
                             whatsappIntent.setType("text/plain");
                             whatsappIntent.setPackage("com.whatsapp");
-                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, display_text.getText().toString());
                             try {
                                 _activity.startActivity(whatsappIntent);
                             } catch (android.content.ActivityNotFoundException ex) {
                                 Toast.makeText(_activity, "Whatsapp have not been installed.", Toast.LENGTH_SHORT).show();
-                            }                        }
+                            }
+                        }
 
                     }
 
@@ -345,7 +349,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
             public void onResponse(Call<AddLike> call, Response<AddLike> response) {
                 dialog.dismiss();
                 Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                textstatus(name);
+//                textstatus(name);
             }
 
             @Override

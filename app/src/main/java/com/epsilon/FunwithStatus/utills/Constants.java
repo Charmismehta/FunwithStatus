@@ -1,6 +1,9 @@
 package com.epsilon.FunwithStatus.utills;
 
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategoryDatum;
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageSubcategory;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageListDatum;
@@ -27,4 +30,20 @@ public class Constants {
     public static final String UPLOAD_URL = "https://epsiloninfotech.co.in/funwithstatus/image/upload.php";
     public static final String UPLOAD_VIDEO = "https://epsiloninfotech.co.in/funwithstatus/video/upload.php";
 
+
+    @SuppressLint("LongLogTag")
+    public static String getFileName(String urlStr) {
+
+        String fileNameWithoutExtension="Video_"+System.currentTimeMillis();
+        if (urlStr != null && urlStr.length() != 0) {
+            String fileName = urlStr.substring(urlStr.lastIndexOf('/') + 1, urlStr.length());
+            fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+
+            Log.i("File Name", fileName);
+            Log.i("File Name Without Extension", fileNameWithoutExtension);
+
+        }
+
+        return fileNameWithoutExtension;
+    }
 }
