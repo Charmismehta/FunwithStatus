@@ -14,9 +14,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -207,10 +209,25 @@ public class TextListActivity extends AppCompatActivity {
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.vc_addtoolbar) {
-            Intent it = new Intent(TextListActivity.this, AddTextActivity.class);
-            it.putExtra("NAME", name);
-            startActivity(it);
-            finish();
+            if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
+            {
+                Intent it = new Intent(TextListActivity.this, AddTextActivity.class);
+                it.putExtra("NAME", name);
+                startActivity(it);
+                finish();
+            }
+            else
+            {
+
+                Intent mainIntent = new Intent(context, LoginPage.class);
+                startActivity(mainIntent);
+                LayoutInflater inflater = getLayoutInflater();
+                View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.llCustom));
+                Toast toast = new Toast(getApplicationContext());
+                toast.setDuration(Toast.LENGTH_LONG);
+                toast.setView(toastLayout);
+                toast.show();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -115,6 +115,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".ImageSlider" />
         <activity android:name=".TextSlider" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

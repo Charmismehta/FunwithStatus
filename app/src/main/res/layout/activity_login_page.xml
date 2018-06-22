@@ -117,8 +117,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:textSize="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:textSize="@dimen/_10sdp"
                 android:textColor="#fff"
                 android:text="FORGOT YOUR PASSWORD ?"/>
 
@@ -129,12 +129,12 @@
     android:orientation="horizontal">
 
     <TextView
-        android:layout_marginLeft="@dimen/_73sdp"
+        android:layout_marginLeft="@dimen/_60sdp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:layout_marginTop="@dimen/_32sdp"
-        android:textSize="@dimen/_8sdp"
+        android:textSize="@dimen/_10sdp"
         android:textColor="#acaaaa"
         android:text="DON'T HAVE AN ACCOUNT ?"/>
     <TextView
@@ -143,13 +143,24 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_32sdp"
-        android:textSize="@dimen/_8sdp"
+        android:textSize="@dimen/_10sdp"
         android:textColor="@color/white"
         android:text="Sign Up"/>
 </LinearLayout>
+
+
         </LinearLayout>
 
     </ScrollView>
-
+    <TextView
+        android:text="Want to Skip this page?"
+        android:gravity="center"
+        android:id="@+id/login_tskip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_32sdp"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/white" />
 
 </LinearLayout>

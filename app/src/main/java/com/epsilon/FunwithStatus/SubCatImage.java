@@ -262,7 +262,7 @@ public class SubCatImage extends AppCompatActivity {
         a = new SubAlbum("Happy", covers[3]);
         albumList.add(a);
 
-        a = new SubAlbum("Miss You", covers[4]);
+        a = new SubAlbum("Missyou", covers[4]);
         albumList.add(a);
 
         adapter.notifyDataSetChanged();
@@ -297,10 +297,10 @@ public class SubCatImage extends AppCompatActivity {
                 R.drawable.anniversary,
                 R.drawable.birthday};
 
-        SubAlbum a = new SubAlbum("Good Morning", covers[0]);
+        SubAlbum a = new SubAlbum("GoodMorning", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("Good Night", covers[1]);
+        a = new SubAlbum("GoodNight", covers[1]);
         albumList.add(a);
 
         a = new SubAlbum("Congratulations", covers[2]);
@@ -323,7 +323,7 @@ public class SubCatImage extends AppCompatActivity {
         SubAlbum a = new SubAlbum("Cricket", covers[0]);
         albumList.add(a);
 
-        a = new SubAlbum("Other Sports", covers[1]);
+        a = new SubAlbum("OtherSports", covers[1]);
         albumList.add(a);
         adapter.notifyDataSetChanged();
     }

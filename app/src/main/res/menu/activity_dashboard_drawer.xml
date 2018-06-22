@@ -25,12 +25,10 @@
             android:icon="@drawable/vc_video"
             android:title="Videos" />
 
-
         <item
-            android:id="@+id/nav_Contact"
-            android:icon="@drawable/vc_contact"
-            android:title="Contacts" />
-
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/vc_profile"
+            android:title="Profile" />
         <item
             android:id="@+id/nav_about_us"
             android:icon="@drawable/vc_aboutus"

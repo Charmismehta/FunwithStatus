@@ -87,7 +87,7 @@ public class ImageSlider extends AppCompatActivity {
         final String Id = getIntent().getStringExtra("Id");
         name = getIntent().getStringExtra("NAME");
         String u_name = getIntent().getStringExtra("U_NAME");
-        String maincat = getIntent().getStringExtra("REALNAME");
+        maincat = getIntent().getStringExtra("REALNAME");
         Log.e("##########NAME", name);
         final String email = sessionmanager.getValue(Sessionmanager.Email);
         final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
@@ -155,7 +155,6 @@ public class ImageSlider extends AppCompatActivity {
                         if (result) {
                             saveimage(uri);
                         }
-
                     }
 
                     @Override

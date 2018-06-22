@@ -5,9 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,12 +32,13 @@ import retrofit2.Response;
 public class LoginPage extends AppCompatActivity {
 
     EditText login_email, login_epassword;
-    TextView login_tlogin, login_tsignin, login_tforgot;
+    TextView login_tlogin, login_tsignin, login_tforgot,login_tskip;
     ImageView login_user,login_password,pwdeye;
     Context context;
     private int passwordNotVisible=1;
     Sessionmanager sessionmanager;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+
     
 
     @Override
@@ -43,6 +49,11 @@ public class LoginPage extends AppCompatActivity {
         sessionmanager = new Sessionmanager(this);
         idMapping();
         Listener();
+
+        String udata="Want to Skip this page ?";
+        SpannableString content = new SpannableString(udata);
+        content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
+        login_tskip.setText(content);
     }
 
     private void Listener() {
@@ -51,6 +62,15 @@ public class LoginPage extends AppCompatActivity {
             public void onClick(View view) {
                 Intent it = new Intent(LoginPage.this, RegistrationPage.class);
                 startActivity(it);
+                finish();
+            }
+        });
+
+        login_tskip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginPage.this, Dashboard.class);
+                startActivity(i);
                 finish();
             }
         });
@@ -111,6 +131,7 @@ public class LoginPage extends AppCompatActivity {
         login_tlogin = (TextView) findViewById(R.id.login_tlogin);
         login_tsignin = (TextView) findViewById(R.id.login_tsignin);
         login_tforgot = (TextView) findViewById(R.id.login_tforgot);
+        login_tskip = (TextView) findViewById(R.id.login_tskip);
         pwdeye = (ImageView) findViewById(R.id.pwdeye);
     }
     public void LoginPage(String email, String password) {

@@ -13,8 +13,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -39,6 +42,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     String passStr;
     Sessionmanager sessionmanager;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    MenuItem nav_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +56,16 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_navigation);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        if(!sessionmanager.getValue(Sessionmanager.Name).equalsIgnoreCase(""))
+        {
         String text = sessionmanager.getValue(Sessionmanager.Name);
         String cap = text.substring(0, 1).toUpperCase() + text.substring(1);
-        toolbar.setTitle(cap);
+        toolbar.setTitle(cap);}
+        else
+        {
+            toolbar.setTitle("User");
+        }
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mainbtn = (LinearLayout) findViewById(R.id.mainbtn);
 
@@ -69,6 +80,19 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View hView = navigationView.getHeaderView(0);
+
+        if (Sessionmanager.getPreferenceBoolean(activity, Constants.IS_LOGIN, false)) {
+            Menu menu = navigationView.getMenu();
+            nav_login = menu.findItem(R.id.nav_logout);
+            nav_login.setTitle("Logout");
+
+        }
+        else
+        {
+            Menu menu = navigationView.getMenu();
+            nav_login = menu.findItem(R.id.nav_logout);
+            nav_login.setTitle("Login");
+        }
 
     }
 
@@ -99,7 +123,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        displaySelectedScreen(item.getItemId());
+        displaySelectedScreen(id);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -112,7 +136,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             case android.R.id.home:
                 drawer.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -138,7 +161,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 fragment = new VideoFragment();
                 break;
 
-            case R.id.nav_Contact:
+            case R.id.nav_profile:
                 fragment = new ContactUsFragment();
                 break;
 
@@ -154,14 +177,28 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 break;
 
             case R.id.nav_logout:
-                sessionmanager.logoutUser();
-                Intent i = new Intent(Dashboard.this, LoginPage.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                finish();
+                if (nav_login.getTitle().equals("Logout"))
+                {
+                    Menu menu = navigationView.getMenu();
+                    MenuItem nav_login = menu.findItem(R.id.nav_logout);
+                    nav_login.setTitle("Logout");
+                    sessionmanager.logoutUser();
+                    Intent i = new Intent(Dashboard.this, LoginPage.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    finish();
+                }
+                else
+                {
+                    Menu menu = navigationView.getMenu();
+                    MenuItem nav_login = menu.findItem(R.id.nav_logout);
+                    nav_login.setTitle("Login");
+                    Intent mainIntent = new Intent(activity, LoginPage.class);
+                    startActivity(mainIntent);
+                    finish();
+                }
                 break;
         }
-
         //replacing the fragment
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -169,9 +206,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             ft.addToBackStack("Some String");
             ft.commit();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
-
 }

@@ -8,8 +8,8 @@ android {
         applicationId "com.epsilon.FunwithStatus"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         resConfigs "en", "hi"
@@ -56,7 +56,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
-
 
     implementation 'com.rockerhieu.emojicon:library:1.3.3'
     implementation 'net.gotev:uploadservice:2.1'

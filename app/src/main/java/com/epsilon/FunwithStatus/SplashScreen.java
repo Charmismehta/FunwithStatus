@@ -52,18 +52,9 @@ public class SplashScreen extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 imageView.startAnimation(animation_3);
                 finish();
-                if (Sessionmanager.getPreferenceBoolean(SplashScreen.this, Constants.IS_LOGIN, false))
-                {
                     Intent mainIntent = new Intent(SplashScreen.this, Dashboard.class);
                     startActivity(mainIntent);
                     finish();
-                }
-                else
-                    {
-                    Intent mainIntent = new Intent(SplashScreen.this, LoginPage.class);
-                    startActivity(mainIntent);
-                    finish();
-                }
 
             }
 

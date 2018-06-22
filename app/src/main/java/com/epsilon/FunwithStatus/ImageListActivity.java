@@ -29,9 +29,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -176,11 +178,25 @@ public class ImageListActivity extends AppCompatActivity {
         iright.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(context,Demo.class);
-                it.putExtra("NAME",subcat);
-                it.putExtra("REALNAME",maincat);
-                startActivity(it);
-                finish();
+                if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
+                {
+                    Intent it = new Intent(context,Demo.class);
+                    it.putExtra("NAME",subcat);
+                    it.putExtra("REALNAME",maincat);
+                    startActivity(it);
+                    finish();
+                }
+                else
+                {
+                    Intent mainIntent = new Intent(context, LoginPage.class);
+                    startActivity(mainIntent);
+                    LayoutInflater inflater = getLayoutInflater();
+                    View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.llCustom));
+                    Toast toast = new Toast(getApplicationContext());
+                    toast.setDuration(Toast.LENGTH_LONG);
+                    toast.setView(toastLayout);
+                    toast.show();
+                }
             }
         });
     }

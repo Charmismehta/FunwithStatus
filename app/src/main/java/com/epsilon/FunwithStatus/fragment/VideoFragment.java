@@ -38,6 +38,8 @@ import android.widget.VideoView;
 import com.epsilon.FunwithStatus.AddTextActivity;
 import com.epsilon.FunwithStatus.AddVideoActivity;
 import com.epsilon.FunwithStatus.Dashboard;
+import com.epsilon.FunwithStatus.Demo;
+import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
 import com.epsilon.FunwithStatus.adapter.TrendingImgAdapter;
@@ -48,6 +50,7 @@ import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
+import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -108,8 +111,23 @@ public class VideoFragment extends Fragment{
         floatingbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent it = new Intent(getContext(),AddVideoActivity.class);
-                startActivity(it);
+                if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
+                { Intent it = new Intent(getContext(),AddVideoActivity.class);
+                    startActivity(it);
+                }
+                else
+                {
+                    Intent mainIntent = new Intent(context, LoginPage.class);
+                    startActivity(mainIntent);
+                    LayoutInflater inflater = getLayoutInflater();
+                    View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup)view.findViewById(R.id.llCustom));
+                    Toast toast = new Toast(getActivity());
+                    toast.setDuration(Toast.LENGTH_LONG);
+                    toast.setView(toastLayout);
+                    toast.show();
+                }
+
+
             }
         });
 

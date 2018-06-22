@@ -2,6 +2,7 @@ package com.epsilon.FunwithStatus.fragment;
 
 import android.content.Context;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -53,6 +54,7 @@ public class MainFragment extends Fragment {
     };
     private static int currentPage = 0;
     private static int NUM_PAGES = 0;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -223,7 +225,5 @@ public class MainFragment extends Fragment {
             container.removeView((LinearLayout) object);
         }
     }
-
-
 }
 

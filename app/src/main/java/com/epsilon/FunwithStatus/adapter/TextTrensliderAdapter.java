@@ -307,6 +307,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
                         facebook.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
+                            Toast.makeText(_activity, "clikc", Toast.LENGTH_SHORT).show();
                             Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
                             whatsappIntent.setType("text/plain");
                             whatsappIntent.setPackage("com.facebook.katana");

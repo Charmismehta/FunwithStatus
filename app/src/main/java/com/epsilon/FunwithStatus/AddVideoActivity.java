@@ -63,7 +63,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class AddVideoActivity extends AppCompatActivity implements SingleUploadBroadcastReceiver.Delegate{
+public class AddVideoActivity extends AppCompatActivity implements SingleUploadBroadcastReceiver.Delegate {
 
     Activity activity;
     VideoView iv_video;
@@ -73,9 +73,10 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
     static final int VIDEO_CAPTURE = 3;
     private static final int REQUEST_VIDEO_CAPTURE = 300;
-    String selectpath,user;
+    private static final int STORAGE_PERMISSION_CODE = 123;
+    String selectpath, user;
     EmojiconEditText edit_caption;
-    Button button_caption_send,vc_camera,vc_album;
+    Button button_caption_send, vc_camera, vc_album;
     String name;
     Sessionmanager sessionmanager;
     private static final String TAG = "AndroidUploadService";
@@ -104,7 +105,6 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
         button_caption_send = (Button) findViewById(R.id.button_caption_send);
         main = (LinearLayout) findViewById(R.id.main);
         user = sessionmanager.getValue(Sessionmanager.Name);
-
         imageview.setVisibility(View.VISIBLE);
         iv_video.setVisibility(View.GONE);
         imageview.setImageResource(R.drawable.videocamera);
@@ -117,18 +117,14 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
             }
         });
 
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 dispatchTakeVideoIntent();
-
             } else {
                 //Request Location Permission
-                checkCameraPermission();
-                requestAudioPermissions();
+                requestStoragePermission();
             }
         } else {
             dispatchTakeVideoIntent();
@@ -193,6 +189,7 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
 //        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
 //    }
     }
+
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED
@@ -206,11 +203,12 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
                         new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions( activity,
+                ActivityCompat.requestPermissions(activity,
                         new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
             }
         }
     }
+
     public void uploadMultipart(View view) {
         Helper.hideSoftKeyboard(activity);
         //getting name for the image
@@ -270,7 +268,7 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
         Intent intent = new Intent();
         intent.setType("video/*");
         intent.setAction(Intent.ACTION_PICK);
-        startActivityForResult(Intent.createChooser(intent,"Select Video"),VIDEO_CAPTURE);
+        startActivityForResult(Intent.createChooser(intent, "Select Video"), VIDEO_CAPTURE);
     }
 
     @Override
@@ -281,8 +279,7 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
         if (resultCode == activity.RESULT_CANCELED) {
             return;
         }
-        if (requestCode == VIDEO_CAPTURE)
-        {
+        if (requestCode == VIDEO_CAPTURE) {
             iv_video.setVisibility(View.VISIBLE);
             imageview.setVisibility(View.GONE);
             Uri selectedVideoUri = data.getData();
@@ -349,7 +346,7 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
         dialog.setMessage("Please Wait...");
         dialog.show();
         // Set the toast and duration
-        int toastDurationInMilliSeconds = 15000;
+        int toastDurationInMilliSeconds = 20000;
         dialog.show();
 //        custom_layout.setVisibility(View.VISIBLE);
 
@@ -363,6 +360,7 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
 //                custom_layout.setVisibility(View.VISIBLE);
 //                mToastToShow.show();
             }
+
             public void onFinish() {
                 dialog.dismiss();
 //                custom_layout.setVisibility(View.GONE);
@@ -374,5 +372,38 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
         // Show the toast and starts the countdown
         dialog.show();
         toastCountDown.start();
+    }
+
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            return;
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            //If the user has denied the permission previously your code will come to this block
+            //Here you can explain why you need this permission
+            //Explain here why you need this permission
+        }
+        //And finally ask for the permission
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+    }
+
+
+    //This method will be called when the user will tap on allow or deny
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        //Checking the request code of our request
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+
+            //If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Displaying a toast
+                Toast.makeText(this, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+                dispatchTakeVideoIntent();
+            } else {
+                //Displaying another toast if permission is not granted
+                Toast.makeText(this, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

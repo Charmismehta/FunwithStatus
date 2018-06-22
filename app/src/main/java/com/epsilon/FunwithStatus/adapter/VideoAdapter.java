@@ -409,7 +409,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         @Override
         protected String doInBackground(Void... voids) {
             File extStore = Environment.getExternalStorageDirectory();
-            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
+            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
 
             if (!myFile.exists()) {
                 downloadFile(video, position);
@@ -540,7 +540,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
         {
             try {
                 File extStore = Environment.getExternalStorageDirectory();
-                File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
+                File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
                 if (file.isFile()) {
                     MediaScannerConnection.scanFile(activity,
                             new String[]{file.toString()}, null,
@@ -589,7 +589,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
 
     public void sharevideo(int position) {
         File extStore = Environment.getExternalStorageDirectory();
-        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.videoListData.get(position).getFilename() + ".mp4");
+        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
         if (file.exists()) {
             Log.e("downloadFile", "file:" + file.getAbsolutePath());
             Uri uri = Uri.parse(file.getPath());
@@ -605,6 +605,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                 e.printStackTrace();
 
                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                videoshare.setType("text/plain");
                 videoshare.putExtra(Intent.EXTRA_STREAM, uri);
                 videoshare.setType("video/*");
                 videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
