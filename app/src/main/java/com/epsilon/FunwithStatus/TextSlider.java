@@ -52,7 +52,7 @@ public class TextSlider extends AppCompatActivity {
 
         if(name.equalsIgnoreCase("Trending") )
         {
-            TextTrensliderAdapter adapter = new TextTrensliderAdapter(activity,name,u_name);
+            TextTrensliderAdapter adapter = new TextTrensliderAdapter(activity,name,u_name,position);
             pager.setAdapter(adapter);
             pager.post(new Runnable() {
                 @Override
@@ -63,7 +63,7 @@ public class TextSlider extends AppCompatActivity {
         }
         else
             {
-            TextSlideAdapter adapter = new TextSlideAdapter(activity, name, u_name);
+            TextSlideAdapter adapter = new TextSlideAdapter(activity, name, u_name,position);
             pager.setAdapter(adapter);
             pager.post(new Runnable() {
                 @Override
@@ -81,4 +81,22 @@ public class TextSlider extends AppCompatActivity {
     private void idMappings() {
         pager = (ViewPager)findViewById(R.id.pager);
     }
+
+    public void onBackPressed() {
+        if (name.equalsIgnoreCase("Trending"))
+        {
+            Intent it = new Intent(activity, TextListActivity.class);
+            it.putExtra("NAME", "Trending");
+            startActivity(it);
+            finish();// close this activity and return to preview activity (if there is any)
+        }
+        else
+        {
+            Intent it = new Intent(activity, TextListActivity.class);
+            it.putExtra("NAME", name);
+            startActivity(it);
+            finish();
+        }
+    }
+
     }

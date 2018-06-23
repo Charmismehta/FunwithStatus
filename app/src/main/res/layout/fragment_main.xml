@@ -62,7 +62,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/_100sdp"
-                    android:layout_marginRight="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:orientation="vertical">
 
@@ -122,29 +121,29 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/_100sdp"
-                    android:layout_marginRight="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:orientation="vertical">
 
                     <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_marginLeft="@dimen/_100sdp"
                         android:background="@drawable/orange"
                         android:padding="@dimen/_8sdp"
-                        android:id="@+id/help"
+                        android:id="@+id/whatsapp"
                         android:layout_width="@dimen/_50sdp"
                         android:layout_height="@dimen/_50sdp"
-                        android:src="@drawable/vc_help" />
+                        android:src="@drawable/wapp" />
 
                     <TextView
-                        android:layout_marginTop="@dimen/_8sdp"
+                        android:layout_marginLeft="@dimen/_90sdp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Help"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:text="Whatsapp Status"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10sdp" />
 
                 </LinearLayout>
+
 
             </LinearLayout>
         </LinearLayout>

@@ -4,6 +4,8 @@ package com.epsilon.FunwithStatus.utills;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import com.epsilon.FunwithStatus.adapter.GridViewItem;
+import com.epsilon.FunwithStatus.adapter.GridViewVideoItem;
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategoryDatum;
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageSubcategory;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageListDatum;
@@ -25,6 +27,8 @@ public class Constants {
     public static List<TrendingDatum> trendingData = new ArrayList<>();
     public static List<TrendingImgDatum> trendingimgData = new ArrayList<>();
     public static List<VideoListDatum> videoListData = new ArrayList<>();
+    public static List<GridViewItem> items = new ArrayList<>();
+    public static List<GridViewVideoItem> videoitems = new ArrayList<>();
 
 
     public static final String UPLOAD_URL = "https://epsiloninfotech.co.in/funwithstatus/image/upload.php";

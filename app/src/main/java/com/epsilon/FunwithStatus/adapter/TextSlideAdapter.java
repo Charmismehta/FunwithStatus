@@ -57,12 +57,14 @@ public class TextSlideAdapter extends PagerAdapter{
     String text, Id, name, email, u_name, loginuser,subcat;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
+    int i;
 
     // constructor
-    public TextSlideAdapter(Activity activity,String subcat,String u_name) {
+    public TextSlideAdapter(Activity activity,String subcat,String u_name,int i) {
         this._activity = activity;
         this.subcat = subcat;
         this.u_name = u_name;
+        this.i = i;
         sessionmanager = new Sessionmanager(activity);
         inflater = (LayoutInflater) _activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -87,9 +89,9 @@ public class TextSlideAdapter extends PagerAdapter{
         StatusDatum dummyItem = Constants.statusData.get(position);
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
-        text = Constants.statusData.get(position).getStatus();
-        Id = Constants.statusData.get(position).getId();
-        name = Constants.statusData.get(position).getUser();
+        text = Constants.statusData.get(i).getStatus();
+        Id = Constants.statusData.get(i).getId();
+        name = Constants.statusData.get(i).getUser();
 
         final EmojiconTextView display_text = (EmojiconTextView) viewLayout.findViewById(R.id.display_text);
         final ImageView like = (ImageView) viewLayout.findViewById(R.id.like);

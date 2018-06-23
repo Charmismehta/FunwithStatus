@@ -58,6 +58,7 @@ public class TrendingAdapter  extends RecyclerView.Adapter<TrendingAdapter.MyVie
                 it.putExtra("U_NAME", Constants.trendingData.get(i).getUser());
                 it.putExtra("position", i);
                 activity.startActivity(it);
+                activity.finish();
 
             }
         });

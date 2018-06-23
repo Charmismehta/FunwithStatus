@@ -115,7 +115,11 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".ImageSlider" />
         <activity android:name=".TextSlider" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".WhatsappActivity" />
+        <activity android:name=".whatsappImage" />
+        <activity android:name=".whatsappVideo" />
+        <activity android:name=".whatsappImageSlide"></activity>
     </application>
 
 </manifest>

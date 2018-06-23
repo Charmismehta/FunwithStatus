@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.WhatsappActivity;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -38,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainFragment extends Fragment {
 
     Context context;
-    CircleImageView text, image, video, plus, help;
+    CircleImageView text, image, video, plus,whatsapp;
     Fragment fragment = null;
     Sessionmanager sessionmanager;
     ViewPager mViewPager;
@@ -128,7 +129,7 @@ public class MainFragment extends Fragment {
         text = (CircleImageView) view.findViewById(R.id.text);
         image = (CircleImageView) view.findViewById(R.id.image);
         video = (CircleImageView) view.findViewById(R.id.video);
-        help = (CircleImageView) view.findViewById(R.id.help);
+        whatsapp = (CircleImageView) view.findViewById(R.id.whatsapp);
 
 
         text.setOnClickListener(new View.OnClickListener() {
@@ -170,16 +171,14 @@ public class MainFragment extends Fragment {
             }
         });
 
-        help.setOnClickListener(new View.OnClickListener() {
+
+
+        whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragment = new ContactUsFragment();
-                if (fragment != null) {
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_frame, fragment);
-                    ft.commit();
-
-                }
+                Intent it = new Intent(getActivity(), WhatsappActivity.class);
+                startActivity(it);
+                getActivity().finish();
             }
         });
 

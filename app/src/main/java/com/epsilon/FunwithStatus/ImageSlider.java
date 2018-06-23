@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.epsilon.FunwithStatus.adapter.FullScreenImageAdapter;
 import com.epsilon.FunwithStatus.adapter.FullScreenTrenImageAdapter;
 import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
+import com.epsilon.FunwithStatus.adapter.WhatsappImageAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageListDatum;
@@ -72,7 +73,6 @@ public class ImageSlider extends AppCompatActivity {
     File myDir;
     Toolbar toolbar;
     InputStream stream = null;
-    Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +92,8 @@ public class ImageSlider extends AppCompatActivity {
         final String email = sessionmanager.getValue(Sessionmanager.Email);
         final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
-        final Uri uri = Uri.parse(pic);
+        String bitmap = getIntent().getStringExtra("picture");
+
 
         display_image = (ImageView) findViewById(R.id.display_image);
         download = (ImageView) findViewById(R.id.download);
@@ -111,11 +112,20 @@ public class ImageSlider extends AppCompatActivity {
         delete.setColorFilter(getResources().getColor(R.color.colorAccent));
         download.setColorFilter(getResources().getColor(R.color.colorAccent));
 
-        if (u_name.equalsIgnoreCase(loginuser)) {
-            delete.setVisibility(View.VISIBLE);
-        }
+            if (u_name.equalsIgnoreCase(loginuser)) {
+                delete.setVisibility(View.VISIBLE);
+            }
 
-        if (name.equalsIgnoreCase("Featured")) {
+        if (name.equalsIgnoreCase("WHATSAPP")) {
+            WhatsappImageAdapter adapter = new WhatsappImageAdapter(activity);
+            pager.setAdapter(adapter);
+            pager.post(new Runnable() {
+                @Override
+                public void run() {
+                    pager.setCurrentItem(position, true);
+                }
+            });
+        } else if (name.equalsIgnoreCase("Featured")) {
             FullScreenTrenImageAdapter adapter = new FullScreenTrenImageAdapter(activity);
             pager.setAdapter(adapter);
             pager.post(new Runnable() {
@@ -153,6 +163,7 @@ public class ImageSlider extends AppCompatActivity {
                         download.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
+                            final Uri uri = Uri.parse(pic);
                             saveimage(uri);
                         }
                     }
@@ -185,6 +196,7 @@ public class ImageSlider extends AppCompatActivity {
                         share.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
+                            Log.e("pic ",pic);
                             new ShareImage().execute(pic);
                         }
 
@@ -388,6 +400,7 @@ public class ImageSlider extends AppCompatActivity {
             case 2:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //resume tasks needing this permission
+                    final Uri uri = Uri.parse(pic);
                     saveimage(uri);
                 } else {
 
@@ -574,46 +587,46 @@ public class ImageSlider extends AppCompatActivity {
     }
 
 
-// TODO : SHARE ON FACEBOOK
-private class sharefacebookImage extends AsyncTask<String, Void, Bitmap> {
+    // TODO : SHARE ON FACEBOOK
+    private class sharefacebookImage extends AsyncTask<String, Void, Bitmap> {
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        // Create a progressdialog
-        mProgressDialog = new ProgressDialog(activity);
-        // Set progressdialog title
-        mProgressDialog.setTitle("Share Image");
-        // Set progressdialog message
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.setIndeterminate(false);
-        // Show progressdialog
-        mProgressDialog.show();
-    }
-
-    @Override
-    protected Bitmap doInBackground(String... URL) {
-
-        String imageURL = URL[0];
-
-        Bitmap bitmap = null;
-        try {
-            // Download Image from URL
-            InputStream input = new java.net.URL(imageURL).openStream();
-            // Decode Bitmap
-            bitmap = BitmapFactory.decodeStream(input);
-        } catch (Exception e) {
-            e.printStackTrace();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(activity);
+            // Set progressdialog title
+            mProgressDialog.setTitle("Share Image");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
         }
-        return bitmap;
-    }
 
-    @Override
-    protected void onPostExecute(Bitmap result) {
-        shareFacebook(activity, result);
-        mProgressDialog.dismiss();
+        @Override
+        protected Bitmap doInBackground(String... URL) {
+
+            String imageURL = URL[0];
+
+            Bitmap bitmap = null;
+            try {
+                // Download Image from URL
+                InputStream input = new java.net.URL(imageURL).openStream();
+                // Decode Bitmap
+                bitmap = BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            shareFacebook(activity, result);
+            mProgressDialog.dismiss();
+        }
     }
-}
 
     public static void shareFacebook(Activity activity, Bitmap url) {
         String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
@@ -646,48 +659,48 @@ private class sharefacebookImage extends AsyncTask<String, Void, Bitmap> {
 // END SHARE
 
 
-// TODO SAVE IMAGE CODE :
-private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+    // TODO SAVE IMAGE CODE :
+    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        // Create a progressdialog
-        mProgressDialog = new ProgressDialog(activity);
-        // Set progressdialog title
-        mProgressDialog.setTitle("Download Image");
-        // Set progressdialog message
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.setIndeterminate(false);
-        // Show progressdialog
-        mProgressDialog.show();
-    }
-
-    @Override
-    protected Bitmap doInBackground(String... URL) {
-
-        String imageURL = URL[0];
-
-        Bitmap bitmap = null;
-        try {
-            // Download Image from URL
-            InputStream input = new java.net.URL(imageURL).openStream();
-            // Decode Bitmap
-            bitmap = BitmapFactory.decodeStream(input);
-        } catch (Exception e) {
-            e.printStackTrace();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(activity);
+            // Set progressdialog title
+            mProgressDialog.setTitle("Download Image");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
         }
-        return bitmap;
-    }
 
-    @Override
-    protected void onPostExecute(Bitmap result) {
-        SaveImage(result);
-        mProgressDialog.dismiss();
-        Toast.makeText(activity, "Image Save Successfully", Toast.LENGTH_SHORT).show();
-        addImageToGallery(pic, activity);
+        @Override
+        protected Bitmap doInBackground(String... URL) {
+
+            String imageURL = URL[0];
+
+            Bitmap bitmap = null;
+            try {
+                // Download Image from URL
+                InputStream input = new java.net.URL(imageURL).openStream();
+                // Decode Bitmap
+                bitmap = BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            SaveImage(result);
+            mProgressDialog.dismiss();
+            Toast.makeText(activity, "Image Save Successfully", Toast.LENGTH_SHORT).show();
+            addImageToGallery(pic, activity);
+        }
     }
-}
 
     private void SaveImage(Bitmap finalBitmap) {
 
@@ -726,40 +739,40 @@ private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
 // TODO SHARE IMAGE :
 
-private class ShareImage extends AsyncTask<String, Void, Bitmap> {
+    private class ShareImage extends AsyncTask<String, Void, Bitmap> {
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        mProgressDialog = new ProgressDialog(activity);
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.show();
-    }
-
-    @Override
-    protected Bitmap doInBackground(String... URL) {
-
-        String imageURL = URL[0];
-
-        Bitmap bitmap = null;
-        try {
-            // Download Image from URL
-            InputStream input = new java.net.URL(imageURL).openStream();
-            // Decode Bitmap
-            bitmap = BitmapFactory.decodeStream(input);
-        } catch (Exception e) {
-            e.printStackTrace();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(activity);
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.show();
         }
-        return bitmap;
-    }
 
-    @Override
-    protected void onPostExecute(Bitmap result) {
-        ShareImage(result);
-        mProgressDialog.dismiss();
-    }
+        @Override
+        protected Bitmap doInBackground(String... URL) {
 
-}
+            String imageURL = URL[0];
+
+            Bitmap bitmap = null;
+            try {
+                // Download Image from URL
+                InputStream input = new java.net.URL(imageURL).openStream();
+                // Decode Bitmap
+                bitmap = BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            ShareImage(result);
+            mProgressDialog.dismiss();
+        }
+
+    }
 
     private void ShareImage(Bitmap finalBitmap) {
 

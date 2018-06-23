@@ -46,12 +46,14 @@ public class TextTrensliderAdapter extends PagerAdapter {
     String text, Id, name, email, u_name, loginuser, subcat;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
+    int i;
 
     // constructor
-    public TextTrensliderAdapter(Activity activity, String subcat, String u_name) {
+    public TextTrensliderAdapter(Activity activity, String subcat, String u_name,int i) {
         this._activity = activity;
         this.subcat = subcat;
         this.u_name = u_name;
+        this.i = i;
         sessionmanager = new Sessionmanager(activity);
         inflater = (LayoutInflater) _activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -75,9 +77,9 @@ public class TextTrensliderAdapter extends PagerAdapter {
 
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
-        text = Constants.trendingData.get(position).getStatus();
-        Id = Constants.trendingData.get(position).getId();
-        name = Constants.trendingData.get(position).getUser();
+        text = Constants.trendingData.get(i).getStatus();
+        Id = Constants.trendingData.get(i).getId();
+        name = Constants.trendingData.get(i).getUser();
 
         final EmojiconTextView display_text = (EmojiconTextView) viewLayout.findViewById(R.id.display_text);
         final ImageView like = (ImageView) viewLayout.findViewById(R.id.like);
@@ -88,7 +90,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
         final ImageView whatsapp = (ImageView) viewLayout.findViewById(R.id.whatsapp);
         final ImageView facebook = (ImageView) viewLayout.findViewById(R.id.facebook);
 
-        String textURL = Constants.trendingData.get(position).getStatus();
+        String textURL = Constants.trendingData.get(i).getStatus();
         String result = EmojiParser.parseToUnicode(textURL);
         display_text.setText(result);
 
@@ -350,7 +352,6 @@ public class TextTrensliderAdapter extends PagerAdapter {
             public void onResponse(Call<AddLike> call, Response<AddLike> response) {
                 dialog.dismiss();
                 Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-//                textstatus(name);
             }
 
             @Override
@@ -372,7 +373,6 @@ public class TextTrensliderAdapter extends PagerAdapter {
             public void onResponse(Call<DisLike> call, Response<DisLike> response) {
                 dialog.dismiss();
                 Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                textstatus(name);
             }
 
             @Override
