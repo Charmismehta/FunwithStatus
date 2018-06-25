@@ -88,7 +88,6 @@ public class ImageSlider extends AppCompatActivity {
         name = getIntent().getStringExtra("NAME");
         String u_name = getIntent().getStringExtra("U_NAME");
         maincat = getIntent().getStringExtra("REALNAME");
-        Log.e("##########NAME", name);
         final String email = sessionmanager.getValue(Sessionmanager.Email);
         final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
@@ -789,5 +788,19 @@ public class ImageSlider extends AppCompatActivity {
 
     // TODO : END SHARE IMAGE CODE ////////////////
 
-
+    public void onBackPressed() {
+        if (name.equalsIgnoreCase("featured")) {
+        Intent it = new Intent(activity, SubCatImage.class);
+        it.putExtra("NAME", name);
+        it.putExtra("REALNAME", maincat);
+        startActivity(it);
+        finish();// close this activity and return to preview activity (if there is any)
+    } else {
+        Intent it = new Intent(activity, ImageListActivity.class);
+        it.putExtra("NAME", name);
+        it.putExtra("REALNAME", maincat);
+        startActivity(it);
+        finish();
+    }
+}
 }

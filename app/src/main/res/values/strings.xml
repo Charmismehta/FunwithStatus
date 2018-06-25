@@ -22,6 +22,9 @@
     <string name="interstitial_full_screen">ca-app-pub-3940256099942544/1033173712</string>
     <string name="banner_add">ca-app-pub-3940256099942544/6300978111</string>
 
+    <string name="placement_id">272968746773018_272983256771567</string>
+    <string name="Bannerplacement_id">272968746773018_272979286771964</string>
+
     <string name="underline"> <u>Want to Skip this Page ??</u>.</string>
 
 </resources>

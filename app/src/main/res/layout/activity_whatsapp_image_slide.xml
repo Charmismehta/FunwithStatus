@@ -58,16 +58,6 @@
             android:layout_gravity="center"
             android:src="@drawable/fbicon" />
 
-        <TextView
-            android:layout_gravity="center"
-            android:id="@+id/upload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:text="Upload"
-            android:textColor="@color/colorAccent"
-            android:textSize="@dimen/album_title"
-            android:textStyle="bold" />
 
 
     </LinearLayout>

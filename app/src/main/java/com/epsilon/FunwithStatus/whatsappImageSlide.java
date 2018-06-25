@@ -67,7 +67,6 @@ public class whatsappImageSlide extends AppCompatActivity {
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
     Toolbar toolbar;
-    TextView upload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,6 @@ public class whatsappImageSlide extends AppCompatActivity {
         final String bitmap = getIntent().getStringExtra("picture");
 
 
-        upload = (TextView) findViewById(R.id.upload);
         display_image = (ImageView) findViewById(R.id.display_image);
         download = (ImageView) findViewById(R.id.download);
         share = (ImageView) findViewById(R.id.share);
@@ -109,27 +107,6 @@ public class whatsappImageSlide extends AppCompatActivity {
                 }
             });
         }
-
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Sessionmanager.getPreferenceBoolean(activity, Constants.IS_LOGIN, false))
-                {
-                    uploadMultipart(position);
-                }
-                else
-                {
-                    Intent mainIntent = new Intent(activity, LoginPage.class);
-                    startActivity(mainIntent);
-                    LayoutInflater inflater = getLayoutInflater();
-                    View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.llCustom));
-                    Toast toast = new Toast(getApplicationContext());
-                    toast.setDuration(Toast.LENGTH_LONG);
-                    toast.setView(toastLayout);
-                    toast.show();
-                }
-            }
-        });
 
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +187,8 @@ public class whatsappImageSlide extends AppCompatActivity {
                                                         public void run() {
                                                             try {
                                                                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                                                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                                                videoshare.setType("text/plain");
                                                                 videoshare.putExtra(Intent.EXTRA_STREAM, picUri);
                                                                 videoshare.setType("image/*");
                                                                 videoshare.setPackage("com.facebook.katana");
@@ -221,6 +200,8 @@ public class whatsappImageSlide extends AppCompatActivity {
                                                                 e.printStackTrace();
 
                                                                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                                                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                                                videoshare.setType("text/plain");
                                                                 videoshare.putExtra(Intent.EXTRA_STREAM, picUri);
                                                                 videoshare.setType("image/*");
                                                                 videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -273,6 +254,8 @@ public class whatsappImageSlide extends AppCompatActivity {
                             try {
 
                                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                videoshare.setType("text/plain");
                                 videoshare.putExtra(Intent.EXTRA_STREAM, uri);
                                 videoshare.setType("image/*");
                                 videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -323,7 +306,7 @@ public class whatsappImageSlide extends AppCompatActivity {
                         boolean result = checkPermission();
                         if (result) {
                             copyFileOrDirectory(sourceLocation, targetLocation);
-                            addImageToGallery(targetLocation, activity);
+                            addImageToGallery(Constants.items.get(position).getImage(), activity);
                         }
                     }
 
@@ -335,29 +318,6 @@ public class whatsappImageSlide extends AppCompatActivity {
             }
 
         });
-    }
-    public void uploadMultipart(int position) {
-
-        String user = sessionmanager.getValue(Sessionmanager.Name);
-
-        //getting the actual path of the image
-        String path = Constants.items.get(position).getImage();//it contain your path of image..im using a temp string..
-        Uri uri = Uri.parse(path);        //Uploading code
-        try {
-            String uploadId = UUID.randomUUID().toString();
-            //Creating a multi part request
-            new MultipartUploadRequest(this, uploadId, Constants.UPLOAD_URL)
-                    .addFileToUpload(path, "image") //Adding file
-                    .addParameter("subcata", "Featured") //Adding text parameter to the request
-                    .addParameter("name", "Whatsapp") //Adding text parameter to the request
-                    .addParameter("user", user) //Adding text parameter to the request
-                    .setNotificationConfig(new UploadNotificationConfig())
-                    .setMaxRetries(2)
-                    .startUpload(); //Starting the upload
-            Toast.makeText(activity, "Add Successfully", Toast.LENGTH_SHORT).show();
-        } catch (Exception exc) {
-
-        }
     }
     private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {

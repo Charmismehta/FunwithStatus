@@ -27,7 +27,7 @@
 
         <item
             android:id="@+id/nav_profile"
-            android:icon="@drawable/vc_profile"
+            android:icon="@drawable/vc_contact"
             android:title="Contact us" />
         <item
             android:id="@+id/nav_about_us"
@@ -44,5 +44,4 @@
             android:title="Logout" />
 
     </group>
-
 </menu>

@@ -177,7 +177,6 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
                         share.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
-                            new Download(context, video, position).execute();
                             String path = Constants.videoitems.get(position).getImage();//it contain your path of image..im using a temp string..
                             String filename = path.substring(path.lastIndexOf("/") + 1);
                             File myFile = new File(Environment.getExternalStorageDirectory() + "/" + "FunwithStatus" + "/" + filename);
@@ -285,6 +284,8 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
                         boolean result = checkPermission();
                         if (result) {
                             copyFileOrDirectory(sourceLocation,targetLocation);
+                            Toast.makeText(context, "Download Successfully", Toast.LENGTH_SHORT).show();
+
                         }
                     }
 
@@ -336,7 +337,7 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
             //Creating a multi part request
             new MultipartUploadRequest(context, uploadId, Constants.UPLOAD_VIDEO)
                     .addFileToUpload(selectpath, "image") //Adding file
-                    .addParameter("filename", "Whatsapp") //Adding text parameter to the request
+                    .addParameter("filename", "Whatsapp Status") //Adding text parameter to the request
                     .addParameter("user", user) //Adding text parameter to the request
                     .addParameter("name", user) //Adding text parameter to the request
                     .setNotificationConfig(new UploadNotificationConfig())
@@ -451,6 +452,8 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
                                             public void run() {
                                                 try {
                                                     Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                                    videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                                    videoshare.setType("text/plain");
                                                     videoshare.putExtra(Intent.EXTRA_STREAM, picUri);
                                                     videoshare.setType("video/*");
                                                     videoshare.setPackage("com.facebook.katana");
@@ -462,6 +465,8 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
                                                     e.printStackTrace();
 
                                                     Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                                    videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                                    videoshare.setType("text/plain");
                                                     videoshare.putExtra(Intent.EXTRA_STREAM, picUri);
                                                     videoshare.setType("video/*");
                                                     videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -492,8 +497,9 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
             Log.e("downloadFile", "file:" + myFile.getAbsolutePath());
             Uri uri = Uri.parse(myFile.getPath());
             try {
-
                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                videoshare.setType("text/plain");
                 videoshare.putExtra(Intent.EXTRA_STREAM, uri);
                 videoshare.setType("video/*");
                 videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

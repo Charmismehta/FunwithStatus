@@ -29,6 +29,8 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jzvd.JZVideoPlayer;
+
 public class whatsappVideo extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     GridView gridView;
@@ -171,9 +173,24 @@ public class whatsappVideo extends AppCompatActivity implements AdapterView.OnIt
             }
         }
     }
+
+    @Override
     public void onBackPressed() {
+
+
+        if (JZVideoPlayer.backPress()) {
+            return;
+        }
+
         Intent it = new Intent(this, WhatsappActivity.class);
         startActivity(it);
         finish();
+        super.onBackPressed();
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        JZVideoPlayer.releaseAllVideos();
+    }
+
 }

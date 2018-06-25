@@ -102,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/_10sdp"
-            android:text="Upload it"
+            android:text="Upload It"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/album_title"
             android:textStyle="bold" />

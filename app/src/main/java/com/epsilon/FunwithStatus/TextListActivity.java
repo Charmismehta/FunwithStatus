@@ -37,6 +37,8 @@ import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
+import com.facebook.ads.*;
+import com.google.android.gms.ads.AdRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,9 @@ public class TextListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     String name;
+    private InterstitialAd interstitialAd;
+    com.google.android.gms.ads.InterstitialAd mInterstitialAd;
+    private final String TAG = TextListActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,7 @@ public class TextListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         name = getIntent().getStringExtra("NAME");
+
 
         if (name.equalsIgnoreCase("Trending")) {
             trending();
@@ -98,6 +104,69 @@ public class TextListActivity extends AppCompatActivity {
                 swipelayout.setRefreshing(false);
             }
         });
+
+        interstitialAd = new InterstitialAd(this, getString(R.string.placement_id));
+        // Set listeners for the Interstitial Ad
+        interstitialAd.setAdListener(new InterstitialAdListener() {
+            @Override
+            public void onInterstitialDisplayed(Ad ad) {
+                // Interstitial ad displayed callback
+                Log.e(TAG, "Interstitial ad displayed.");
+            }
+
+            @Override
+            public void onInterstitialDismissed(Ad ad) {
+                // Interstitial dismissed callback
+                Log.e(TAG, "Interstitial ad dismissed.");
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                AdRequest adRequest = new AdRequest.Builder()
+                        .build();
+                // Ad error callback
+                Log.e(TAG, "Interstitial ad failed to load: " + adError.getErrorMessage());
+
+                mInterstitialAd = new com.google.android.gms.ads.InterstitialAd(context);
+                mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
+                mInterstitialAd.loadAd(adRequest);
+                mInterstitialAd.setAdListener(new com.google.android.gms.ads.AdListener() {
+                    public void onAdLoaded() {
+                        showInterstitial();
+                    }
+                });
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                // Interstitial ad is loaded and ready to be displayed
+                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!");
+                // Show the ad
+                interstitialAd.show();
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                // Ad clicked callback
+                Log.d(TAG, "Interstitial ad clicked!");
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                // Ad impression logged callback
+                Log.d(TAG, "Interstitial ad impression logged!");
+            }
+        });
+
+        // For auto play video ads, it's recommended to load the ad
+        // at least 30 seconds before it is shown
+        interstitialAd.loadAd();
+    }
+
+    private void showInterstitial() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
     }
 
     private void idMapping() {

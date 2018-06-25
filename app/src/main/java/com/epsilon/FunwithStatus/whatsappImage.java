@@ -10,6 +10,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -47,6 +50,7 @@ public class whatsappImage extends AppCompatActivity implements AdapterView.OnIt
         final String path = Environment.getExternalStorageDirectory().toString()+"/WhatsApp/Media/.Statuses";
         Log.e("path",":"+path);
         setGridAdapter(path);
+
 
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

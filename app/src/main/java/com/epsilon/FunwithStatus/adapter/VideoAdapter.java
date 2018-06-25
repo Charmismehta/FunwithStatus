@@ -554,6 +554,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                                             public void run() {
                                                 try {
                                                     Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                                    videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                                    videoshare.setType("text/plain");
                                                     videoshare.putExtra(Intent.EXTRA_STREAM, picUri);
                                                     videoshare.setType("video/*");
                                                     videoshare.setPackage("com.facebook.katana");
@@ -565,6 +567,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                                                     e.printStackTrace();
 
                                                     Intent videoshare = new Intent(Intent.ACTION_SEND);
+                                                    videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                                                    videoshare.setType("text/plain");
                                                     videoshare.putExtra(Intent.EXTRA_STREAM, picUri);
                                                     videoshare.setType("video/*");
                                                     videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -594,8 +598,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             Log.e("downloadFile", "file:" + file.getAbsolutePath());
             Uri uri = Uri.parse(file.getPath());
             try {
-
                 Intent videoshare = new Intent(Intent.ACTION_SEND);
+                videoshare.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                videoshare.setType("text/plain");
                 videoshare.putExtra(Intent.EXTRA_STREAM, uri);
                 videoshare.setType("video/*");
                 videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

@@ -8,8 +8,8 @@ android {
         applicationId "com.epsilon.FunwithStatus"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         resConfigs "en", "hi"
@@ -61,4 +61,5 @@ dependencies {
     implementation 'net.gotev:uploadservice:2.1'
     implementation 'com.vdurmont:emoji-java:4.0.0'
     implementation 'cn.jzvd:jiaozivideoplayer:6.2.10'
+    implementation 'com.facebook.android:audience-network-sdk:4.99.0'
 }

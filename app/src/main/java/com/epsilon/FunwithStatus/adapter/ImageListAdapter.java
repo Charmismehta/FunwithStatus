@@ -79,6 +79,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.MyVi
                 it.putExtra("U_NAME",Constants.imageListData.get(position).getUser());
                 it.putExtra("REALNAME",maincat);
                 activity.startActivity(it);
+                activity.finish();
             }
         });
     }

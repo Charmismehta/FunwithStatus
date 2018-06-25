@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:layout_marginLeft="@dimen/_5sdp"
+    android:layout_marginRight="@dimen/_5sdp"
     android:layout_height="match_parent"
     tools:context=".whatsappImage">
 
@@ -12,6 +15,13 @@
         android:layout_height="match_parent">
 
     <GridView
+        android:padding="0dp"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp"
+        android:scrollingCache="true"
+        android:smoothScrollbar="true"
+        android:clipChildren="true"
+        android:alwaysDrawnWithCache="true"
         android:id="@+id/gridView"
         android:numColumns="auto_fit"
         android:gravity="center"
