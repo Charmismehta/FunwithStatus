@@ -4,9 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
@@ -35,6 +39,8 @@ import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.rockerhieu.emojicon.EmojiconTextView;
 import com.vdurmont.emoji.EmojiParser;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -203,10 +209,9 @@ public class TextTrensliderAdapter extends PagerAdapter {
                     public void onAnimationEnd(Animation animation) {
                         share.startAnimation(animation_3);
                         Intent share = new Intent(Intent.ACTION_SEND);
-                        share.putExtra(Intent.EXTRA_TEXT,"https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
                         share.setType("text/plain");
-                        share.putExtra(Intent.EXTRA_STREAM, display_text.getText().toString());
-                        share.setType("text/plain");
+                        share.putExtra(Intent.EXTRA_STREAM, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
+                        share.putExtra(Intent.EXTRA_TEXT, display_text.getText().toString());
                         _activity.startActivity(Intent.createChooser(share, "Fun With Status"));
                     }
 
@@ -267,11 +272,9 @@ public class TextTrensliderAdapter extends PagerAdapter {
                         if (result) {
                             whatsapp.startAnimation(animation_3);
                             Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-                            whatsappIntent.putExtra(Intent.EXTRA_TEXT,"https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
-                            whatsappIntent.setType("text/plain");
-                            whatsappIntent.putExtra(Intent.EXTRA_STREAM, display_text.getText().toString());
                             whatsappIntent.setType("text/plain");
                             whatsappIntent.setPackage("com.whatsapp");
+                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, display_text.getText().toString());
                             try {
                                 _activity.startActivity(whatsappIntent);
                             } catch (android.content.ActivityNotFoundException ex) {
@@ -309,16 +312,33 @@ public class TextTrensliderAdapter extends PagerAdapter {
                         facebook.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
-                            Toast.makeText(_activity, "clikc", Toast.LENGTH_SHORT).show();
-                            Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-                            whatsappIntent.setType("text/plain");
-                            whatsappIntent.setPackage("com.facebook.katana");
-                            whatsappIntent.putExtra(Intent.EXTRA_TEXT, display_text.getText().toString());
-                            try {
-                                _activity.startActivity(whatsappIntent);
-                            } catch (android.content.ActivityNotFoundException ex) {
-                                Toast.makeText(_activity, "Facebook have not been installed.", Toast.LENGTH_SHORT).show();
+                            ClipboardManager cm = (ClipboardManager) _activity.getSystemService(_activity.CLIPBOARD_SERVICE);
+                            cm.setText(display_text.getText());
+                            Toast.makeText(_activity, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+                            String url = display_text.getText().toString();
+                            boolean facebookAppFound = false;
+                            Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                            shareIntent.setType("text/plain");
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, url);
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+                            PackageManager pm = _activity.getPackageManager();
+                            List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
+                            for (final ResolveInfo app : activityList) {
+                                if ((app.activityInfo.packageName).contains("com.facebook.katana")) {
+                                    final ActivityInfo activityInfo = app.activityInfo;
+                                    final ComponentName name = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
+                                    shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                                    shareIntent.setComponent(name);
+                                    facebookAppFound = true;
+                                    Toast.makeText(_activity, "Paste your text ", Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
                             }
+                            if (!facebookAppFound) {
+                                String sharerUrl = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+                                shareIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharerUrl));
+                            }
+                            _activity.startActivity(shareIntent);
                         }
                     }
 

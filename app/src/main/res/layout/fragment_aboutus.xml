@@ -3,13 +3,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     tools:context=".fragment.AboutusFragment">
-
-    <ImageView
+    <LinearLayout
+    android:orientation="vertical"
+    android:layout_marginTop="@dimen/_120sdp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+   <TextView
+       android:textColor="@color/white"
+       android:gravity="center"
+       android:layout_gravity="center"
+       android:textSize="@dimen/_20sdp"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text="Fun With Status"
+       />
+    <TextView
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="@dimen/_16sdp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/fragmentaboutus"
-         />
+        android:layout_height="wrap_content"
+        android:text="Version 1.3"
+        />
+    <ImageView
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_gravity="center"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_80sdp"
+        android:src="@drawable/icon"/>
 
+    <TextView
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="@dimen/_12sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="© 2017-2018 Epsilon Infotech" />
+    <TextView
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="@dimen/_12sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="All right reserved" />
+</LinearLayout>
 </FrameLayout>
