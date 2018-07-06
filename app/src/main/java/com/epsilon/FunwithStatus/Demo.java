@@ -1,12 +1,14 @@
 package com.epsilon.FunwithStatus;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -43,7 +45,7 @@ public class Demo extends AppCompatActivity {
     //storage permission code
     private static final int STORAGE_PERMISSION_CODE = 123;
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
-    private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
+    private final int MY_PERMISSIONS_RECORD_AUDIO = 2;
 
     //Bitmap to get image from gallery
     private Bitmap bitmap;
@@ -174,7 +176,7 @@ public class Demo extends AppCompatActivity {
         //getting name for the image
         name = edit_caption.getText().toString().trim();
         //getting the actual path of the image
-        String path = getPath(filePath);
+        String path = getPath(activity,filePath);
         //Uploading code
         try {
             String uploadId = UUID.randomUUID().toString();
@@ -221,24 +223,82 @@ public class Demo extends AppCompatActivity {
         }
     }
 
+
     //method to get the file path from uri
-    public String getPath(Uri uri) {
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        String document_id = cursor.getString(0);
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
-        cursor.close();
+//    public String getPath(Uri uri) {
+//        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+//        cursor.moveToFirst();
+//        String document_id = cursor.getString(0);
+//        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+//        cursor.close();
+//
+//        cursor = getContentResolver().query(
+//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+//        cursor.moveToFirst();
+//        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+//        cursor.close();
+//
+//        return path;
+//    }
 
-        cursor = getContentResolver().query(
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-        cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-        cursor.close();
 
-        return path;
+    public static String getPath(final Context context, final Uri uri) {
+
+        // check here to KITKAT or new version
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+
+            // ExternalStorageProviderif (isMediaDocument(uri)) {
+            final String docId = DocumentsContract.getDocumentId(uri);
+            final String[] split = docId.split(":");
+            final String type = split[0];
+
+            Uri contentUri = null;
+            if ("image".equals(type)) {
+                contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            } else if ("video".equals(type)) {
+                contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+            } else if ("audio".equals(type)) {
+                contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            }
+
+            final String selection = "_id=?";
+            final String[] selectionArgs = new String[] { split[1] };
+
+            return getDataColumn(context, contentUri, selection,
+                    selectionArgs);
+        }
+        // MediaStore (and general)
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
     }
+    public static String getDataColumn(Context context, Uri uri,
+                                       String selection, String[] selectionArgs) {
 
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = { column };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
 
     //Requesting permission
     private void requestStoragePermission() {
@@ -273,6 +333,13 @@ public class Demo extends AppCompatActivity {
         }
     }
     public void onBackPressed() {
+        if(subcat.equalsIgnoreCase("") && maincat.equalsIgnoreCase("")){
+            Intent it = new Intent(Demo.this, Dashboard.class);
+            it.putExtra("NAME",subcat);
+            it.putExtra("REALNAME",maincat);
+            startActivity(it);
+            finish();
+        }
         Intent it = new Intent(Demo.this, ImageListActivity.class);
         it.putExtra("NAME",subcat);
         it.putExtra("REALNAME",maincat);

@@ -69,11 +69,13 @@ public class MyGridAdapter extends BaseAdapter {
         }
 
         TextView text = (TextView) convertView.findViewById(R.id.username);
+        ImageView like = (ImageView) convertView.findViewById(R.id.like);
         text.setVisibility(View.GONE);
         ImageView imageView = (ImageView) convertView.findViewById(R.id.tvimage);
         final String image = Constants.items.get(position).getImage();
         String filenameArray[] = image.split("\\.");
         String extension = filenameArray[filenameArray.length - 1];
+       like.setVisibility(View.GONE);
 
        if(extension.equalsIgnoreCase("jpg"))
         {

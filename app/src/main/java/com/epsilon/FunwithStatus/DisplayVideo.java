@@ -28,6 +28,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -80,7 +82,7 @@ import retrofit2.Response;
 
 public class DisplayVideo extends AppCompatActivity {
 
-    Context activity;
+    Activity activity;
     LinearLayout layout_content;
     ImageView download, like, dislike, share, delete, whatsapp,facebook;
     JZVideoPlayerStandard JZVideoPlayerStandard;
@@ -94,6 +96,8 @@ public class DisplayVideo extends AppCompatActivity {
     TextView user_name,likecount;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     public static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE  = 123;
+    RecyclerView rv_video;
+    RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +143,49 @@ public class DisplayVideo extends AppCompatActivity {
         {
             delete.setVisibility(View.GONE);
         }
+
+
+        rv_video.setHasFixedSize(true);
+
+        // The number of Columns
+        mLayoutManager = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
+        rv_video.setLayoutManager(mLayoutManager);
+
+        videolist();
+    }
+
+    private void videolist() {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<VideoList> countrycall = apiInterface.videolistpojo();
+        countrycall.enqueue(new Callback<VideoList>() {
+            @Override
+            public void onResponse(Call<VideoList> call, Response<VideoList> response) {
+                dialog.dismiss();
+
+                if (Constants.videoListData != null) {
+                    Constants.videoListData.clear();
+                }
+                if (!Constants.videoListData.equals("") && Constants.videoListData != null) {
+                    Constants.videoListData.addAll(response.body().getImages());
+                    VideoAdapter adapter = new VideoAdapter(activity);
+                    rv_video.setAdapter(adapter);
+                    if (adapter != null)
+                        adapter.notifyDataSetChanged();
+
+                } else {
+                    Toast.makeText(activity, "No Video Found", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VideoList> call, Throwable t) {
+                dialog.dismiss();
+                Helper.showToastMessage(activity, "Please Connect Internet");
+            }
+        });
     }
 
 
@@ -853,6 +900,8 @@ public class DisplayVideo extends AppCompatActivity {
         user_name = (TextView) findViewById(R.id.user_name);
         likecount = (TextView) findViewById(R.id.likecount);
         main = (RelativeLayout) findViewById(R.id.main);
+        rv_video = (RecyclerView)findViewById(R.id.rv_video);
+
     }
 
     @Override

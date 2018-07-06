@@ -3,6 +3,8 @@ package com.epsilon.FunwithStatus;
 import android.app.Activity;
 
 import android.app.ProgressDialog;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -79,7 +82,6 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
     Button button_caption_send, vc_camera, vc_album;
     String name;
     Sessionmanager sessionmanager;
-    private static final String TAG = "AndroidUploadService";
     ProgressDialog dialog;
     private Toast mToastToShow;
 
@@ -283,7 +285,7 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
             iv_video.setVisibility(View.VISIBLE);
             imageview.setVisibility(View.GONE);
             Uri selectedVideoUri = data.getData();
-            selectpath = getPath(selectedVideoUri);
+            selectpath = getPath(activity,selectedVideoUri);
             iv_video.setVideoPath(selectpath);
             iv_video.setVideoURI(selectedVideoUri);
             iv_video.setMediaController(new MediaController(this));
@@ -303,14 +305,61 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
     }
 
 
-    private String getPath(Uri uri) {
-        String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.SIZE, MediaStore.Video.Media.DURATION};
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        cursor.moveToFirst();
-        String filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
-        int fileSize = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
-        long duration = TimeUnit.MILLISECONDS.toSeconds(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)));
-        return filePath;
+    public static String getPath(final Context context, final Uri uri) {
+
+        // check here to KITKAT or new version
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+
+            // ExternalStorageProviderif (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[] { split[1] };
+
+                return getDataColumn(context, contentUri, selection,
+                        selectionArgs);
+            }
+        // MediaStore (and general)
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+    public static String getDataColumn(Context context, Uri uri,
+                                       String selection, String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = { column };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
     }
 
     @Override
@@ -348,17 +397,11 @@ public class AddVideoActivity extends AppCompatActivity implements SingleUploadB
         // Set the toast and duration
         int toastDurationInMilliSeconds = 20000;
         dialog.show();
-//        custom_layout.setVisibility(View.VISIBLE);
-
-//        mToastToShow = Toast.makeText(this, "Please Wait for a Moment.", Toast.LENGTH_LONG);
-
-        // Set the countdown to display the toast
         CountDownTimer toastCountDown;
         toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
             public void onTick(long millisUntilFinished) {
                 dialog.show();
-//                custom_layout.setVisibility(View.VISIBLE);
-//                mToastToShow.show();
+
             }
 
             public void onFinish() {

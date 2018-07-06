@@ -13,6 +13,7 @@ tools:context=".Dashboard">
     android:layout_height="match_parent" />
 
 
+
 <android.support.design.widget.NavigationView
     android:id="@+id/nav_view"
     android:layout_width="@dimen/_200sdp"
@@ -23,3 +24,4 @@ tools:context=".Dashboard">
     app:itemTextColor="@drawable/drawer_item_color"
     app:menu="@menu/activity_dashboard_drawer"/>
 </android.support.v4.widget.DrawerLayout>
+

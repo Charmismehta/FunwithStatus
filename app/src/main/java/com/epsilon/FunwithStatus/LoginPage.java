@@ -3,6 +3,7 @@ package com.epsilon.FunwithStatus;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -26,9 +27,13 @@ import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAd;
+
+
 import com.facebook.ads.InterstitialAdListener;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +50,10 @@ public class LoginPage extends AppCompatActivity {
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     private InterstitialAd interstitialAd;
     private final String TAG = TextListActivity.class.getSimpleName();
-
+    private final String PREFERENCE_NAME = "ad_counter_preference";
+    private final String COUNTER_INTERSTITIAL_ADS = "ad_counter";
+    private int mAdCounter = 0;
+    private AdRequest mInterstitialAdRequest;
     
 
     @Override
@@ -57,56 +65,56 @@ public class LoginPage extends AppCompatActivity {
         idMapping();
         Listener();
 
+        loadInterstitialAd();
+
+
+        SharedPreferences preferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        mAdCounter = preferences.getInt(COUNTER_INTERSTITIAL_ADS, 0);
+
+        if (mAdCounter == 3) {
+            // Load interstitial ad now
+            interstitialAd.setAdListener(new AdListener() {
+                public void onAdLoaded() {
+                    showInterstitial();
+                }
+            });
+            mAdCounter = 0; //Clear counter variable
+        } else {
+            mAdCounter++; // Increment counter variable
+        }
+
+        // Save counter value back to SharedPreferences
+        editor.putInt(COUNTER_INTERSTITIAL_ADS, mAdCounter);
+        editor.commit();
+
+
         String udata="Want to Skip this page ?";
         SpannableString content = new SpannableString(udata);
         content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
         login_tskip.setText(content);
+    }
 
-        interstitialAd = new InterstitialAd(this, getString(R.string.placement_id));
-        // Set listeners for the Interstitial Ad
-        interstitialAd.setAdListener(new InterstitialAdListener() {
-            @Override
-            public void onInterstitialDisplayed(Ad ad) {
-                // Interstitial ad displayed callback
-                Log.e(TAG, "Interstitial ad displayed.");
+    private void loadInterstitialAd() {
+
+        mInterstitialAdRequest = new AdRequest.Builder()
+                .build();
+
+        //interstitial
+        interstitialAd = new InterstitialAd(this);
+
+        // set the ad unit ID
+        interstitialAd.setAdUnitId("Your Ad unit Id");
+
+        // Load ads into Interstitial Ads
+        interstitialAd.loadAd(mInterstitialAdRequest);
             }
 
-            @Override
-            public void onInterstitialDismissed(Ad ad) {
-                // Interstitial dismissed callback
-                Log.e(TAG, "Interstitial ad dismissed.");
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                // Ad error callback
-                Log.e(TAG, "Interstitial ad failed to load: " + adError.getErrorMessage());
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Interstitial ad is loaded and ready to be displayed
-                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!");
-                // Show the ad
-                interstitialAd.show();
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!");
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!");
-            }
-        });
-
-        // For auto play video ads, it's recommended to load the ad
-        // at least 30 seconds before it is shown
-        interstitialAd.loadAd();
+    private void showInterstitial() {
+        if (interstitialAd.isLoaded()) {
+            interstitialAd.show();
+        }
     }
 
     private void Listener() {

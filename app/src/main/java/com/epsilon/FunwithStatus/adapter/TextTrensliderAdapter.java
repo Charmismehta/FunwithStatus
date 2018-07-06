@@ -12,9 +12,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +27,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.ImageSlider;
@@ -32,6 +38,7 @@ import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
 import com.epsilon.FunwithStatus.jsonpojo.dislike.DisLike;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.StatusDatum;
+import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.jsonpojo.trending.TrendingDatum;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
@@ -53,6 +60,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
     int i;
+
 
     // constructor
     public TextTrensliderAdapter(Activity activity, String subcat, String u_name,int i) {
@@ -103,7 +111,6 @@ public class TextTrensliderAdapter extends PagerAdapter {
         if (loginuser.equalsIgnoreCase(u_name)) {
             delete.setVisibility(View.VISIBLE);
         }
-
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -445,7 +452,6 @@ public class TextTrensliderAdapter extends PagerAdapter {
                 }
                 if (!Constants.statusData.equals("") && Constants.statusData != null) {
                     Constants.statusData.addAll(response.body().getData());
-                    notifyDataSetChanged();
                 } else {
                     Toast.makeText(_activity, "No Video Found", Toast.LENGTH_SHORT).show();
                 }

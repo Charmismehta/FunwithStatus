@@ -1,228 +1,244 @@
 package com.epsilon.FunwithStatus.fragment;
 
-import android.content.Context;
-
-import android.content.Intent;
+import android.app.Activity;
+import android.app.TabActivity;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-
-import android.support.v4.app.FragmentTransaction;
-
-import android.support.v4.view.PagerAdapter;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-
-
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.WhatsappActivity;
-import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdChoicesView;
+import com.facebook.ads.AdError;
+import com.facebook.ads.AdIconView;
+import com.facebook.ads.MediaView;
+import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdListener;
 
-
-import java.util.Timer;
-import java.util.TimerTask;
-
-
-import de.hdodenhof.circleimageview.CircleImageView;
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainFragment extends Fragment {
 
-    Context context;
-    CircleImageView text, image, video, plus,whatsapp;
-    Fragment fragment = null;
-    Sessionmanager sessionmanager;
-    ViewPager mViewPager;
-    int[] mResources = {
-            R.drawable.bg,
-            R.drawable.bgone,
-            R.drawable.bgtwo,
-            R.drawable.bgthree,
-            R.drawable.bgfour,
-            R.drawable.bgfive,
-            R.drawable.bgsix,
-            R.drawable.bgseven
-    };
-    private static int currentPage = 0;
-    private static int NUM_PAGES = 0;
-
+    Activity activity;
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private LinearLayout nativeAdContainer;
+    private LinearLayout adView;
+    private NativeAd nativeAd;
+    LinearLayout adChoicesContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        context = getActivity();
-        sessionmanager = new Sessionmanager(context);
-
-        CustomPagerAdapter mCustomPagerAdapter = new CustomPagerAdapter(context);
-
-        mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        mViewPager.setAdapter(mCustomPagerAdapter);
-
-//       indicator.setRadius(5 * density);
-
-        NUM_PAGES = mResources.length;
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        AdView mAdView = view.findViewById(R.id.adView);
-        mAdView.loadAd(adRequest);
-
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the user is about to return
-                // to the app after tapping on an ad.
-            }
-        });
-
-
-        // Auto start of viewpager
-        final Handler handler = new Handler();
-        final Runnable Update = new Runnable() {
-            public void run() {
-                if (currentPage == NUM_PAGES) {
-                    currentPage = 0;
-                }
-                mViewPager.setCurrentItem(currentPage++, true);
-            }
-        };
-        Timer swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(Update);
-            }
-        }, 3000, 3000);
-
-        text = (CircleImageView) view.findViewById(R.id.text);
-        image = (CircleImageView) view.findViewById(R.id.image);
-        video = (CircleImageView) view.findViewById(R.id.video);
-        whatsapp = (CircleImageView) view.findViewById(R.id.whatsapp);
-
-
-        text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragment = new HomeFragment();
-                if (fragment != null) {
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_frame, fragment);
-                    ft.commit();
-
-                }
-            }
-        });
-
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragment = new ImageFragment();
-                if (fragment != null) {
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_frame, fragment);
-                    ft.commit();
-
-                }
-            }
-        });
-
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragment = new VideoFragment();
-                if (fragment != null) {
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_frame, fragment);
-                    ft.commit();
-
-                }
-            }
-        });
-
-
-
-        whatsapp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getActivity(), WhatsappActivity.class);
-                startActivity(it);
-                getActivity().finish();
-            }
-        });
-
-        // Set listeners for the Interstitial Add
-        return view;
+        activity = getActivity();
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        nativeAdContainer = view.findViewById(R.id.native_ad_container);
+        adChoicesContainer = view.findViewById(R.id.ad_choices_container);
+        setupViewPager(viewPager);
+        // Set Tabs inside Toolbar
+        TabLayout tabs = (TabLayout) view.findViewById(R.id.tabs);
+        tabs.setupWithViewPager(viewPager);
+    return view;
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        Adapter adapter = new Adapter(getChildFragmentManager());
+        adapter.addFragment(new TrendingFragment(), "Home");
+        adapter.addFragment(new WhatsappFragment(), "Your Whatsapp Status");
+        viewPager.setAdapter(adapter);
 
-    class CustomPagerAdapter extends PagerAdapter {
+    }
 
-        Context mContext;
-        LayoutInflater mLayoutInflater;
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public CustomPagerAdapter(Context context) {
-            mContext = context;
-            mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        public Adapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return mResources.length;
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == ((LinearLayout) object);
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View itemView = mLayoutInflater.inflate(R.layout.fragment_page, container, false);
-
-            ImageView imageView = (ImageView) itemView.findViewById(R.id.imageView);
-            imageView.setImageResource(mResources[position]);
-
-            container.addView(itemView);
-
-            return itemView;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((LinearLayout) object);
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
-}
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+
+        menuInflater.inflate(R.menu.menugift, menu);
+        final ImageView locButton = (ImageView) menu.findItem(R.id.vc_addgift).getActionView();
+        final Animation animation_2 = AnimationUtils.loadAnimation(getActivity().getBaseContext(), R.anim.bounce);
+        final Animation animation_3 = AnimationUtils.loadAnimation(getActivity().getBaseContext(), R.anim.abc_fade_out);
+
+        locButton.startAnimation(animation_2);
+
+        animation_2.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                locButton.startAnimation(animation_3);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (item.getItemId() == android.R.id.home) {
+            return true;
+        }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.vc_addgift) {
+            loadNativeAd();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    private void loadNativeAd() {
+        // Instantiate a NativeAd object.
+        // NOTE: the placement ID will eventually identify this as your App, you can ignore it for
+        // now, while you are testing and replace it later when you have signed up.
+        // While you are using this temporary code you will only get test ads and if you release
+        // your code like this to the Google Play your users will not receive ads (you will get a no fill error).
+        nativeAd = new NativeAd(getActivity(),"263700057716193_263738751045657");
+        nativeAd.setAdListener(new NativeAdListener() {
+            @Override
+            public void onMediaDownloaded(Ad ad) {
+                // Native ad finished downloading all assets
+
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                // Native ad failed to load
+
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                // Native ad is loaded and ready to be displayed
+                if (nativeAd == null || nativeAd != ad) {
+                    return;
+                }
+                // Inflate Native Ad into Container
+                inflateAd(nativeAd);
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                // Native ad clicked
+
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                // Native ad impression
+            }
+        });
+
+        // Request an ad
+        nativeAd.loadAd();
+    }
+    private void inflateAd(NativeAd nativeAd) {
+
+        nativeAd.unregisterView();
+        nativeAd.destroy();
+        // Add the Ad view into the ad container.
+
+        nativeAdContainer.setVisibility(View.VISIBLE);
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        // Inflate the Ad view.  The layout referenced should be the one you created in the last step.
+        adView = (LinearLayout) inflater.inflate(R.layout.native_ad_layout_1, nativeAdContainer, false);
+        nativeAdContainer.addView(adView);
+
+        // Add the AdChoices icon
+
+        AdChoicesView adChoicesView = new AdChoicesView(activity, nativeAd, true);
+        adChoicesContainer.addView(adChoicesView, 0);
+
+        // Create native UI using the ad metadata.
+        AdIconView nativeAdIcon = adView.findViewById(R.id.native_ad_icon);
+        TextView nativeAdTitle = adView.findViewById(R.id.native_ad_title);
+        MediaView nativeAdMedia = adView.findViewById(R.id.native_ad_media);
+        TextView nativeAdSocialContext = adView.findViewById(R.id.native_ad_social_context);
+        TextView nativeAdBody = adView.findViewById(R.id.native_ad_body);
+        TextView sponsoredLabel = adView.findViewById(R.id.native_ad_sponsored_label);
+        Button nativeAdCallToAction = adView.findViewById(R.id.native_ad_call_to_action);
+
+        // Set the Text.
+        nativeAdTitle.setText(nativeAd.getAdvertiserName());
+        nativeAdBody.setText(nativeAd.getAdBodyText());
+        nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
+        nativeAdCallToAction.setVisibility(nativeAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
+        nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
+        sponsoredLabel.setText(nativeAd.getSponsoredTranslation());
+
+        // Create a list of clickable views
+        List<View> clickableViews = new ArrayList<>();
+        clickableViews.add(nativeAdTitle);
+        clickableViews.add(nativeAdCallToAction);
+
+        // Register the Title and CTA button to listen for clicks.
+        nativeAd.registerViewForInteraction(
+                adView,
+                nativeAdMedia,
+                nativeAdIcon,
+                clickableViews);
+
+
+    }
+    public void dismissAd() {
+        nativeAdContainer.setVisibility(View.GONE);
+        nativeAd.destroy();
+    }
+}

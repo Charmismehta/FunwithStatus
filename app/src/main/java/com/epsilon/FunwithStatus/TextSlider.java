@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.epsilon.FunwithStatus.adapter.RecycleviewAdapter;
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
 import com.epsilon.FunwithStatus.adapter.TextSlideAdapter;
 import com.epsilon.FunwithStatus.adapter.TextTrensliderAdapter;
@@ -31,6 +35,7 @@ public class TextSlider extends AppCompatActivity {
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
     RelativeLayout rlayout;
+    RecyclerView recycler_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,7 @@ public class TextSlider extends AppCompatActivity {
         u_name = getIntent().getStringExtra("U_NAME");
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
+
 
         if(name.equalsIgnoreCase("Trending") )
         {

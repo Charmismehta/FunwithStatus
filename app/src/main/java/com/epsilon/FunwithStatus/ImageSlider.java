@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -18,19 +19,25 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.adapter.FullScreenImageAdapter;
@@ -46,6 +53,13 @@ import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdChoicesView;
+import com.facebook.ads.AdError;
+import com.facebook.ads.AdIconView;
+import com.facebook.ads.MediaView;
+import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -73,6 +87,12 @@ public class ImageSlider extends AppCompatActivity {
     File myDir;
     Toolbar toolbar;
     InputStream stream = null;
+    RecyclerView rv_image;
+    RecyclerView.LayoutManager mLayoutManager;
+    private final String TAG = Dashboard.class.getSimpleName();
+    private LinearLayout nativeAdContainer;
+    private LinearLayout adView;
+    private NativeAd nativeAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +102,7 @@ public class ImageSlider extends AppCompatActivity {
         activity = this;
         sessionmanager = new Sessionmanager(activity);
         pager = (ViewPager) findViewById(R.id.pager);
+        rv_image = (RecyclerView) findViewById(R.id.rv_image);
         Intent mIntent = getIntent();
         final int position = mIntent.getIntExtra("position", 0);
         final String Id = getIntent().getStringExtra("Id");
@@ -92,28 +113,7 @@ public class ImageSlider extends AppCompatActivity {
         final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
         pic = getIntent().getStringExtra("pic");
         String bitmap = getIntent().getStringExtra("picture");
-
-
-        display_image = (ImageView) findViewById(R.id.display_image);
-        download = (ImageView) findViewById(R.id.download);
-        like = (ImageView) findViewById(R.id.like);
-        dislike = (ImageView) findViewById(R.id.dislike);
-        share = (ImageView) findViewById(R.id.share);
-        delete = (ImageView) findViewById(R.id.delete);
-        whatsapp = (ImageView) findViewById(R.id.whatsapp);
-        facebook = (ImageView) findViewById(R.id.facebook);
-        layout_content = (LinearLayout) findViewById(R.id.layout_content);
-        ll = (LinearLayout) findViewById(R.id.ll);
-        mainlayout = (RelativeLayout) findViewById(R.id.mainlayout);
-        share.setColorFilter(getResources().getColor(R.color.colorAccent));
-        like.setColorFilter(getResources().getColor(R.color.colorAccent));
-        dislike.setColorFilter(getResources().getColor(R.color.colorAccent));
-        delete.setColorFilter(getResources().getColor(R.color.colorAccent));
-        download.setColorFilter(getResources().getColor(R.color.colorAccent));
-
-            if (u_name.equalsIgnoreCase(loginuser)) {
-                delete.setVisibility(View.VISIBLE);
-            }
+        loadNativeAd();
 
         if (name.equalsIgnoreCase("WHATSAPP")) {
             WhatsappImageAdapter adapter = new WhatsappImageAdapter(activity);
@@ -125,7 +125,8 @@ public class ImageSlider extends AppCompatActivity {
                 }
             });
         } else if (name.equalsIgnoreCase("Featured")) {
-            FullScreenTrenImageAdapter adapter = new FullScreenTrenImageAdapter(activity);
+            FullScreenTrenImageAdapter adapter = new FullScreenTrenImageAdapter(activity,name,maincat,position);
+            Imagecategory(name);
             pager.setAdapter(adapter);
             pager.post(new Runnable() {
                 @Override
@@ -134,7 +135,8 @@ public class ImageSlider extends AppCompatActivity {
                 }
             });
         } else {
-            FullScreenImageAdapter adapter = new FullScreenImageAdapter(activity);
+            FullScreenImageAdapter adapter = new FullScreenImageAdapter(activity,name,maincat,position);
+            Imagecategory(name);
             pager.setAdapter(adapter);
             pager.post(new Runnable() {
                 @Override
@@ -143,664 +145,183 @@ public class ImageSlider extends AppCompatActivity {
                 }
             });
         }
-        download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                download.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        download.startAnimation(animation_3);
-                        boolean result = checkPermission();
-                        if (result) {
-                            final Uri uri = Uri.parse(pic);
-                            saveimage(uri);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-
-        });
-
-        share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                share.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        share.startAnimation(animation_3);
-                        boolean result = checkPermission();
-                        if (result) {
-                            Log.e("pic ",pic);
-                            new ShareImage().execute(pic);
-                        }
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-
-            }
-        });
-
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_1 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                like.startAnimation(animation_1);
-
-                animation_1.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        like.startAnimation(animation_3);
-                        addlike(name, email, Id, pic);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-
-            }
-        });
-
-        dislike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                dislike.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        dislike.startAnimation(animation_3);
-                        dislike(name, email, Id, pic);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-            }
-        });
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.move);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                delete.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        delete.startAnimation(animation_3);
-                        delete(Id);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-        });
-
-        whatsapp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                whatsapp.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        whatsapp.startAnimation(animation_3);
-                        boolean result = checkPermission();
-                        if (result) {
-                            new sharewhatsappImage().execute(pic);
-                        }
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-
-        });
-
-        facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.bounce);
-                final Animation animation_3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-                facebook.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        facebook.startAnimation(animation_3);
-                        boolean result = checkPermission();
-                        if (result) {
-                            new sharefacebookImage().execute(pic);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-            }
-        });
-
-
-        mainlayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (layout_content.getVisibility() == View.VISIBLE) {
-                    layout_content.setVisibility(View.VISIBLE);
-                    mainlayout.setBackgroundColor(Color.WHITE);
-                } else if (layout_content.getVisibility() == View.GONE) {
-                    layout_content.setVisibility(View.VISIBLE);
-                    mainlayout.setBackgroundColor(Color.WHITE);
-                } else {
-                    layout_content.setVisibility(View.VISIBLE);
-                    mainlayout.setBackgroundColor(Color.WHITE);
-                }
-            }
-        });
     }
 
 
-    private boolean checkPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-//                Log.v(TAG,"Permission is granted2");
-                return true;
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
-                return false;
-            }
-        } else { //permission is automatically granted on sdk<23 upon installation
-//            Log.v(TAG,"Permission is granted2");
-            return true;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 2:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //resume tasks needing this permission
-                    final Uri uri = Uri.parse(pic);
-                    saveimage(uri);
-                } else {
-
-                    break;
-                }
-        }
-    }
-
-    private void saveimage(Uri uri) {
-        DownloadManager.Request r = new DownloadManager.Request(uri);
-
-        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "fileName");
-
-        r.allowScanningByMediaScanner();
-
-        r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
-        DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-        dm.enqueue(r);
-        addImageToGallery(pic, activity);
-
-    }
-
-    // TODO : IMAGE LIKE API >>
-
-    public void addlike(String category, String email, String image_id, String image) {
-        final ProgressDialog dialog = new ProgressDialog(activity);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<ImageLike> countrycall = apiInterface.addimagelikepojo(category, email, image_id, image);
-        countrycall.enqueue(new Callback<ImageLike>() {
-            @Override
-            public void onResponse(Call<ImageLike> call, Response<ImageLike> response) {
-                dialog.dismiss();
-                Toast.makeText(activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<ImageLike> call, Throwable t) {
-                dialog.dismiss();
-
-            }
-        });
-    }
-
-    // TODO IMAGE LIKE API END
-
-    // TODO : IMAGE DELETE API >>
-
-    public void delete(String id) {
-        final ProgressDialog dialog = new ProgressDialog(activity);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<DeleteImage> countrycall = apiInterface.deleteimage(id);
-        countrycall.enqueue(new Callback<DeleteImage>() {
-            @Override
-            public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
-                dialog.dismiss();
-                if (response.body().getStatus().equals("Succ")) {
-                    Intent it = new Intent(activity, ImageListActivity.class);
-                    it.putExtra("NAME", name);
-                    it.putExtra("REALNAME", maincat);
-                    startActivity(it);
-                    finish();
-                    Toast.makeText(activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(activity, "Try Again", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DeleteImage> call, Throwable t) {
-                dialog.dismiss();
-
-            }
-        });
-    }
-
-
-    // TODO IMAGE DELETE API END
-
-
-    // TODO IMAGE DISLIKE API >>
-
-    public void dislike(String category, String email, String status_id, String status) {
-        final ProgressDialog dialog = new ProgressDialog(activity);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<ImageDislike> countrycall = apiInterface.imagedislikepojo(category, email, status_id, status);
-        countrycall.enqueue(new Callback<ImageDislike>() {
-            @Override
-            public void onResponse(Call<ImageDislike> call, Response<ImageDislike> response) {
-                dialog.dismiss();
-                Toast.makeText(activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<ImageDislike> call, Throwable t) {
-                dialog.dismiss();
-
-            }
-        });
-    }
-
-    // TODO : IMAGE DISLIKE API END >>>>
-
-//    public void onBackPressed() {
-//        if (name.equalsIgnoreCase("featured")) {
-//            Intent it = new Intent(activity, SubCatImage.class);
-//            it.putExtra("NAME", name);
-//            it.putExtra("REALNAME", maincat);
-//            startActivity(it);
-//            finish();// close this activity and return to preview activity (if there is any)
-//        } else {
-//            Intent it = new Intent(activity, ImageListActivity.class);
-//            it.putExtra("NAME", name);
-//            it.putExtra("REALNAME", maincat);
-//            startActivity(it);
-//            finish();
-//        }
-//    }
-
-    // TODO : SHARE ON WHATSAPP
-
-    private class sharewhatsappImage extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(activity);
-            // Set progressdialog title
-            mProgressDialog.setTitle("Share Image");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... URL) {
-
-            String imageURL = URL[0];
-
-            Bitmap bitmap = null;
-            try {
-                // Download Image from URL
-                InputStream input = new java.net.URL(imageURL).openStream();
-                // Decode Bitmap
-                bitmap = BitmapFactory.decodeStream(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            SharewhatsappImage(activity, result);
-            mProgressDialog.dismiss();
-        }
-    }
-
-    private void SharewhatsappImage(Activity activity, Bitmap finalBitmap) {
-        String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
-                finalBitmap, "Design", null);
-        Uri uri = Uri.parse(path);
-        Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
-        whatsappIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
-        whatsappIntent.setType("text/plain");
-        whatsappIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        whatsappIntent.setType("image/jpeg");
-        whatsappIntent.setPackage("com.whatsapp");
-
-        try {
-            activity.startActivity(whatsappIntent);
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(activity, "Whatsapp have not been installed.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    // TODO : SHARE ON FACEBOOK
-    private class sharefacebookImage extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(activity);
-            // Set progressdialog title
-            mProgressDialog.setTitle("Share Image");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... URL) {
-
-            String imageURL = URL[0];
-
-            Bitmap bitmap = null;
-            try {
-                // Download Image from URL
-                InputStream input = new java.net.URL(imageURL).openStream();
-                // Decode Bitmap
-                bitmap = BitmapFactory.decodeStream(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            shareFacebook(activity, result);
-            mProgressDialog.dismiss();
-        }
-    }
-
-    public static void shareFacebook(Activity activity, Bitmap url) {
-        String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
-                url, "Design", null);
-        boolean facebookAppFound = false;
-        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-        shareIntent.setType("image/*");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
-
-        PackageManager pm = activity.getPackageManager();
-        List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
-        for (final ResolveInfo app : activityList) {
-            if ((app.activityInfo.packageName).contains("com.facebook.katana")) {
-                final ActivityInfo activityInfo = app.activityInfo;
-                final ComponentName name = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
-                shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-                shareIntent.setComponent(name);
-                facebookAppFound = true;
-                break;
-            }
-        }
-        if (!facebookAppFound) {
-            String sharerUrl = "https://www.facebook.com/sharer/sharer.php?u=" + url;
-            shareIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharerUrl));
-        }
-        activity.startActivity(shareIntent);
-    }
-
-// END SHARE
-
-
-    // TODO SAVE IMAGE CODE :
-    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(activity);
-            // Set progressdialog title
-            mProgressDialog.setTitle("Download Image");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... URL) {
-
-            String imageURL = URL[0];
-
-            Bitmap bitmap = null;
-            try {
-                // Download Image from URL
-                InputStream input = new java.net.URL(imageURL).openStream();
-                // Decode Bitmap
-                bitmap = BitmapFactory.decodeStream(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            SaveImage(result);
-            mProgressDialog.dismiss();
-            Toast.makeText(activity, "Image Save Successfully", Toast.LENGTH_SHORT).show();
-            addImageToGallery(pic, activity);
-        }
-    }
-
-    private void SaveImage(Bitmap finalBitmap) {
-
-        String root = Environment.getExternalStorageDirectory().toString();
-        myDir = new File(root + "/saved_images");
-        myDir.mkdirs();
-        Random generator = new Random();
-        int n = 10000;
-        n = generator.nextInt(n);
-        String fname = "Image-" + n + ".jpg";
-        File file = new File(myDir, fname);
-        if (file.exists()) file.delete();
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.flush();
-            out.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void addImageToGallery(String myDir, Context context) {
-
-        ContentValues values = new ContentValues();
-
-        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/*");
-        values.put(MediaStore.MediaColumns.DATA, myDir);
-
-        context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Toast.makeText(context, "Save Image Successfully", Toast.LENGTH_SHORT).show();
-    }
-// TODO END SAVE IMAGE CODE ///////
-
-// TODO SHARE IMAGE :
-
-    private class ShareImage extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = new ProgressDialog(activity);
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... URL) {
-
-            String imageURL = URL[0];
-
-            Bitmap bitmap = null;
-            try {
-                // Download Image from URL
-                InputStream input = new java.net.URL(imageURL).openStream();
-                // Decode Bitmap
-                bitmap = BitmapFactory.decodeStream(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            ShareImage(result);
-            mProgressDialog.dismiss();
-        }
-
-    }
-
-    private void ShareImage(Bitmap finalBitmap) {
-
-        String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(),
-                finalBitmap, "Design", null);
-
-        Uri uri = Uri.parse(path);
-        Intent share = new Intent(Intent.ACTION_SEND);
-        share.setType("image/*");
-        share.putExtra(Intent.EXTRA_STREAM, uri);
-        share.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.epsilon.FunwithStatus");
-        activity.startActivity(Intent.createChooser(share, "Fun With Status"));
-    }
 
     // TODO : END SHARE IMAGE CODE ////////////////
 
     public void onBackPressed() {
-        if (name.equalsIgnoreCase("featured")) {
-        Intent it = new Intent(activity, SubCatImage.class);
-        it.putExtra("NAME", name);
-        it.putExtra("REALNAME", maincat);
-        startActivity(it);
-        finish();// close this activity and return to preview activity (if there is any)
-    } else {
-        Intent it = new Intent(activity, ImageListActivity.class);
-        it.putExtra("NAME", name);
-        it.putExtra("REALNAME", maincat);
-        startActivity(it);
-        finish();
-    }
+        if(nativeAdContainer.getVisibility() == View.VISIBLE) {
+            dismissAd();
+        }
+        else {
+            if (name.equalsIgnoreCase("featured")) {
+                Intent it = new Intent(activity, SubCatImage.class);
+                it.putExtra("NAME", name);
+                it.putExtra("REALNAME", maincat);
+                Log.e("NAME", name);
+                Log.e("REALNAME", maincat);
+                startActivity(it);
+                finish();// close this activity and return to preview activity (if there is any)
+            } else {
+                Intent it = new Intent(activity, ImageListActivity.class);
+                it.putExtra("NAME", name);
+                it.putExtra("REALNAME", maincat);
+                Log.e("NAME", name);
+                Log.e("REALNAME", maincat);
+                startActivity(it);
+                finish();
+            }
+        }
 }
+
+
+    public void Imagecategory(String subcat) {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<ImageList> countrycall = apiInterface.imagelistpojo(subcat);
+        countrycall.enqueue(new Callback<ImageList>() {
+            @Override
+            public void onResponse(Call<ImageList> call, Response<ImageList> response) {
+                dialog.dismiss();
+                if (response.body().getStatus().equals("Success")) {
+                    if (Constants.imageListData != null) {
+                        Constants.imageListData.clear();
+                    }
+                    Constants.imageListData.addAll(response.body().getImages());
+                    rv_image.setHasFixedSize(true);
+                    mLayoutManager = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
+                    rv_image.setLayoutManager(mLayoutManager);
+                    ImageListAdapter adapter = new ImageListAdapter(activity,maincat);
+                    rv_image.setAdapter(adapter);
+                }
+                else
+                {
+                    Toast.makeText(activity,"Try Again", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ImageList> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(activity, "No Internet", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void loadNativeAd() {
+        // Instantiate a NativeAd object.
+        // NOTE: the placement ID will eventually identify this as your App, you can ignore it for
+        // now, while you are testing and replace it later when you have signed up.
+        // While you are using this temporary code you will only get test ads and if you release
+        // your code like this to the Google Play your users will not receive ads (you will get a no fill error).
+        nativeAd = new NativeAd(this,"263700057716193_263738751045657");
+        nativeAd.setAdListener(new NativeAdListener() {
+            @Override
+            public void onMediaDownloaded(Ad ad) {
+                // Native ad finished downloading all assets
+                Log.e(TAG, "Native ad finished downloading all assets.");
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                // Native ad failed to load
+                Log.e(TAG, "Native ad failed to load: " + adError.getErrorMessage());
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                // Native ad is loaded and ready to be displayed
+                showNativeAdWithDelay();
+
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                // Native ad clicked
+                Log.d(TAG, "Native ad clicked!");
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                // Native ad impression
+                Log.d(TAG, "Native ad impression logged!");
+            }
+        });
+
+        // Request an ad
+        nativeAd.loadAd();
+
+    }
+    private void inflateAd(NativeAd nativeAd) {
+
+        nativeAd.unregisterView();
+        nativeAd.destroy();
+        // Add the Ad view into the ad container.
+        nativeAdContainer = findViewById(R.id.native_ad_container);
+        nativeAdContainer.setVisibility(View.VISIBLE);
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        // Inflate the Ad view.  The layout referenced should be the one you created in the last step.
+        adView = (LinearLayout) inflater.inflate(R.layout.native_ad_layout_1, nativeAdContainer, false);
+        nativeAdContainer.addView(adView);
+
+        // Add the AdChoices icon
+        LinearLayout adChoicesContainer = findViewById(R.id.ad_choices_container);
+        AdChoicesView adChoicesView = new AdChoicesView(activity, nativeAd, true);
+        adChoicesContainer.addView(adChoicesView, 0);
+
+        // Create native UI using the ad metadata.
+        AdIconView nativeAdIcon = adView.findViewById(R.id.native_ad_icon);
+        TextView nativeAdTitle = adView.findViewById(R.id.native_ad_title);
+        MediaView nativeAdMedia = adView.findViewById(R.id.native_ad_media);
+        TextView nativeAdSocialContext = adView.findViewById(R.id.native_ad_social_context);
+        TextView nativeAdBody = adView.findViewById(R.id.native_ad_body);
+        TextView sponsoredLabel = adView.findViewById(R.id.native_ad_sponsored_label);
+        Button nativeAdCallToAction = adView.findViewById(R.id.native_ad_call_to_action);
+
+        // Set the Text.
+        nativeAdTitle.setText(nativeAd.getAdvertiserName());
+        nativeAdBody.setText(nativeAd.getAdBodyText());
+        nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
+        nativeAdCallToAction.setVisibility(nativeAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
+        nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
+        sponsoredLabel.setText(nativeAd.getSponsoredTranslation());
+
+        // Create a list of clickable views
+        List<View> clickableViews = new ArrayList<>();
+        clickableViews.add(nativeAdTitle);
+        clickableViews.add(nativeAdCallToAction);
+
+        // Register the Title and CTA button to listen for clicks.
+        nativeAd.registerViewForInteraction(
+                adView,
+                nativeAdMedia,
+                nativeAdIcon,
+                clickableViews);
+    }
+    public void dismissAd() {
+        nativeAdContainer.setVisibility(View.GONE);
+        nativeAd.destroy();
+    }
+
+
+    private void showNativeAdWithDelay() {
+
+         Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Check if nativeAd has been loaded successfully
+                if(nativeAd == null || !nativeAd.isAdLoaded()) {
+                    return;
+                }
+                // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
+                if(nativeAd.isAdInvalidated()) {
+                    return;
+                }
+                inflateAd(nativeAd); // Inflate Native Ad into Container same as previous code example
+            }
+        }, 1000 * 60 * 1/4); // Show the ad after 15 minutes
+    }
 }

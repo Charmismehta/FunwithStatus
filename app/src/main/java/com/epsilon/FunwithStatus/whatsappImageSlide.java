@@ -67,6 +67,7 @@ public class whatsappImageSlide extends AppCompatActivity {
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
     Toolbar toolbar;
+    TextView upload_it;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +95,7 @@ public class whatsappImageSlide extends AppCompatActivity {
         layout_content = (LinearLayout) findViewById(R.id.layout_content);
         ll = (LinearLayout) findViewById(R.id.ll);
         mainlayout = (RelativeLayout) findViewById(R.id.mainlayout);
+        upload_it = (TextView) findViewById(R.id.upload_it);
         share.setColorFilter(getResources().getColor(R.color.colorAccent));
         download.setColorFilter(getResources().getColor(R.color.colorAccent));
 
@@ -107,6 +109,16 @@ public class whatsappImageSlide extends AppCompatActivity {
                 }
             });
         }
+
+        upload_it.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadMultipart(bitmap);
+            }
+        });
+
+
+
 
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -319,6 +331,28 @@ public class whatsappImageSlide extends AppCompatActivity {
 
         });
     }
+
+    public void uploadMultipart(String bitmap) {
+
+        String user = sessionmanager.getValue(Sessionmanager.Name);
+
+        try {
+            String uploadId = UUID.randomUUID().toString();
+            //Creating a multi part request
+            new MultipartUploadRequest(this, uploadId, Constants.UPLOAD_URL)
+                    .addFileToUpload(bitmap, "image") //Adding file
+                    .addParameter("subcata", "Featured") //Adding text parameter to the request
+                    .addParameter("name", user) //Adding text parameter to the request
+                    .addParameter("user", user) //Adding text parameter to the request
+                    .setNotificationConfig(new UploadNotificationConfig())
+                    .setMaxRetries(2)
+                    .startUpload(); //Starting the upload
+            Toast.makeText(activity, "Add Successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception exc) {
+
+        }
+    }
+
     private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (activity.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)

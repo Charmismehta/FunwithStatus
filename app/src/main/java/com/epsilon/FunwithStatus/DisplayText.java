@@ -18,6 +18,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -36,12 +38,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
+import com.epsilon.FunwithStatus.adapter.TrendingAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
 import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
 import com.epsilon.FunwithStatus.jsonpojo.dislike.DisLike;
 import com.epsilon.FunwithStatus.jsonpojo.registration.Registration;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
+import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
@@ -60,11 +64,14 @@ public class DisplayText extends AppCompatActivity {
 
     EmojiconTextView display_text;
     ImageView share, like, dislike, copy, delete, whatsapp,facebook;
+    TextView catname;
     Activity activity;
     String text, Id, name, email, u_name, loginuser;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
     RelativeLayout rlayout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -358,6 +365,7 @@ public class DisplayText extends AppCompatActivity {
         whatsapp = (ImageView) findViewById(R.id.whatsapp);
         facebook = (ImageView) findViewById(R.id.facebook);
         rlayout = (RelativeLayout) findViewById(R.id.rlayout);
+        catname = (TextView) findViewById(R.id.catname);
 
 
     }

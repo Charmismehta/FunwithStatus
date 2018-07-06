@@ -38,6 +38,7 @@ import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
 import com.epsilon.FunwithStatus.jsonpojo.dislike.DisLike;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.StatusDatum;
+import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
@@ -108,6 +109,8 @@ public class TextSlideAdapter extends PagerAdapter{
         if (loginuser.equalsIgnoreCase(u_name)) {
             delete.setVisibility(View.VISIBLE);
         }
+
+
 
 
         like.setOnClickListener(new View.OnClickListener() {

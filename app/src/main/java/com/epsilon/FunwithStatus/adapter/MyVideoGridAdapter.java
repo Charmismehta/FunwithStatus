@@ -19,6 +19,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,9 @@ import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.SingleUploadBroadcastReceiver;
 import com.epsilon.FunwithStatus.fragment.VideoFragment;
+import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoList;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
@@ -58,14 +63,15 @@ import java.nio.channels.FileChannel;
 import java.util.UUID;
 
 import cn.jzvd.JZVideoPlayerStandard;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroadcastReceiver.Delegate{
 
     Activity context;
     LayoutInflater inflater;
     Sessionmanager sessionmanager;
-
-
 
     public MyVideoGridAdapter(Activity context) {
 
@@ -135,6 +141,10 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
         } else {
             Toast.makeText(context, "no image", Toast.LENGTH_SHORT).show();
         }
+
+
+
+
 
         share.setColorFilter(context.getResources().getColor(R.color.colorAccent));
         download.setColorFilter(context.getResources().getColor(R.color.colorAccent));
@@ -300,6 +310,9 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
 
         return convertView;
     }
+
+
+
 
     @Override
     public void onProgress(int progress) {

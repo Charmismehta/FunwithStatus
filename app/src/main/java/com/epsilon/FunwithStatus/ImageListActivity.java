@@ -68,6 +68,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import okhttp3.MediaType;
@@ -82,7 +84,7 @@ import static com.epsilon.FunwithStatus.utills.Sessionmanager.Id;
 public class ImageListActivity extends AppCompatActivity {
 
     Activity context;
-    TextView text, title;
+    TextView title;
     ImageView ileft, iright;
     private RecyclerView recyclerView;
     String subcat,maincat;
@@ -228,7 +230,6 @@ public class ImageListActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         swipelayout=(SwipeRefreshLayout) findViewById(R.id.swipelayout);
-        text=(TextView) findViewById(R.id.text);
         title=(TextView) findViewById(R.id.title);
         ileft=(ImageView) findViewById(R.id.ileft);
         iright=(ImageView) findViewById(R.id.iright);
@@ -253,6 +254,8 @@ public class ImageListActivity extends AppCompatActivity {
                     if (Constants.imageListData != null) {
                         Constants.imageListData.clear();
                     }
+                    List<Object> recipeList = new ArrayList<>();
+                    recipeList.add(response.body());
                     Constants.imageListData.addAll(response.body().getImages());
                     ImageListAdapter adapter = new ImageListAdapter(context,maincat);
                     recyclerView.setAdapter(adapter);

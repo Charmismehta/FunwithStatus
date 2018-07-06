@@ -46,6 +46,7 @@
 
 
     <LinearLayout
+        android:id="@+id/main"
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/_25sdp"
@@ -108,4 +109,5 @@
             android:textStyle="bold" />
 
     </LinearLayout>
+
 </RelativeLayout>
