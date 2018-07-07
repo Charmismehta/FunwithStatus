@@ -3,8 +3,13 @@ package com.epsilon.FunwithStatus.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,26 +71,26 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
 
             {
                 @Override
-                public void onClick (View v){
+                public void onClick (View v) {
                     final PopupMenu popup = new PopupMenu(activity, v);
                     popup.getMenuInflater().inflate(R.menu.menuitem, popup.getMenu());
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.delete_post:
-                                    Toast.makeText(activity, "delete Post", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case R.id.edit_post:
-                                    Toast.makeText(activity, "edit Post", Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                            return true;
-                        }
-                    });
-                    popup.show(); //showing popup menu
-                }
-            });
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.delete_post:
+                                        Toast.makeText(activity, "delete Post", Toast.LENGTH_SHORT).show();
+                                        break;
+                                    case R.id.edit_post:
+                                        Toast.makeText(activity, "edit Post", Toast.LENGTH_SHORT).show();
+                                        break;
+                                }
+                                return true;
+                            }
+                        });
+                        popup.show(); //showing popup menu
+                    }
+            });
     }
 
 

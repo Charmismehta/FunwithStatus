@@ -48,6 +48,7 @@ import com.epsilon.FunwithStatus.ImageListActivity;
 import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
+import com.epsilon.FunwithStatus.adapter.FirstFregmetnAdapter;
 import com.epsilon.FunwithStatus.adapter.TrendingImgAdapter;
 import com.epsilon.FunwithStatus.adapter.VideoAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
@@ -106,11 +107,11 @@ public class VideoFragment extends Fragment{
             }
         });
 
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
+        FirstFregmetnAdapter adapter = new FirstFregmetnAdapter(activity);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        floatingbtn = (FloatingActionButton) view.findViewById(R.id.floatingbtn);
+        recyclerView.setAdapter(adapter);
 
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");

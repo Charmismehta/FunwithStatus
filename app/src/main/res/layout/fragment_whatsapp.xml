@@ -3,17 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".fragment.WhatsappFragment">
 
 
     <LinearLayout
-        android:background="@drawable/lightbg"
         android:layout_gravity="center"
+        android:background="@drawable/lightbg"
         android:layout_marginTop="@dimen/_50sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <LinearLayout android:layout_gravity="center"
+    <LinearLayout
+        android:layout_marginTop="@dimen/_50sdp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -23,7 +25,6 @@
         android:layout_marginBottom="@dimen/_10sdp"
         android:layout_marginLeft="@dimen/_30sdp"
         android:layout_marginRight="@dimen/_30sdp"
-        android:layout_gravity="center_vertical"
         android:text="Whatsapp Status Images"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp" />
@@ -33,7 +34,6 @@
         android:layout_marginLeft="@dimen/_30sdp"
         android:layout_marginRight="@dimen/_30sdp"
         android:text="Whatsapp Status Videos"
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp" />
 

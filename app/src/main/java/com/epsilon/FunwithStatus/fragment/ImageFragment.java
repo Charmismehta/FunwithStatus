@@ -1,6 +1,7 @@
 package com.epsilon.FunwithStatus.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -18,23 +19,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.Dashboard;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.adapter.AlbumsAdapter;
+import com.epsilon.FunwithStatus.adapter.RecycleImageAdapter;
+import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Album;
+import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Helper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class ImageFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private AlbumsAdapter adapter;
-    private List<Album> albumList;
     Activity context;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,17 +62,13 @@ public class ImageFragment extends Fragment {
         initCollapsingToolbar(view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-
-        albumList = new ArrayList<>();
-        adapter = new AlbumsAdapter(getActivity(), albumList);
-
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
-        prepareAlbums();
+        Categories();
 
         try {
             Glide.with(this).load(R.drawable.cover1).into((ImageView)view.findViewById(R.id.backdrop));
@@ -105,44 +113,7 @@ public class ImageFragment extends Fragment {
 
     /**
      * Adding few albums for testing
-     */
-    private void prepareAlbums() {
-        int[] covers = new int[]{
-                R.drawable.trending,
-                R.drawable.laughter,
-                R.drawable.emotions,
-                R.drawable.life,
-                R.drawable.wishes,
-                R.drawable.sports,
-                R.drawable.language,
-                R.drawable.entertainment};
-
-        Album a = new Album("Featured", 1, covers[0]);
-        albumList.add(a);
-
-        a = new Album("Laughter", 3, covers[1]);
-        albumList.add(a);
-
-        a = new Album("Emotions", 5, covers[2]);
-        albumList.add(a);
-
-        a = new Album("Life", 4, covers[3]);
-        albumList.add(a);
-
-        a = new Album("Wishes", 5, covers[4]);
-        albumList.add(a);
-
-        a = new Album("Sports", 2, covers[5]);
-        albumList.add(a);
-
-        a = new Album("Language", 4, covers[6]);
-        albumList.add(a);
-
-        a = new Album("Entertainment", 3, covers[7]);
-        albumList.add(a);
-        adapter.notifyDataSetChanged();
-    }
-
+     *
     /**
      * RecyclerView item decoration - give equal margin around grid item
      */
@@ -187,6 +158,41 @@ public class ImageFragment extends Fragment {
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
+    public void Categories() {
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+
+        Call<Categories> logincall = apiInterface.categoriespojo();
+        logincall.enqueue(new Callback<Categories>() {
+            @Override
+            public void onResponse(Call<Categories> call, Response<Categories> response) {
+                dialog.dismiss();
+                if (response.body().getStatus() == 1) {
+                    if (Constants.categoriesData != null) {
+                        Constants.categoriesData.clear();
+                    }
+                    if (!Constants.categoriesData.equals("") && Constants.statusData != null) {
+                        Constants.categoriesData.addAll(response.body().getData());
+                        AlbumsAdapter adapter = new AlbumsAdapter(getActivity());
+                        recyclerView.setAdapter(adapter);
+                        if (adapter != null)
+                            adapter.notifyDataSetChanged();
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Categories> call, Throwable t) {
+                dialog.dismiss();
+                Helper.showToastMessage(context,"No Internet Connection");
+            }
+        });
     }
 
     @Override

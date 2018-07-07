@@ -23,7 +23,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_100sdp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="fitStart"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/trending" />
 
                 <TextView
@@ -36,17 +36,6 @@
                     android:text="Jenil Gopani"
                     android:textColor="@color/album_title"
                     android:textSize="@dimen/album_title" />
-
-                <TextView
-                    android:id="@+id/count1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/title1"
-                    android:paddingBottom="@dimen/songs_count_padding_bottom"
-                    android:paddingLeft="@dimen/album_title_padding"
-                    android:paddingRight="@dimen/album_title_padding"
-                    android:text="3 Subcategory"
-                    android:textSize="@dimen/songs_count" />
 
             </RelativeLayout>
 

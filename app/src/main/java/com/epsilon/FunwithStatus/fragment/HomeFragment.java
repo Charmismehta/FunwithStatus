@@ -1,35 +1,56 @@
 package com.epsilon.FunwithStatus.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.Dashboard;
+import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
+import com.epsilon.FunwithStatus.adapter.RecycleImageAdapter;
+import com.epsilon.FunwithStatus.adapter.TextListAdapter;
+import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
+import com.epsilon.FunwithStatus.jsonpojo.login.Login;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
+import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Helper;
+import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class HomeFragment extends Fragment {
 
     Context context;
-    LinearLayout ic_trending,ic_politics,ic_groupadmin,ic_teacherstudent,ic_encourage,ic_friendship,ic_goodmorning,ic_goodnight,ic_birthday,ic_thankyou,ic_Anniversary,
-            ic_congratulation,ic_insult,ic_flirt,ic_love,ic_shayri,ic_sad,ic_sorry,ic_smile,ic_doublemeaning,ic_gujrati,ic_marathi,ic_religion,ic_music,
-            ic_lyrics,ic_movie,ic_status;
-    TextView tv_trending,tv_politics,tv_groupadmin,tv_teacherstudent,tv_encourage,tv_friendship,tv_goodmorning,tv_goodnight,tv_birthday,tv_thankyou,tv_Anniversary,
-            tv_congratulation, tv_insult,tv_flirt,tv_love,tv_shayri,tv_sad,tv_sorry,tv_smile,tv_doublemeaning,tv_gujrati,tv_marathi,tv_religion,tv_music,
-            tv_lyrics,tv_movie,tv_status;
-
+    RecyclerView recycler_view;
+    SwipeRefreshLayout swipelayout;
+    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    Sessionmanager sessionmanager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,8 +59,23 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         getActivity().setTitle(Html.fromHtml("<font color='#ffffff'> Texts </font>"));
         context = getContext();
-        IpMappings(view);
-        Lisnter();
+        sessionmanager = new Sessionmanager(getActivity());
+        recycler_view =(RecyclerView)view.findViewById(R.id.recycler_view);
+        swipelayout =(SwipeRefreshLayout) view.findViewById(R.id.swipelayout);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 4);
+        recycler_view.setLayoutManager(mLayoutManager);
+        recycler_view.addItemDecoration(new GridSpacingItemDecoration(4, dpToPx(10), true));
+        recycler_view.setItemAnimator(new DefaultItemAnimator());
+        Categories();
+
+        swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Categories();
+                swipelayout.setRefreshing(false);
+            }
+        });
+
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
         AdView mAdView = view.findViewById(R.id.adView);
@@ -78,295 +114,46 @@ public class HomeFragment extends Fragment {
         return view;
 
     }
-
-    private void Lisnter() {
-        ic_trending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_trending.getText().toString());
-                Log.e("NAME",tv_trending.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_politics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_politics.getText().toString());
-                Log.e("NAME",tv_politics.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_groupadmin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_groupadmin.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_teacherstudent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_teacherstudent.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_encourage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_encourage.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_friendship.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_friendship.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_goodmorning.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_goodmorning.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_goodnight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_goodnight.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_birthday.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_birthday.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_thankyou.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_thankyou.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_Anniversary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_Anniversary.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_congratulation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_congratulation.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_insult.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_insult.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_flirt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_flirt.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_love.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_love.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_shayri.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_shayri.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_sad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_sad.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_sorry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_sorry.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_smile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_smile.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_doublemeaning.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_doublemeaning.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_gujrati.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_gujrati.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_marathi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_marathi.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_religion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME","Religion");
-                startActivity(it);
-            }
-        });
-        ic_music.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_music.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_lyrics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_lyrics.getText().toString());
-                startActivity(it);
-
-            }
-        });
-        ic_movie.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME","Movie");
-                startActivity(it);
-            }
-        });
-        ic_status.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_status.getText().toString());
-                startActivity(it);
-            }
-        });
-        ic_status.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(getContext(), TextListActivity.class);
-                it.putExtra("NAME",tv_status.getText().toString());
-                startActivity(it);
-
-            }
-        });
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
-    private void IpMappings(View view) {
-        ic_trending = (LinearLayout)view.findViewById(R.id.ic_trending);
-        ic_politics = (LinearLayout)view.findViewById(R.id.ic_politics);
-        ic_groupadmin = (LinearLayout)view.findViewById(R.id.ic_groupadmin);
-        ic_teacherstudent = (LinearLayout)view.findViewById(R.id.ic_teacherstudent);
-        ic_encourage = (LinearLayout)view.findViewById(R.id.ic_encourage);
-        ic_friendship = (LinearLayout)view.findViewById(R.id.ic_friendship);
-        ic_goodmorning = (LinearLayout)view.findViewById(R.id.ic_goodmorning);
-        ic_goodnight = (LinearLayout)view.findViewById(R.id.ic_goodnight);
-        ic_birthday = (LinearLayout)view.findViewById(R.id.ic_birthday);
-        ic_thankyou = (LinearLayout)view.findViewById(R.id.ic_thankyou);
-        ic_Anniversary = (LinearLayout)view.findViewById(R.id.ic_Anniversary);
-        ic_congratulation = (LinearLayout)view.findViewById(R.id.ic_congratulation);
-        ic_insult = (LinearLayout)view.findViewById(R.id.ic_insult);
-        ic_flirt = (LinearLayout)view.findViewById(R.id.ic_flirt);
-        ic_love = (LinearLayout)view.findViewById(R.id.ic_love);
-        ic_shayri = (LinearLayout)view.findViewById(R.id.ic_shayri);
-        ic_sad = (LinearLayout)view.findViewById(R.id.ic_sad);
-        ic_sorry = (LinearLayout)view.findViewById(R.id.ic_sorry);
-        ic_smile = (LinearLayout)view.findViewById(R.id.ic_smile);
-        ic_doublemeaning = (LinearLayout)view.findViewById(R.id.ic_doublemeaning);
-        ic_gujrati = (LinearLayout)view.findViewById(R.id.ic_gujrati);
-        ic_marathi = (LinearLayout)view.findViewById(R.id.ic_marathi);
-        ic_religion = (LinearLayout)view.findViewById(R.id.ic_religion);
-        ic_music = (LinearLayout)view.findViewById(R.id.ic_music);
-        ic_lyrics = (LinearLayout)view.findViewById(R.id.ic_lyrics);
-        ic_movie = (LinearLayout)view.findViewById(R.id.ic_movie);
-        ic_status = (LinearLayout)view.findViewById(R.id.ic_status);
-        tv_politics = (TextView) view.findViewById(R.id.tv_politics);
-        tv_trending = (TextView) view.findViewById(R.id.tv_trending);
-        tv_groupadmin = (TextView) view.findViewById(R.id.tv_groupadmin);
-        tv_teacherstudent = (TextView) view.findViewById(R.id.tv_teacherstudent);
-        tv_encourage = (TextView) view.findViewById(R.id.tv_encourage);
-        tv_friendship = (TextView) view.findViewById(R.id.tv_friendship);
-        tv_friendship = (TextView) view.findViewById(R.id.tv_friendship);
-        tv_goodmorning = (TextView) view.findViewById(R.id.tv_goodmorning);
-        tv_goodnight = (TextView) view.findViewById(R.id.tv_goodnight);
-        tv_birthday = (TextView) view.findViewById(R.id.tv_birthday);
-        tv_thankyou = (TextView) view.findViewById(R.id.tv_thankyou);
-        tv_Anniversary = (TextView) view.findViewById(R.id.tv_Anniversary);
-        tv_congratulation = (TextView) view.findViewById(R.id.tv_congratulation);
-        tv_insult = (TextView) view.findViewById(R.id.tv_insult);
-        tv_flirt = (TextView) view.findViewById(R.id.tv_flirt);
-        tv_love = (TextView) view.findViewById(R.id.tv_love);
-        tv_shayri = (TextView) view.findViewById(R.id.tv_shayri);
-        tv_sad = (TextView) view.findViewById(R.id.tv_sad);
-        tv_sorry = (TextView) view.findViewById(R.id.tv_sorry);
-        tv_smile = (TextView) view.findViewById(R.id.tv_smile);
-        tv_doublemeaning = (TextView) view.findViewById(R.id.tv_doublemeaning);
-        tv_gujrati = (TextView) view.findViewById(R.id.tv_gujrati);
-        tv_marathi = (TextView) view.findViewById(R.id.tv_marathi);
-        tv_religion = (TextView) view.findViewById(R.id.tv_religion);
-        tv_music = (TextView) view.findViewById(R.id.tv_music);
-        tv_lyrics = (TextView) view.findViewById(R.id.tv_lyrics);
-        tv_movie = (TextView) view.findViewById(R.id.tv_movie);
-        tv_status = (TextView) view.findViewById(R.id.tv_status);
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
     }
+
 
     @Override
     public void onResume() {
@@ -383,6 +170,41 @@ public class HomeFragment extends Fragment {
                     return true;
                 }
                 return false;
+            }
+        });
+    }
+
+    public void Categories() {
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+
+        Call<Categories> logincall = apiInterface.categoriespojo();
+        logincall.enqueue(new Callback<Categories>() {
+            @Override
+            public void onResponse(Call<Categories> call, Response<Categories> response) {
+                dialog.dismiss();
+                if (response.body().getStatus() == 1) {
+                    if (Constants.categoriesData != null) {
+                        Constants.categoriesData.clear();
+                    }
+                    if (!Constants.categoriesData.equals("") && Constants.statusData != null) {
+                        Constants.categoriesData.addAll(response.body().getData());
+                        RecycleImageAdapter adapter = new RecycleImageAdapter(getActivity());
+                        recycler_view.setAdapter(adapter);
+                        if (adapter != null)
+                            adapter.notifyDataSetChanged();
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Categories> call, Throwable t) {
+                dialog.dismiss();
+                Helper.showToastMessage(context,"No Internet Connection");
             }
         });
     }

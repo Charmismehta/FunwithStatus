@@ -157,25 +157,25 @@ public class ImageListActivity extends AppCompatActivity {
         iright.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
-                {
+//                if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
+//                {
                     Intent it = new Intent(context,Demo.class);
                     it.putExtra("NAME",subcat);
                     it.putExtra("REALNAME",maincat);
                     startActivity(it);
                     finish();
-                }
-                else
-                {
-                    Intent mainIntent = new Intent(context, LoginPage.class);
-                    startActivity(mainIntent);
-                    LayoutInflater inflater = getLayoutInflater();
-                    View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.llCustom));
-                    Toast toast = new Toast(getApplicationContext());
-                    toast.setDuration(Toast.LENGTH_LONG);
-                    toast.setView(toastLayout);
-                    toast.show();
-                }
+//                }
+//                else
+//                {
+//                    Intent mainIntent = new Intent(context, LoginPage.class);
+//                    startActivity(mainIntent);
+//                    LayoutInflater inflater = getLayoutInflater();
+//                    View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.llCustom));
+//                    Toast toast = new Toast(getApplicationContext());
+//                    toast.setDuration(Toast.LENGTH_LONG);
+//                    toast.setView(toastLayout);
+//                    toast.show();
+//                }
             }
         });
     }

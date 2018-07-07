@@ -85,7 +85,6 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
     int i;
 
 
-
     // constructor
     public FullScreenTrenImageAdapter(Activity activity, String name, String maincat, int i) {
         this._activity = activity;

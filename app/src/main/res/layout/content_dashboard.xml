@@ -9,12 +9,4 @@
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <LinearLayout
-        android:gravity="center"
-        android:visibility="gone"
-        android:id="@+id/native_ad_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
-
 </RelativeLayout>

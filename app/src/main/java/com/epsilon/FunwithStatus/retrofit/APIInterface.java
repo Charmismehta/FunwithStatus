@@ -3,6 +3,7 @@ package com.epsilon.FunwithStatus.retrofit;
 
 import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.addstatus.AddStatus;
+import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
 import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
 import com.epsilon.FunwithStatus.jsonpojo.deletevideo.DeleteVideo;
@@ -12,6 +13,7 @@ import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategory;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
+import com.epsilon.FunwithStatus.jsonpojo.logout.Logout;
 import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
@@ -50,9 +52,17 @@ public interface APIInterface {
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
     @POST(ServerURl.REGISTER)
-    Call<Registration> registerPojoCall(@Field("name") String name,
+    Call<Registration> registerPojoCall(@Field("login_type") String login_type,
+                                        @Field("name") String name,
                                         @Field("email") String email,
                                         @Field("password") String password);
+
+    @GET(ServerURl.LOGOUT)
+    Call<Logout> logout();
+
+
+    @GET(ServerURl.CATEGORIES)
+    Call<Categories> categoriespojo();
 
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})

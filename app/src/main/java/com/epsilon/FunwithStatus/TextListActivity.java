@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,17 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
 import com.epsilon.FunwithStatus.adapter.TrendingAdapter;
-import com.epsilon.FunwithStatus.fragment.HomeFragment;
-import com.epsilon.FunwithStatus.fragment.ImageFragment;
-import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
@@ -37,11 +27,11 @@ import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.facebook.ads.*;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAd;
+import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,29 +45,21 @@ public class TextListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     String name;
-    private InterstitialAd interstitialAd;
-    com.google.android.gms.ads.InterstitialAd mInterstitialAd;
-    private final String TAG = TextListActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_list);
         context = this;
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        idMapping();
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         name = getIntent().getStringExtra("NAME");
+        textstatus(name);
 
 
-        if (name.equalsIgnoreCase("Trending")) {
-            trending();
-        } else {
-            textstatus(name);
-        }
-
-        idMapping();
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
@@ -96,82 +78,14 @@ public class TextListActivity extends AppCompatActivity {
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (name.equalsIgnoreCase("Trending")) {
-                    trending();
-                } else {
-                    textstatus(name);
-                }
+                textstatus(name);
                 swipelayout.setRefreshing(false);
             }
         });
-
-        interstitialAd = new InterstitialAd(this, getString(R.string.placement_id));
-        // Set listeners for the Interstitial Ad
-        interstitialAd.setAdListener(new InterstitialAdListener() {
-            @Override
-            public void onInterstitialDisplayed(Ad ad) {
-                // Interstitial ad displayed callback
-                Log.e(TAG, "Interstitial ad displayed.");
-            }
-
-            @Override
-            public void onInterstitialDismissed(Ad ad) {
-                // Interstitial dismissed callback
-                Log.e(TAG, "Interstitial ad dismissed.");
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                AdRequest adRequest = new AdRequest.Builder()
-                        .build();
-                // Ad error callback
-                Log.e(TAG, "Interstitial ad failed to load: " + adError.getErrorMessage());
-
-                mInterstitialAd = new com.google.android.gms.ads.InterstitialAd(context);
-                mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
-                mInterstitialAd.loadAd(adRequest);
-                mInterstitialAd.setAdListener(new com.google.android.gms.ads.AdListener() {
-                    public void onAdLoaded() {
-                        showInterstitial();
-                    }
-                });
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Interstitial ad is loaded and ready to be displayed
-                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!");
-                // Show the ad
-                interstitialAd.show();
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!");
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!");
-            }
-        });
-
-        // For auto play video ads, it's recommended to load the ad
-        // at least 30 seconds before it is shown
-        interstitialAd.loadAd();
-    }
-
-    private void showInterstitial() {
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
     }
 
     private void idMapping() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         swipelayout = (SwipeRefreshLayout) findViewById(R.id.swipelayout);
     }
 
@@ -209,35 +123,35 @@ public class TextListActivity extends AppCompatActivity {
         });
     }
 
-    public void trending() {
-        final ProgressDialog dialog = new ProgressDialog(context);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<Trending> countrycall = apiInterface.trendingpojo();
-        countrycall.enqueue(new Callback<Trending>() {
-            @Override
-            public void onResponse(Call<Trending> call, Response<Trending> response) {
-                dialog.dismiss();
-
-                if (Constants.trendingData != null) {
-                    Constants.trendingData.clear();
-                }
-                if (!Constants.trendingData.equals("") && Constants.statusData != null) {
-                    Constants.trendingData.addAll(response.body().getData());
-                    TrendingAdapter adapter = new TrendingAdapter(context);
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Trending> call, Throwable t) {
-                dialog.dismiss();
-            }
-        });
-    }
+//    public void trending() {
+////        final ProgressDialog dialog = new ProgressDialog(context);
+////        dialog.setCanceledOnTouchOutside(false);
+////        dialog.setMessage("Please Wait...");
+////        dialog.show();
+////        final Call<Trending> countrycall = apiInterface.trendingpojo();
+////        countrycall.enqueue(new Callback<Trending>() {
+////            @Override
+////            public void onResponse(Call<Trending> call, Response<Trending> response) {
+////                dialog.dismiss();
+////
+////                if (Constants.trendingData != null) {
+////                    Constants.trendingData.clear();
+////                }
+////                if (!Constants.trendingData.equals("") && Constants.statusData != null) {
+////                    Constants.trendingData.addAll(response.body().getData());
+////                    TrendingAdapter adapter = new TrendingAdapter(context);
+////                    recyclerView.setAdapter(adapter);
+////                } else {
+////                    Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
+////                }
+////            }
+////
+////            @Override
+////            public void onFailure(Call<Trending> call, Throwable t) {
+////                dialog.dismiss();
+////            }
+////        });
+////    }
 
     @Override
     public void onBackPressed() {
@@ -251,13 +165,7 @@ public class TextListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(name.equalsIgnoreCase("Trending"))
-        {
-           menu.close();
-        }
-        else {
-            getMenuInflater().inflate(R.menu.menuimage, menu);
-        }
+        getMenuInflater().inflate(R.menu.menuimage, menu);
         return true;
     }
 

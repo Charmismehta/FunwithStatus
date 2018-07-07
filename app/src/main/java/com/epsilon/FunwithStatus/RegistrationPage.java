@@ -84,11 +84,11 @@ Sessionmanager sessionmanager;
                     register_eemail.setError("Please Enter Valid Email ID");
                 } else if (register_epassword.getText().toString().length() == 0) {
                     register_epassword.setError("Please Enter Password");
-                } else if (register_epassword.getText().toString().length() < 8) {
-                    register_epassword.setError("Please Enter Minimum 8 Digit");
+                } else if (register_epassword.getText().toString().length() < 6) {
+                    register_epassword.setError("Please Enter Minimum 6 Digit");
                 } else {
                     if (Helper.isConnectingToInternet(context)) {
-                        Registercall(name.getText().toString(),
+                        Registercall("email",name.getText().toString(),
                                 register_eemail.getText().toString(),
                                 register_epassword.getText().toString());
 
@@ -100,18 +100,18 @@ Sessionmanager sessionmanager;
 
             }
 
-            private void Registercall(String name, String email, String password) {
+            private void Registercall(String login_type,String name, String email, String password) {
                 final ProgressDialog dialog = new ProgressDialog(context);
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.setMessage("Please Wait...");
                 dialog.show();
-                Call<Registration> registercall = apiInterface.registerPojoCall(name ,email,password);
+                Call<Registration> registercall = apiInterface.registerPojoCall(login_type,name,email,password);
 
                 registercall.enqueue(new Callback<Registration>() {
                     @Override
                     public void onResponse(Call<Registration> call, Response<Registration> response) {
                         dialog.dismiss();
-                        if (response.body().getStatus().equals("Success")) {
+                        if (response.body().getStatus() == 1){
                             sessionmanager.createSession_userRegister((response.body().getData()));
                             Sessionmanager.setPreferenceBoolean(RegistrationPage.this, Constants.IS_LOGIN,true);
                             Toast.makeText(RegistrationPage.this,response.body().getMessage(), Toast.LENGTH_SHORT).show();

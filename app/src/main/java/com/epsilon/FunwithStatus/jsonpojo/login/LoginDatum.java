@@ -5,9 +5,20 @@ import com.google.gson.annotations.SerializedName;
 
 public class LoginDatum {
 
-    @SerializedName("User")
+    @SerializedName("token")
+    @Expose
+    private String token;
+    @SerializedName("user")
     @Expose
     private LoginUser user;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public LoginUser getUser() {
         return user;

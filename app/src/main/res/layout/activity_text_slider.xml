@@ -6,7 +6,8 @@
     android:background="@drawable/lightbg"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,8 +16,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </android.support.v4.view.ViewPager>
-
-    </LinearLayout>
+        <LinearLayout
+            android:gravity="center"
+            android:visibility="gone"
+            android:id="@+id/native_ad_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </RelativeLayout>
 
 </LinearLayout>
 

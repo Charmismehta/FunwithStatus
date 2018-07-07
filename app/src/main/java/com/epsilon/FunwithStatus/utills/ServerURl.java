@@ -1,11 +1,15 @@
 package com.epsilon.FunwithStatus.utills;
 
 public class ServerURl {
+//    public static final String BASE_URL="https://epsiloninfotech.co.in/funwithstatus/";
+    public static final String BASE_URL="http://develop.ithetasolution.com/api/";
 
-    public static final String BASE_URL="https://epsiloninfotech.co.in/funwithstatus/";
-
-    public static final String LOGIN = "login.php";
-    public static final String REGISTER = "register.php";
+//    public static final String LOGIN = "login.php";
+    public static final String LOGIN = "login";
+    public static final String REGISTER = "register";
+    public static final String LOGOUT = "logout";
+    public static final String CATEGORIES = "category";
+    public static final String FORGETPWD = "forget_password.php";
     public static final String TEXTLIST = "show_status.php";
     public static final String ADDSTATUS = "add_status.php";
     public static final String ADDLIKE = "like_status.php";
@@ -22,5 +26,4 @@ public class ServerURl {
     public static final String VIDEOLIST = "video/show_videos.php";
     public static final String VIDEOLIKE = "video/like_video.php";
     public static final String VIDEODISLIKE = "video/dislike_video.php";
-    public static final String FORGETPWD = "forget_password.php";
 }

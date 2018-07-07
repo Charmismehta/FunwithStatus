@@ -4,32 +4,21 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Registration {
-    @SerializedName("data")
-    @Expose
-    private RegistrationDatum data;
     @SerializedName("status")
     @Expose
-    private String status;
+    private Integer status;
     @SerializedName("message")
     @Expose
     private String message;
-    @SerializedName("code")
+    @SerializedName("data")
     @Expose
-    private String code;
+    private RegistrationDatum data;
 
-    public RegistrationDatum getData() {
-        return data;
-    }
-
-    public void setData(RegistrationDatum data) {
-        this.data = data;
-    }
-
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -41,11 +30,11 @@ public class Registration {
         this.message = message;
     }
 
-    public String getCode() {
-        return code;
+    public RegistrationDatum getData() {
+        return data;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setData(RegistrationDatum data) {
+        this.data = data;
     }
 }

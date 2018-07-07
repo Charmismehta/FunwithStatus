@@ -1,6 +1,7 @@
 package com.epsilon.FunwithStatus;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,6 +47,7 @@ public class Demo extends AppCompatActivity {
     private static final int STORAGE_PERMISSION_CODE = 123;
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 12;
     private final int MY_PERMISSIONS_RECORD_AUDIO = 2;
+    private final int CROP_PIC = 3;
 
     //Bitmap to get image from gallery
     private Bitmap bitmap;
@@ -213,15 +215,24 @@ public class Demo extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
-
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                iv_image.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            performCrop();
+        }
+        // user is returning from cropping the image
+        else if (requestCode == CROP_PIC) {
+            Bundle extras = data.getExtras();
+            Bitmap thePic = extras.getParcelable("data");
+            ImageView picView = (ImageView) findViewById(R.id.iv_image);
+            picView.setImageBitmap(thePic);
         }
     }
+
+//            try {
+//                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+//                iv_image.setImageBitmap(bitmap);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+
 
 
     //method to get the file path from uri
@@ -242,6 +253,34 @@ public class Demo extends AppCompatActivity {
 //        return path;
 //    }
 
+    private void performCrop() {
+        // take care of exceptions
+        try {
+            // call the standard crop action intent (the user device may not
+            // support it)
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            // indicate image type and Uri
+            cropIntent.setDataAndType(filePath, "image/*");
+            // set crop properties
+            cropIntent.putExtra("crop", "true");
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 2);
+            cropIntent.putExtra("aspectY", 1);
+            // indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            // retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, CROP_PIC);
+        }
+        // respond to users whose devices do not support the crop action
+        catch (ActivityNotFoundException anfe) {
+            Toast toast = Toast
+                    .makeText(this, "This device doesn't support the crop action!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
 
     public static String getPath(final Context context, final Uri uri) {
 

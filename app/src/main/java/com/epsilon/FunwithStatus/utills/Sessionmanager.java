@@ -18,7 +18,7 @@ public class Sessionmanager {
     public static final String Id = "idKey";
     public static final String Email = "emailKey";
     public static final String Name = "nameKey";
-    public static final String Password = "PasswordKey";
+    public static final String Token = "TokenKey";
 
     public Sessionmanager(Context context) {
         this.context = context;
@@ -54,18 +54,18 @@ public class Sessionmanager {
 
     public void createSession_userLogin(LoginDatum userLogin)
     {
-        sharedPreferences.edit().putString(Id,userLogin.getUser().getId()).apply();
+        sharedPreferences.edit().putString(Token,userLogin.getToken()).apply();
+        sharedPreferences.edit().putString(Id,userLogin.getUser().getId().toString()).apply();
         sharedPreferences.edit().putString(Name,userLogin.getUser().getName()).apply();
         sharedPreferences.edit().putString(Email,userLogin.getUser().getEmail()).apply();
-        sharedPreferences.edit().putString(Password,userLogin.getUser().getPassword()).apply();
     }
 
 
     public void createSession_userRegister(RegistrationDatum userregister)
     {
-        sharedPreferences.edit().putString(Id,userregister.getUser().getId()).apply();
+        sharedPreferences.edit().putString(Token,userregister.getToken()).apply();
+        sharedPreferences.edit().putString(Id,userregister.getUser().getId().toString()).apply();
         sharedPreferences.edit().putString(Name,userregister.getUser().getName()).apply();
         sharedPreferences.edit().putString(Email,userregister.getUser().getEmail()).apply();
-        sharedPreferences.edit().putString(Password,userregister.getUser().getPassword()).apply();
     }
 }

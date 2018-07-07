@@ -6,31 +6,20 @@ import com.google.gson.annotations.SerializedName;
 public class Login {
     @SerializedName("status")
     @Expose
-    private String status;
-    @SerializedName("data")
-    @Expose
-    private LoginDatum data;
+    private Integer status;
     @SerializedName("message")
     @Expose
     private String message;
-    @SerializedName("code")
+    @SerializedName("data")
     @Expose
-    private String code;
+    private LoginDatum data;
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public LoginDatum getData() {
-        return data;
-    }
-
-    public void setData(LoginDatum data) {
-        this.data = data;
     }
 
     public String getMessage() {
@@ -41,11 +30,11 @@ public class Login {
         this.message = message;
     }
 
-    public String getCode() {
-        return code;
+    public LoginDatum getData() {
+        return data;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setData(LoginDatum data) {
+        this.data = data;
     }
 }

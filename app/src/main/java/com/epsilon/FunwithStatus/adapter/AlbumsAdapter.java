@@ -19,33 +19,31 @@ import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.SubCatImage;
 import com.epsilon.FunwithStatus.utills.Album;
+import com.epsilon.FunwithStatus.utills.Constants;
 
 import java.util.List;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyViewHolder> {
 
     private Context mContext;
-    private List<Album> albumList;
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, count;
-        public ImageView thumbnail, overflow;
+        public TextView title;
+        public ImageView thumbnail;
         CardView card_view1;
 
         public MyViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.title1);
-            count = (TextView) view.findViewById(R.id.count1);
             thumbnail = (ImageView) view.findViewById(R.id.thumbnail1);
             card_view1 = (CardView) view.findViewById(R.id.card_view1);
         }
     }
 
 
-    public AlbumsAdapter(Context mContext, List<Album> albumList) {
+    public AlbumsAdapter(Context mContext) {
         this.mContext = mContext;
-        this.albumList = albumList;
     }
 
     @Override
@@ -58,25 +56,12 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        final Album album = albumList.get(position);
-        holder.title.setText(album.getName());
-        holder.count.setText(album.getNumOfSongs() + " Subcategory");
-        Glide.with(mContext).load(album.getThumbnail()).into(holder.thumbnail);
-
-        holder.thumbnail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(mContext, SubCatImage.class);
-                it.putExtra("NAME",albumList.get(position).getName());
-                Log.e("NAME",albumList.get(position).getName());
-                mContext.startActivity(it);
-            }
-        });
-
+        holder.title.setText(Constants.categoriesData.get(position).getCategoryName());
+        Glide.with(mContext).load(Constants.categoriesData.get(position).getCategoryImage()).into(holder.thumbnail);
     }
 
     @Override
     public int getItemCount() {
-        return albumList.size();
+        return Constants.categoriesData.size();
     }
 }

@@ -23,6 +23,7 @@
             android:background="@drawable/appcolorsqure"
             app:tabIndicatorColor="@color/colorPrimaryDark"
             app:tabMode="fixed"
+            android:clickable="true"
             app:tabIndicatorHeight="0dp"
             app:tabTextColor="@color/colorAccent"
             app:tabBackground="@drawable/tab_selector"
