@@ -48,9 +48,12 @@ import com.epsilon.FunwithStatus.ImageListActivity;
 import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
-import com.epsilon.FunwithStatus.adapter.FirstFregmetnAdapter;
+import com.epsilon.FunwithStatus.adapter.AlbumsAdapter;
+
+import com.epsilon.FunwithStatus.adapter.RecycleVideoAdapter;
 import com.epsilon.FunwithStatus.adapter.TrendingImgAdapter;
 import com.epsilon.FunwithStatus.adapter.VideoAdapter;
+import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
 import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
 import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoList;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
@@ -76,7 +79,7 @@ import retrofit2.Response;
 public class VideoFragment extends Fragment{
 
     Activity context;
-    RecyclerView recyclerView;
+    RecyclerView recycler_view;
     FloatingActionButton floatingbtn;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     private InterstitialAd mInterstitialAd;
@@ -93,7 +96,7 @@ public class VideoFragment extends Fragment{
 
         context = getActivity();
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
+        recycler_view = (RecyclerView)view.findViewById(R.id.recycler_view);
         swipelayout=(SwipeRefreshLayout)view.findViewById(R.id.swipelayout);
 
         AdRequest adRequest = new AdRequest.Builder()
@@ -107,47 +110,22 @@ public class VideoFragment extends Fragment{
             }
         });
 
-        FirstFregmetnAdapter adapter = new FirstFregmetnAdapter(activity);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
+        recycler_view.setLayoutManager(mLayoutManager);
+        recycler_view.setItemAnimator(new DefaultItemAnimator());
 
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");
         } else {
-            videolist();
+            Categories();
         }
 
 
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                videolist();
+                Categories();
                 swipelayout.setRefreshing(false);
-            }
-        });
-
-        floatingbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
-                { Intent it = new Intent(getContext(),AddVideoActivity.class);
-                    startActivity(it);
-                }
-                else
-                {
-                    Intent mainIntent = new Intent(context, LoginPage.class);
-                    startActivity(mainIntent);
-                    LayoutInflater inflater = getLayoutInflater();
-                    View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup)view.findViewById(R.id.llCustom));
-                    Toast toast = new Toast(getActivity());
-                    toast.setDuration(Toast.LENGTH_LONG);
-                    toast.setView(toastLayout);
-                    toast.show();
-                }
-
-
             }
         });
 
@@ -186,45 +164,6 @@ public class VideoFragment extends Fragment{
         return view;
     }
 
-    private int dpToPx(int dp) {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
-    }
-
-    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
-
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
-
-        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
-            this.spanCount = spanCount;
-            this.spacing = spacing;
-            this.includeEdge = includeEdge;
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int position = parent.getChildAdapterPosition(view); // item position
-            int column = position % spanCount; // item column
-
-            if (includeEdge) {
-                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
-                if (position < spanCount) { // top edge
-                    outRect.top = spacing;
-                }
-                outRect.bottom = spacing; // item bottom
-            } else {
-                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-                if (position >= spanCount) {
-                    outRect.top = spacing; // item top
-                }
-            }
-        }
-    }
 
     private void showInterstitial() {
         if (mInterstitialAd.isLoaded()) {
@@ -260,33 +199,37 @@ public class VideoFragment extends Fragment{
         JZVideoPlayer.releaseAllVideos();
     }
 
-    private void videolist() {
-        final ProgressDialog dialog = new ProgressDialog(context);
+    public void Categories() {
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Please Wait...");
         dialog.show();
-        final Call<VideoList> countrycall = apiInterface.videolistpojo();
-        countrycall.enqueue(new Callback<VideoList>() {
-            @Override
-            public void onResponse(Call<VideoList> call, Response<VideoList> response) {
-                dialog.dismiss();
 
-                if (Constants.videoListData != null) {
-                    Constants.videoListData.clear();
-                }
-                if (!Constants.videoListData.equals("") && Constants.videoListData != null) {
-                    Constants.videoListData.addAll(response.body().getImages());
-                    VideoAdapter adapter = new VideoAdapter(context);
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    Toast.makeText(context, "No Video Found", Toast.LENGTH_SHORT).show();
+        Call<Categories> logincall = apiInterface.categoriespojo();
+        logincall.enqueue(new Callback<Categories>() {
+            @Override
+            public void onResponse(Call<Categories> call, Response<Categories> response) {
+                dialog.dismiss();
+                if (response.body().getStatus() == 1) {
+                    if (Constants.categoriesData != null) {
+                        Constants.categoriesData.clear();
+                    }
+                    if (!Constants.categoriesData.equals("") && Constants.statusData != null) {
+                        Constants.categoriesData.addAll(response.body().getData());
+                        RecycleVideoAdapter adapter = new RecycleVideoAdapter(getActivity());
+                        recycler_view.setAdapter(adapter);
+                        if (adapter != null)
+                            adapter.notifyDataSetChanged();
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
-
             @Override
-            public void onFailure(Call<VideoList> call, Throwable t) {
+            public void onFailure(Call<Categories> call, Throwable t) {
                 dialog.dismiss();
-                Helper.showToastMessage(context, "Please Connect Internet");
+                Helper.showToastMessage(context,"No Internet Connection");
             }
         });
     }

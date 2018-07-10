@@ -10,6 +10,8 @@ import com.epsilon.FunwithStatus.jsonpojo.categories.CategoriesDatum;
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageCategoryDatum;
 import com.epsilon.FunwithStatus.jsonpojo.image_category.ImageSubcategory;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageListDatum;
+import com.epsilon.FunwithStatus.jsonpojo.mainhome.HomeData;
+import com.epsilon.FunwithStatus.jsonpojo.mainhome.HomeDatum;
 import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImgDatum;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.StatusDatum;
 import com.epsilon.FunwithStatus.jsonpojo.trending.TrendingDatum;
@@ -23,6 +25,8 @@ public class Constants {
     public static final String NAV_ITEM_INTENT="nav_item_intent";
     public static List<StatusDatum> statusData = new ArrayList<>();
     public static List<CategoriesDatum> categoriesData = new ArrayList<>();
+    public static List<HomeDatum> homedata = new ArrayList<>();
+    public static HomeData home = new HomeData();
     public static List<ImageCategoryDatum> imageCategoryData = new ArrayList<>();
     public static List<ImageListDatum> imageListData = new ArrayList<>();
     public static List<ImageSubcategory> imageSubcategories = new ArrayList<>();

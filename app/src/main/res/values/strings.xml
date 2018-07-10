@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Fun with Status</string>
-    <string name="facebook_app_id">2108509322753139</string>
-    <string name="fb_login_protocol_scheme">fb2108509322753139</string>
+    <string name="facebook_app_id">230732141087494</string>
+    <string name="fb_login_protocol_scheme">fb230732141087494</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

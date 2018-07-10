@@ -94,9 +94,11 @@ android:orientation="vertical"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.rockerhieu.emojicon.EmojiconTextView
+                android:visibility="gone"
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_gravity="center"
+                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:text="hvgfxjmfbxkvfxhkjbgukfxbvjbfcugkbfxjgbfuxkvbkfxj bgukfbhgukjfxbkufxj,gfx,ujbv,fxj gufx,bgfx,jbukvbfxvub,uxgbfrxu"
                 android:id="@+id/tv_textview"
@@ -108,7 +110,7 @@ android:orientation="vertical"
                 android:visibility="gone"
                 android:src="@drawable/videocamera"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_200sdp"
+                android:layout_height="wrap_content"
                 android:id="@+id/iv_imageview"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
@@ -117,7 +119,7 @@ android:orientation="vertical"
             <VideoView
                 android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_200sdp"
+                android:layout_height="wrap_content"
                 android:id="@+id/vv_videoview"
                 android:layout_marginTop="@dimen/_3sdp"
                 />
@@ -148,7 +150,6 @@ android:orientation="vertical"
                     android:id="@+id/tv_likecount"
                     android:textSize="@dimen/_10sdp"
                     android:layout_gravity="center"
-
                     />
             </LinearLayout>
             <LinearLayout

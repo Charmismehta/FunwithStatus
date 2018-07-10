@@ -7,6 +7,5 @@
        />
     <item
         android:id="@+id/edit_post"
-        android:title="Edit Post"
-         />
+        android:title="Edit Post" />
 </menu>

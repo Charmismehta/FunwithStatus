@@ -33,6 +33,7 @@ import com.facebook.ads.InterstitialAd;
 import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.rockerhieu.emojicon.EmojiconEditText;
 
 import java.io.IOException;
 
@@ -40,8 +41,8 @@ public class AddOption extends AppCompatActivity {
     Activity activity;
     ImageView ileft, iright, iv_image;
     TextView title;
+    EmojiconEditText et_text;
     FloatingActionButton video, image;
-    EditText et_text;
     VideoView vv_video;
     private int PICK_IMAGE_REQUEST = 1;
     private int VIDEO_CAPTURE = 2;
@@ -129,51 +130,26 @@ public class AddOption extends AppCompatActivity {
             }
         });
 
-        InputMethodManager inputMethodManager =
-                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInputFromWindow(
-                et_text.getApplicationWindowToken(),
-                InputMethodManager.SHOW_FORCED, 0);
 
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideSoftKeyboard(activity);
                 et_text.setVisibility(View.GONE);
                 vv_video.setVisibility(View.GONE);
                 iv_image.setVisibility(View.VISIBLE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        showFileChooser();
-                    } else {
-                        //Request Location Permission
-                        requestStoragePermission();
-                    }
-                } else {
-                    showFileChooser();
-                }
+                showFileChooser();
             }
         });
 
         video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideSoftKeyboard(activity);
                 et_text.setVisibility(View.GONE);
                 vv_video.setVisibility(View.VISIBLE);
                 iv_image.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                         dispatchTakeVideoIntent();
-                    } else {
-                        //Request Location Permission
-                        requestStoragePermission();
-                    }
-                } else {
-                    dispatchTakeVideoIntent();
-                }
             }
         });
     }
@@ -331,7 +307,7 @@ public class AddOption extends AppCompatActivity {
         iright = (ImageView) findViewById(R.id.iright);
         iv_image = (ImageView) findViewById(R.id.iv_image);
         title = (TextView) findViewById(R.id.title);
-        et_text = (EditText) findViewById(R.id.et_text);
+        et_text = (EmojiconEditText) findViewById(R.id.et_text);
         vv_video = (VideoView) findViewById(R.id.vv_video);
         video = (FloatingActionButton) findViewById(R.id.video);
         image = (FloatingActionButton) findViewById(R.id.image);
@@ -386,4 +362,11 @@ public class AddOption extends AppCompatActivity {
         // at least 30 seconds before it is shown
         mInterstitialAd.loadAd();
     }
+    public static void hideSoftKeyboard(Context context) {
+        if(((Activity)context).getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(((Activity)context).getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
 }

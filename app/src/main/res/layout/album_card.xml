@@ -23,8 +23,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_100sdp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/trending" />
+                    android:scaleType="centerCrop" />
 
                 <TextView
                     android:id="@+id/title1"

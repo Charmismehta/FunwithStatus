@@ -57,7 +57,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyViewHold
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.title.setText(Constants.categoriesData.get(position).getCategoryName());
-        Glide.with(mContext).load(Constants.categoriesData.get(position).getCategoryImage()).into(holder.thumbnail);
+        Glide.with(mContext).load(Constants.categoriesData.get(position).getCategoryImage()).thumbnail(Glide.with(mContext).load(R.drawable.load)).into(holder.thumbnail);
     }
 
     @Override

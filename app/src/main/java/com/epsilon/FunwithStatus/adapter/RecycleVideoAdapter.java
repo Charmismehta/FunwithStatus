@@ -39,29 +39,15 @@ public class RecycleVideoAdapter extends RecyclerView.Adapter<RecycleVideoAdapte
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.video_item, parent, false);
+                .inflate(R.layout.videocategoryitem, parent, false);
 
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
-        final String video = Constants.videoitems.get(position).getImage();
-        holder.user_name.setVisibility(View.GONE);
-        holder.tvlike_count.setVisibility(View.GONE);
-        holder.like.setVisibility(View.GONE);
-        String filenameArray[] = video.split("\\.");
-        String extension = filenameArray[filenameArray.length - 1];
-
-        if (extension.equalsIgnoreCase("mp4")) {
-            RequestOptions options = new RequestOptions().frame(10000);
-            Glide.with(activity).asBitmap()
-                    .load(video)
-                    .apply(options)
-                    .into(holder.JZVideoPlayerStandard);
-        }else {
-            Toast.makeText(activity, "no image", Toast.LENGTH_SHORT).show();
-        }
+       holder.textview.setText(Constants.categoriesData.get(position).getCategoryName());
+        Glide.with(activity).load(Constants.categoriesData.get(position).getCategoryStatusImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).into(holder.imageview);
 
     }
 
@@ -72,20 +58,18 @@ public class RecycleVideoAdapter extends RecyclerView.Adapter<RecycleVideoAdapte
 
     @Override
     public int getItemCount() {
-        return Constants.videoitems.size();
+        return Constants.categoriesData.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView user_name, tvlike_count;
-        ImageView JZVideoPlayerStandard, like;
+        public TextView textview;
+        ImageView imageview;
 
 
         public MyViewHolder(View item) {
             super(item);
-            JZVideoPlayerStandard = (ImageView) item.findViewById(R.id.Thumbnail);
-            user_name = (TextView) item.findViewById(R.id.username);
-            tvlike_count = (TextView) item.findViewById(R.id.tvlike_count);
-            like = (ImageView) item.findViewById(R.id.like);
+            imageview = (ImageView) item.findViewById(R.id.imageview);
+            textview = (TextView) item.findViewById(R.id.textview);
 
         }
     }

@@ -14,6 +14,7 @@ import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
 import com.epsilon.FunwithStatus.jsonpojo.logout.Logout;
+import com.epsilon.FunwithStatus.jsonpojo.mainhome.Home;
 import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
@@ -35,6 +36,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 /**
  * Created by DeLL on 12-01-2018.
@@ -63,6 +65,9 @@ public interface APIInterface {
 
     @GET(ServerURl.CATEGORIES)
     Call<Categories> categoriespojo();
+
+    @GET(ServerURl.HOME)
+    Call<Home> homepojo();
 
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})

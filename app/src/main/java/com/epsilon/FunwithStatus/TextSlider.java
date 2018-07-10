@@ -47,7 +47,7 @@ public class TextSlider extends AppCompatActivity {
     Activity activity;
     ViewPager pager;
     ImageView share, like, dislike, copy, delete, whatsapp,facebook;
-    String text, Id, name, email, u_name, loginuser;
+    String text, name, email, u_name, loginuser;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     Sessionmanager sessionmanager;
     RelativeLayout rlayout;
@@ -69,8 +69,6 @@ public class TextSlider extends AppCompatActivity {
         Listners();
         Intent mIntent = getIntent();
         final int position = mIntent.getIntExtra("position", 0);
-        text = getIntent().getStringExtra("text");
-        Id = getIntent().getStringExtra("Id");
         name = getIntent().getStringExtra("NAME");
         u_name = getIntent().getStringExtra("U_NAME");
         email = sessionmanager.getValue(Sessionmanager.Email);

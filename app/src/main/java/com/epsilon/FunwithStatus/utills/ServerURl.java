@@ -9,6 +9,7 @@ public class ServerURl {
     public static final String REGISTER = "register";
     public static final String LOGOUT = "logout";
     public static final String CATEGORIES = "category";
+    public static final String HOME = "home? page = ";
     public static final String FORGETPWD = "forget_password.php";
     public static final String TEXTLIST = "show_status.php";
     public static final String ADDSTATUS = "add_status.php";

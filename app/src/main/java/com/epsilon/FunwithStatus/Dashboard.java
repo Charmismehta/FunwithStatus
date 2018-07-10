@@ -364,45 +364,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     public void popup()
     {
-
-        nativeAd.setAdListener(new NativeAdListener() {
-            @Override
-            public void onMediaDownloaded(Ad ad) {
-                // Native ad finished downloading all assets
-                Log.e(TAG, "Native ad finished downloading all assets.");
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                // Native ad failed to load
-                Log.e(TAG, "Native ad failed to load: " + adError.getErrorMessage());
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                if (nativeAd == null || nativeAd != ad) {
-                    return;
-                }
-                // Inflate Native Ad into Container
-                inflateAd(nativeAd);
-                // Native ad is loaded and ready to be displayed
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Native ad clicked
-                Log.d(TAG, "Native ad clicked!");
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Native ad impression
-                Log.d(TAG, "Native ad impression logged!");
-            }
-        });
-
-        // Request an ad
-        nativeAd.loadAd();
+        loadAd();
         final Dialog dialog = new Dialog(activity);
         dialog.setContentView(R.layout.custom_dialog_layout);
         Button  btnNever, btnSure;

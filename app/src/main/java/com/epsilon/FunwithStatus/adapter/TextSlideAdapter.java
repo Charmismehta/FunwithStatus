@@ -278,8 +278,6 @@ public class TextSlideAdapter extends PagerAdapter{
                         whatsapp.startAnimation(animation_3);
                         boolean result = checkPermission();
                         if (result) {
-                            whatsapp.startAnimation(animation_3);
-
                             Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
                             whatsappIntent.setType("text/plain");
                             whatsappIntent.setPackage("com.whatsapp");

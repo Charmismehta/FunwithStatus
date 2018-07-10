@@ -6,6 +6,11 @@
     android:background="@color/background"
     android:layout_height="match_parent"
     tools:context=".fragment.VideoFragment">
+    <LinearLayout
+        android:layout_marginBottom="@dimen/_40sdp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipelayout"
         android:layout_width="match_parent"
@@ -18,20 +23,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/_50sdp"
-        android:src="@drawable/vc_videoicon" />
+    </LinearLayout>
 
         <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/adView"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/_40sdp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             ads:adSize="SMART_BANNER"

@@ -9,60 +9,72 @@
     tools:context=".AddOption">
     <include layout="@layout/custom_bar" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <com.rockerhieu.emojicon.EmojiconEditText
+            android:id="@+id/et_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:hint="Enter Your Text"
+            android:lines="500"
+            android:singleLine="false" />
 
-            <EditText
-                android:id="@+id/et_text"
-                android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/videocamera"
+            android:visibility="gone" />
+
+        <VideoView
+            android:id="@+id/vv_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/addmenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center|bottom"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/video"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_10sdp"
-                android:background="@android:color/transparent"
-                android:hint="Enter Your Text" />
+                android:src="@drawable/vc_videoicon" />
 
-            <ImageView
-                android:id="@+id/iv_image"
-                android:layout_width="match_parent"
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/image"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/videocamera"
-                android:visibility="gone" />
+                android:src="@drawable/vc_image" />
+        </LinearLayout>
+    </RelativeLayout>
 
-            <VideoView
-                android:id="@+id/vv_video"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="518dp">
 
-            <LinearLayout
-                android:id="@+id/addmenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:layout_gravity="center|bottom"
-                android:gravity="center|bottom"
-                android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/video"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/_10sdp"
-                    android:src="@drawable/vc_videoicon" />
+        </LinearLayout>
+    </ScrollView>
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_10sdp"
-                    android:src="@drawable/vc_image" />
-            </LinearLayout>
-        </RelativeLayout>
-    </LinearLayout>
 </LinearLayout>
