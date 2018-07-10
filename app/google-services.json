@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "322373263551",
+    "firebase_url": "https://fun-with-status.firebaseio.com",
+    "project_id": "fun-with-status",
+    "storage_bucket": "fun-with-status.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322373263551:android:3f62eacb0feaa3b8",
+        "android_client_info": {
+          "package_name": "com.epsilon.FunwithStatus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322373263551-ql2a6fcfljfv4c1k7qp0qsrjmd8mts33.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.epsilon.FunwithStatus",
+            "certificate_hash": "38c7aed2cefd0c4c41b6d671526d90a785108ccb"
+          }
+        },
+        {
+          "client_id": "322373263551-40nss3vim475rkkd7n4iapiruu0aept2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDZGYgHUr5jbZXHNt4IDXsS4xyYYJko3Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322373263551-40nss3vim475rkkd7n4iapiruu0aept2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

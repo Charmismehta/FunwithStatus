@@ -62,8 +62,12 @@ dependencies {
     implementation 'com.vdurmont:emoji-java:4.0.0' // support emojies at backend
     implementation 'cn.jzvd:jiaozivideoplayer:6.2.10' // video Player
     implementation 'com.facebook.android:audience-network-sdk:4.99.0' // facebook ad
+//    classpath 'com.google.gms:google-services:4.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.0'
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
 
     implementation 'com.facebook.android:facebook-login:[4,5)'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
+apply plugin: 'com.google.gms.google-services'

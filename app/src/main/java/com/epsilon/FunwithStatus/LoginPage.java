@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Google;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.facebook.AccessToken;
@@ -47,6 +49,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 
 import org.json.JSONObject;
@@ -63,10 +66,10 @@ import retrofit2.Response;
 public class LoginPage extends AppCompatActivity {
 
     EditText login_email, login_epassword;
-    TextView login_tlogin, login_tsignin, login_tforgot,login_tskip;
-    ImageView login_user,login_password,pwdeye;
+    TextView login_tlogin, login_tsignin, login_tforgot, login_tskip;
+    ImageView login_user, login_password, pwdeye;
     Context context;
-    private int passwordNotVisible=1;
+    private int passwordNotVisible = 1;
     Sessionmanager sessionmanager;
     APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
     private InterstitialAd interstitialAd;
@@ -77,14 +80,13 @@ public class LoginPage extends AppCompatActivity {
     private AdRequest mInterstitialAdRequest;
     private static final String EMAIL = "email";
 
-
+    // Facebook Login
     CallbackManager callbackManager;
-
 
     @BindView(R.id.btnFbLogin)
     LoginButton btnFbLogin;
-
-    
+    @BindView(R.id.btnGoogleLogin)
+    Button btnGoogleLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +127,7 @@ public class LoginPage extends AppCompatActivity {
         editor.commit();
 
 
-        String udata="Want to Skip this page ?";
+        String udata = "Want to Skip this page ?";
         SpannableString content = new SpannableString(udata);
         content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
         login_tskip.setText(content);
@@ -133,12 +135,24 @@ public class LoginPage extends AppCompatActivity {
         init();
     }
 
-    public void init(){
+    public void init() {
 
         btnFbLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 initFacebook();
+            }
+        });
+
+        btnGoogleLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if (btnGoogleLogin.getText().toString().equals("Google Logout")) {
+//                    google.signOut();
+//                } else if (google.getGoogleSignInClient() != null) {
+                    Intent signInIntent = google.getGoogleSignInClient().getSignInIntent();
+                    startActivityForResult(signInIntent, Google.GOOGLE_SIGNIN_REQUEST_CODE);
+//                }
             }
         });
     }
@@ -185,18 +199,6 @@ public class LoginPage extends AppCompatActivity {
 //                    fbRes = new Gson().fromJson(object.toString(), new TypeToken<FbRes>() {
 //                    }.getType());
 
-//                    if (StringUtils.isEmpty(fbRes.email)) {
-//                        showToast("We couldn't find your email address. Please try again", Toast.LENGTH_SHORT);
-//                    } else
-//                        if (StringUtils.isEmpty(fbRes.name)) {
-//                        showToast("We couldn't find your name. Please try again", Toast.LENGTH_SHORT);
-//                    } else {
-//                    checkFacebookLogin(fbRes);
-
-//                        login(fbRes.name, fbRes.lastName, fbRes.email, "Facebook", fbRes.id);
-//                    }
-
-//                    saveUser(object.getString("name"), object.getString("link"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -206,6 +208,31 @@ public class LoginPage extends AppCompatActivity {
         parameters.putString("fields", "id, name, first_name, last_name, email,birthday,gender,location,picture.type(large)");
         request.setParameters(parameters);
         request.executeAsync();
+    }
+    Google google;
+    private void GoogleSignIn() {
+        google = Google.getInstance();
+        google.configureSignIn(LoginPage.this);
+
+
+        google.setEventListner(new Google.EventListner() {
+            @Override
+            public void onGoogleSignInResult(GoogleSignInAccount account) {
+                if (account != null) {
+                    Log.d("", "Email : " + account.getEmail());
+                    btnGoogleLogin.setText("Google Logout");
+                } else {
+                    Log.d("", "Google Sign In Failed");
+                }
+            }
+
+            @Override
+            public void onGoogleSignoutResult(boolean isSignOut) {
+                Log.d("", "Email : " + isSignOut);
+                btnGoogleLogin.setText(isSignOut ? "Google" : "Google Logout");
+
+            }
+        });
     }
 
     private void loadInterstitialAd() {
@@ -221,7 +248,7 @@ public class LoginPage extends AppCompatActivity {
 
         // Load ads into Interstitial Ads
         interstitialAd.loadAd(mInterstitialAdRequest);
-            }
+    }
 
     private void showInterstitial() {
         if (interstitialAd.isLoaded()) {
@@ -251,7 +278,7 @@ public class LoginPage extends AppCompatActivity {
         login_tforgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(context,ForgetPassword.class);
+                Intent it = new Intent(context, ForgetPassword.class);
                 startActivity(it);
             }
         });
@@ -262,19 +289,15 @@ public class LoginPage extends AppCompatActivity {
             public void onClick(View view) {
                 if (login_email.getText().toString().length() == 0) {
                     login_email.setError("Enter Email");
-                }
-                else if (login_epassword.getText().toString().length() == 0) {
+                } else if (login_epassword.getText().toString().length() == 0) {
                     login_epassword.setError("Enter Password");
-                }
-                else if (login_epassword.getText().toString().length() < 6) {
+                } else if (login_epassword.getText().toString().length() < 6) {
                     login_epassword.setError("Enter Minimum 6 digit");
-                }
-                else {
-                    if(Helper.isConnectingToInternet(context)){
+                } else {
+                    if (Helper.isConnectingToInternet(context)) {
                         LoginPage(login_email.getText().toString(), login_epassword.getText().toString());
-                    }
-                    else {
-                        Helper.showToastMessage(context,"No Internet Connection");
+                    } else {
+                        Helper.showToastMessage(context, "No Internet Connection");
                     }
                 }
             }
@@ -307,6 +330,7 @@ public class LoginPage extends AppCompatActivity {
         login_tskip = (TextView) findViewById(R.id.login_tskip);
         pwdeye = (ImageView) findViewById(R.id.pwdeye);
     }
+
     public void LoginPage(String email, String password) {
         final ProgressDialog dialog = new ProgressDialog(context);
         dialog.setCanceledOnTouchOutside(false);
@@ -316,28 +340,25 @@ public class LoginPage extends AppCompatActivity {
         Call<Login> logincall = apiInterface.loginpojocall(email, password);
         logincall.enqueue(new Callback<Login>() {
             @Override
-            public void onResponse(Call<Login> call, Response<Login> response)
-            {
+            public void onResponse(Call<Login> call, Response<Login> response) {
                 dialog.dismiss();
-                if (response.body().getStatus() == 1)
-                {
+                if (response.body().getStatus() == 1) {
                     sessionmanager.createSession_userLogin((response.body().getData()));
-                    Sessionmanager.setPreferenceBoolean(LoginPage.this, Constants.IS_LOGIN,true);
+                    Sessionmanager.setPreferenceBoolean(LoginPage.this, Constants.IS_LOGIN, true);
                     Toast.makeText(LoginPage.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("TOKEN",response.body().getData().getToken());
+                    Log.e("TOKEN", response.body().getData().getToken());
                     Intent i = new Intent(LoginPage.this, Dashboard.class);
                     startActivity(i);
                     finish();
-                }
-                else
-                {
+                } else {
                     Toast.makeText(LoginPage.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<Login> call, Throwable t) {
                 dialog.dismiss();
-                Helper.showToastMessage(context,"No Internet Connection");
+                Helper.showToastMessage(context, "No Internet Connection");
             }
         });
     }
@@ -365,7 +386,15 @@ public class LoginPage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Google.GOOGLE_SIGNIN_REQUEST_CODE) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            google.getSignInAccount(data);
+            GoogleSignIn();
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+
     }
 
     @Override
