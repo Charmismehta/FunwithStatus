@@ -44,6 +44,7 @@ import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.ImageListActivity;
 import com.epsilon.FunwithStatus.R;
 
+import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageListDatum;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
@@ -68,22 +69,20 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
     private Activity _activity;
     private LayoutInflater inflater;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    APIInterface apiInterface;
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
-    String name, maincat;
     int i;
 
 
     // constructor
-    public FullScreenImageAdapter(Activity activity, String name, String maincat, int i) {
+    public FullScreenImageAdapter(Activity activity,int i) {
         this._activity = activity;
         sessionmanager = new Sessionmanager(_activity);
-        this.name = name;
-        this.maincat = maincat;
         this.i = i;
         inflater = (LayoutInflater) _activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        apiInterface = APIClient.getClient().create(APIInterface.class);
     }
 
     @Override
@@ -100,8 +99,8 @@ public class FullScreenImageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         final String email = sessionmanager.getValue(Sessionmanager.Email);
         final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
-        final String u_name = Constants.imageListData.get(i).getUser();
-        final String Id = Constants.imageListData.get(i).getId();
+        final String u_name = Constants.imageListData.get(i).userName;
+        final int Id = Constants.imageListData.get(i).id;
 
 
         View viewLayout = inflater.inflate(R.layout.layout_fullscreen_image, container,
@@ -122,7 +121,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
         delete.setColorFilter(_activity.getResources().getColor(R.color.colorAccent));
         download.setColorFilter(_activity.getResources().getColor(R.color.colorAccent));
 
-        final String imgURL = Constants.imageListData.get(position).getImage();
+        final String imgURL = Constants.imageListData.get(position).file;
         Glide.with(_activity).load(imgURL).thumbnail(Glide.with(_activity).load(R.drawable.load)).into(display_image);
 
         if (u_name.equalsIgnoreCase(loginuser)) {
@@ -222,7 +221,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         like.startAnimation(animation_3);
-                        addlike(name, email, Id, imgURL);
+                        addlike(Id,"like");
                     }
 
                     @Override
@@ -250,7 +249,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         dislike.startAnimation(animation_3);
-                        dislike(name, email, Id, imgURL);
+                        addlike(Id,"unlike");
                     }
 
                     @Override
@@ -261,34 +260,34 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
             }
         });
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Animation animation_2 = AnimationUtils.loadAnimation(_activity.getBaseContext(), R.anim.move);
-                final Animation animation_3 = AnimationUtils.loadAnimation(_activity.getBaseContext(), R.anim.abc_fade_out);
-
-                delete.startAnimation(animation_2);
-
-                animation_2.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        delete.startAnimation(animation_3);
-                        delete(Id);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-        });
+//
+//        delete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final Animation animation_2 = AnimationUtils.loadAnimation(_activity.getBaseContext(), R.anim.move);
+//                final Animation animation_3 = AnimationUtils.loadAnimation(_activity.getBaseContext(), R.anim.abc_fade_out);
+//
+//                delete.startAnimation(animation_2);
+//
+//                animation_2.setAnimationListener(new Animation.AnimationListener() {
+//                    @Override
+//                    public void onAnimationStart(Animation animation) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onAnimationEnd(Animation animation) {
+//                        delete.startAnimation(animation_3);
+//                        delete(Id);
+//                    }
+//
+//                    @Override
+//                    public void onAnimationRepeat(Animation animation) {
+//
+//                    }
+//                });
+//            }
+//        });
 
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -381,21 +380,21 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
     // TODO : IMAGE LIKE API >>
 
-    public void addlike(String category, String email, String image_id, String image) {
+    public void addlike(int id, String type) {
         final ProgressDialog dialog = new ProgressDialog(_activity);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Please Wait...");
         dialog.show();
-        final Call<ImageLike> countrycall = apiInterface.addimagelikepojo(category, email, image_id, image);
-        countrycall.enqueue(new Callback<ImageLike>() {
+        final Call<AddLike> countrycall = apiInterface.addlikepojo(id, type);
+        countrycall.enqueue(new Callback<AddLike>() {
             @Override
-            public void onResponse(Call<ImageLike> call, Response<ImageLike> response) {
+            public void onResponse(Call<AddLike> call, Response<AddLike> response) {
                 dialog.dismiss();
-                Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(_activity, response.body().msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(Call<ImageLike> call, Throwable t) {
+            public void onFailure(Call<AddLike> call, Throwable t) {
                 dialog.dismiss();
 
             }
@@ -406,35 +405,35 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
     // TODO : IMAGE DELETE API >>
 
-    public void delete(String id) {
-        final ProgressDialog dialog = new ProgressDialog(_activity);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<DeleteImage> countrycall = apiInterface.deleteimage(id);
-        countrycall.enqueue(new Callback<DeleteImage>() {
-            @Override
-            public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
-                dialog.dismiss();
-                if (response.body().getStatus().equals("Succ")) {
-                    Intent it = new Intent(_activity, ImageListActivity.class);
-                    it.putExtra("NAME", name);
-                    it.putExtra("REALNAME", maincat);
-                    _activity.startActivity(it);
-                    _activity.finish();
-                    Toast.makeText(_activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(_activity, "Try Again", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DeleteImage> call, Throwable t) {
-                dialog.dismiss();
-
-            }
-        });
-    }
+//    public void delete(String id) {
+//        final ProgressDialog dialog = new ProgressDialog(_activity);
+//        dialog.setCanceledOnTouchOutside(false);
+//        dialog.setMessage("Please Wait...");
+//        dialog.show();
+//        final Call<DeleteImage> countrycall = apiInterface.deleteimage(id);
+//        countrycall.enqueue(new Callback<DeleteImage>() {
+//            @Override
+//            public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
+//                dialog.dismiss();
+//                if (response.body().getStatus().equals("Succ")) {
+//                    Intent it = new Intent(_activity, ImageListActivity.class);
+//                    it.putExtra("NAME", name);
+//                    it.putExtra("REALNAME", maincat);
+//                    _activity.startActivity(it);
+//                    _activity.finish();
+//                    Toast.makeText(_activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(_activity, "Try Again", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<DeleteImage> call, Throwable t) {
+//                dialog.dismiss();
+//
+//            }
+//        });
+//    }
 
 
     // TODO IMAGE DELETE API END

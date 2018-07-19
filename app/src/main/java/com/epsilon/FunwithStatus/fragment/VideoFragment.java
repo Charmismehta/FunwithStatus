@@ -1,76 +1,35 @@
 package com.epsilon.FunwithStatus.fragment;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.graphics.Rect;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
-import com.epsilon.FunwithStatus.AddTextActivity;
-import com.epsilon.FunwithStatus.AddVideoActivity;
 import com.epsilon.FunwithStatus.Dashboard;
-import com.epsilon.FunwithStatus.Demo;
-import com.epsilon.FunwithStatus.ImageListActivity;
-import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.TextListActivity;
-import com.epsilon.FunwithStatus.adapter.AlbumsAdapter;
 
 import com.epsilon.FunwithStatus.adapter.RecycleVideoAdapter;
-import com.epsilon.FunwithStatus.adapter.TrendingImgAdapter;
-import com.epsilon.FunwithStatus.adapter.VideoAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
-import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
-import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoList;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
-import com.epsilon.FunwithStatus.utills.Sessionmanager;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
-
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
-import cn.jzvd.JZVideoPlayer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,9 +40,9 @@ public class VideoFragment extends Fragment{
     Activity context;
     RecyclerView recycler_view;
     FloatingActionButton floatingbtn;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-    private InterstitialAd mInterstitialAd;
+    APIInterface apiInterface;
     SwipeRefreshLayout swipelayout;
+    AdView mAdView;
 
 
 
@@ -95,20 +54,14 @@ public class VideoFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_video, container, false);
 
         context = getActivity();
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         recycler_view = (RecyclerView)view.findViewById(R.id.recycler_view);
         swipelayout=(SwipeRefreshLayout)view.findViewById(R.id.swipelayout);
 
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
-        mInterstitialAd = new InterstitialAd(getActivity());
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
-        mInterstitialAd.loadAd(adRequest);
-        mInterstitialAd.setAdListener(new AdListener() {
-            public void onAdLoaded() {
-                showInterstitial();
-            }
-        });
+
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recycler_view.setLayoutManager(mLayoutManager);
@@ -129,7 +82,7 @@ public class VideoFragment extends Fragment{
             }
         });
 
-        AdView mAdView =view.findViewById(R.id.adView);
+        mAdView =view.findViewById(R.id.adView);
         mAdView.loadAd(adRequest);
 
         mAdView.setAdListener(new AdListener() {
@@ -165,11 +118,6 @@ public class VideoFragment extends Fragment{
     }
 
 
-    private void showInterstitial() {
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
-    }
     @Override
     public void onResume() {
         super.onResume();
@@ -179,9 +127,6 @@ public class VideoFragment extends Fragment{
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (JZVideoPlayer.backPress()) {
-                        return true;
-                    }
                     Intent it = new Intent(getContext(), Dashboard.class);
                     startActivity(it);
                     getActivity().finish();
@@ -196,7 +141,6 @@ public class VideoFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        JZVideoPlayer.releaseAllVideos();
     }
 
     public void Categories() {
@@ -220,7 +164,6 @@ public class VideoFragment extends Fragment{
                         recycler_view.setAdapter(adapter);
                         if (adapter != null)
                             adapter.notifyDataSetChanged();
-                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     }

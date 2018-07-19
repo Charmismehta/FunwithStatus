@@ -9,7 +9,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -27,13 +26,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,8 +38,8 @@ import com.epsilon.FunwithStatus.fragment.ContactUsFragment;
 import com.epsilon.FunwithStatus.fragment.HomeFragment;
 import com.epsilon.FunwithStatus.fragment.ImageFragment;
 import com.epsilon.FunwithStatus.fragment.MainFragment;
+import com.epsilon.FunwithStatus.fragment.TrendingFragment;
 import com.epsilon.FunwithStatus.fragment.VideoFragment;
-import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.jsonpojo.logout.Logout;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
@@ -60,9 +55,6 @@ import com.facebook.ads.InterstitialAdListener;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdListener;
-
-import com.google.android.gms.ads.AdRequest;
-import com.vdurmont.emoji.EmojiParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,19 +73,22 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     Fragment fragment = null;
     String passStr;
     Sessionmanager sessionmanager;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    APIInterface apiInterface ;
     MenuItem nav_login;
     private final String TAG = Dashboard.class.getSimpleName();
     Toolbar toolbar;
     public static int STORAGE_PERMISSION_CODE=1;
-    private InterstitialAd interstitialAd;
+    InterstitialAd mInterstitialAd;
     NativeAd nativeAd;
+    private LinearLayout nativeAdContainer;
+    private LinearLayout adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         activity = this;
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         sessionmanager = new Sessionmanager(activity);
         requestStoragePermission();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -102,20 +97,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_navigation);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        if(!sessionmanager.getValue(Sessionmanager.Name).equalsIgnoreCase(""))
-        {
-        String text = sessionmanager.getValue(Sessionmanager.Name);
-        String cap = text.substring(0, 1).toUpperCase() + text.substring(1);
-        toolbar.setTitle(cap);}
-        else
-        {
-            toolbar.setTitle("User");
-        }
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mainbtn = (LinearLayout) findViewById(R.id.mainbtn);
-        nativeAd = new NativeAd(this,"263700057716193_263738751045657");
-        loadAd();
-
         toolbar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
@@ -127,57 +108,27 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         @Override
                         public void onClick(View v) {
                             ObjectAnimator animator = ObjectAnimator
-                                    .ofFloat(v, "rotation", v.getRotation() + 180);
+                                    .ofFloat(v, "rotation", v.getRotation() + 360);
                             animator.start();
-                            interstitialAd = new InterstitialAd(activity, getString(R.string.placement_id));
-                            // Set listeners for the Interstitial Ad
-                            interstitialAd.setAdListener(new InterstitialAdListener() {
-                                @Override
-                                public void onInterstitialDisplayed(Ad ad) {
-                                    // Interstitial ad displayed callback
-                                    Log.e(TAG, "Interstitial ad displayed.");
-                                }
-
-                                @Override
-                                public void onInterstitialDismissed(Ad ad) {
-                                    // Interstitial dismissed callback
-                                    Log.e(TAG, "Interstitial ad dismissed.");
-                                }
-
-                                @Override
-                                public void onError(Ad ad, AdError adError) {
-                                }
-
-                                @Override
-                                public void onAdLoaded(Ad ad) {
-                                    // Interstitial ad is loaded and ready to be displayed
-                                    Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!");
-                                    // Show the ad
-                                    interstitialAd.show();
-                                }
-
-                                @Override
-                                public void onAdClicked(Ad ad) {
-                                    // Ad clicked callback
-                                    Log.d(TAG, "Interstitial ad clicked!");
-                                }
-
-                                @Override
-                                public void onLoggingImpression(Ad ad) {
-                                    // Ad impression logged callback
-                                    Log.d(TAG, "Interstitial ad impression logged!");
-                                }
-                            });
-
-                            // For auto play video ads, it's recommended to load the ad
-                            // at least 30 seconds before it is shown
-                            interstitialAd.loadAd();
+                            mInterstitialAd = new InterstitialAd(activity, getString(R.string.placement_id));
+                            loadInterstitialAd();
                         }
                     });
                 }
             }
         });
 
+        if(!sessionmanager.getValue(Sessionmanager.Name).equalsIgnoreCase(""))
+        {
+        String text = sessionmanager.getValue(Sessionmanager.Name);
+        String cap = text.substring(0, 1).toUpperCase() + text.substring(1);
+        toolbar.setTitle(cap);}
+        else
+        {
+            toolbar.setTitle("User");
+        }
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mainbtn = (LinearLayout) findViewById(R.id.mainbtn);
         fragment = new MainFragment();
             if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -203,6 +154,49 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             nav_login.setTitle("Login");
         }
 
+    }
+
+    private void loadInterstitialAd() {
+        mInterstitialAd.setAdListener(new InterstitialAdListener() {
+            @Override
+            public void onInterstitialDisplayed(Ad ad) {
+                // Interstitial ad displayed callback
+            }
+
+            @Override
+            public void onInterstitialDismissed(Ad ad) {
+                // Interstitial dismissed callback
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                // Ad error callback
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                showInterstitial();
+                // Interstitial ad is loaded and ready to be displayed
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                // Ad clicked callback
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                // Ad impression logged callback
+            }
+        });
+
+        // For auto play video ads, it's recommended to load the ad
+        // at least 30 seconds before it is shown
+        mInterstitialAd.loadAd();
+    }
+
+    private void showInterstitial() {
+        mInterstitialAd.show();
     }
 
 
@@ -304,14 +298,18 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     MenuItem nav_login = menu.findItem(R.id.nav_logout);
                     nav_login.setTitle("Logout");
                     sessionmanager.logoutUser();
-                    LogoutAPI();
+                    Intent i = new Intent(Dashboard.this, LoginPageActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    finish();
+//                    LogoutAPI();
                 }
                 else
                 {
                     Menu menu = navigationView.getMenu();
                     MenuItem nav_login = menu.findItem(R.id.nav_logout);
                     nav_login.setTitle("Login");
-                    Intent mainIntent = new Intent(activity, LoginPage.class);
+                    Intent mainIntent = new Intent(activity, LoginPageActivity.class);
                     startActivity(mainIntent);
                     finish();
                 }
@@ -361,6 +359,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
 
+    public void dismissAd() {
+        nativeAdContainer.setVisibility(View.GONE);
+        nativeAd.unregisterView();
+        nativeAd.destroy();
+    }
+
+
 
     public void popup()
     {
@@ -390,8 +395,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         });
     }
 
-    public void loadAd()
-    {
+    public void loadAd() {
+        nativeAd = new NativeAd(this, "263700057716193_263734114379454");
         nativeAd.setAdListener(new NativeAdListener() {
             @Override
             public void onMediaDownloaded(Ad ad) {
@@ -407,11 +412,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
             @Override
             public void onAdLoaded(Ad ad) {
-//                if (nativeAd == null || nativeAd != ad) {
-//                    return;
-//                }
-//                // Inflate Native Ad into Container
-//                inflateAd(nativeAd);
+                if (nativeAd == null || nativeAd != ad) {
+                    return;
+                }
+                // Inflate Native Ad into Container
+                inflateAd(nativeAd);
                 // Native ad is loaded and ready to be displayed
             }
 
@@ -431,19 +436,20 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         // Request an ad
         nativeAd.loadAd();
     }
-    LinearLayout nativeAdContainer;
+
     private void inflateAd(NativeAd nativeAd) {
 
-
-        LinearLayout adView;
         nativeAd.unregisterView();
-
+        // Add the Ad view into the ad container.
+        nativeAdContainer =(LinearLayout) findViewById(R.id.native_ad_container);
+        nativeAdContainer.setVisibility(View.VISIBLE);
         LayoutInflater inflater = LayoutInflater.from(activity);
+        // Inflate the Ad view.  The layout referenced should be the one you created in the last step.
         adView = (LinearLayout) inflater.inflate(R.layout.native_ad_layout_1, nativeAdContainer, false);
         nativeAdContainer.addView(adView);
 
         // Add the AdChoices icon
-        LinearLayout adChoicesContainer = adView.findViewById(R.id.ad_choices_container);
+        LinearLayout adChoicesContainer = (LinearLayout) adView.findViewById(R.id.ad_choices_container);
         AdChoicesView adChoicesView = new AdChoicesView(activity, nativeAd, true);
         adChoicesContainer.addView(adChoicesView, 0);
 
@@ -472,41 +478,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         // Register the Title and CTA button to listen for clicks.
         nativeAd.registerViewForInteraction(
                 adView,
+
                 nativeAdMedia,
                 nativeAdIcon,
                 clickableViews);
-    }
-    public void LogoutAPI() {
-        final ProgressDialog dialog = new ProgressDialog(activity);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-
-        Call<Logout> logincall = apiInterface.logout();
-        logincall.enqueue(new Callback<Logout>() {
-            @Override
-            public void onResponse(Call<Logout> call, Response<Logout> response)
-            {
-                dialog.dismiss();
-                if (response.body().getStatus() == 1)
-                {
-                    Toast.makeText(activity ,response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(Dashboard.this, LoginPage.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
-
-                }
-                else
-                {
-                    Toast.makeText(activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onFailure(Call<Logout> call, Throwable t) {
-                dialog.dismiss();
-                Helper.showToastMessage(activity,"No Internet Connection");
-            }
-        });
     }
 }

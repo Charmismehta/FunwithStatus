@@ -1,12 +1,9 @@
 package com.epsilon.FunwithStatus.adapter;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,24 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.epsilon.FunwithStatus.Dashboard;
-import com.epsilon.FunwithStatus.ImageSlider;
-import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
-import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.utills.Constants;
-import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.epsilon.FunwithStatus.whatsappImageSlide;
-import com.google.android.gms.ads.InterstitialAd;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class RecycleImageAdapter extends RecyclerView.Adapter<RecycleImageAdapter.MyViewHolder> {
 
@@ -63,6 +48,8 @@ public class RecycleImageAdapter extends RecyclerView.Adapter<RecycleImageAdapte
             public void onClick(View v) {
                 Intent it = new Intent(activity, TextListActivity.class);
                 it.putExtra("NAME",Constants.categoriesData.get(position).getCategoryName());
+                it.putExtra("ID",Constants.categoriesData.get(position).getId());
+                Log.e("CATID",":"+Constants.categoriesData.get(position).getId());
                 activity.startActivity(it);
             }
         });

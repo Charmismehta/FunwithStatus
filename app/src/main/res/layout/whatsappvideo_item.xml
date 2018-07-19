@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:bvp="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -36,11 +37,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_200sdp" />
 
-            <cn.jzvd.JZVideoPlayerStandard
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/Thumbnail"
+            <com.halilibo.bettervideoplayer.BetterVideoPlayer
+                android:id="@+id/bvp"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_200sdp" />
+                android:layout_height="240dp"
+                bvp:bvp_autoPlay="true"
+                bvp:bvp_captionColor="@android:color/holo_blue_light"
+                bvp:bvp_captionSize="20sp"
+                bvp:bvp_hideControlsOnPlay="true"
+                bvp:bvp_loadingStyle="RotatingPlane"
+                bvp:bvp_showBottomProgressBar="true"
+                bvp:bvp_title="Big Buck Bunny"
+                bvp:bvp_showTotalDuration="false"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

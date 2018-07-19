@@ -2,10 +2,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/delete_post"
-        android:title="Delete Post"
-       />
-    <item
-        android:id="@+id/edit_post"
-        android:title="Edit Post" />
+        android:id="@+id/overflow"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/vc_playdot"
+        android:title="">
+        <menu>
+            <item
+                android:id="@+id/delete_post"
+                android:title="Delete Post"
+                />
+            <item
+                android:id="@+id/edit_post"
+                android:title="Edit Post" />
+        </menu>
+    </item>
 </menu>

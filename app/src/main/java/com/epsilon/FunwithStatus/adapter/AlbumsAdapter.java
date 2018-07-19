@@ -1,27 +1,21 @@
 package com.epsilon.FunwithStatus.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.epsilon.FunwithStatus.ImageListActivity;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.SubCatImage;
-import com.epsilon.FunwithStatus.utills.Album;
 import com.epsilon.FunwithStatus.utills.Constants;
-
-import java.util.List;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyViewHolder> {
 
@@ -58,6 +52,19 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.title.setText(Constants.categoriesData.get(position).getCategoryName());
         Glide.with(mContext).load(Constants.categoriesData.get(position).getCategoryImage()).thumbnail(Glide.with(mContext).load(R.drawable.load)).into(holder.thumbnail);
+
+   holder.thumbnail.setOnClickListener(new View.OnClickListener() {
+       @Override
+       public void onClick(View v) {
+           Intent it = new Intent(mContext, ImageListActivity.class);
+           it.putExtra("ID",Constants.categoriesData.get(position).getId());
+           Log.e("ID",":"+Constants.categoriesData.get(position).getId());
+           it.putExtra("NAME",Constants.categoriesData.get(position).getCategoryName());
+           Log.e("NAME",":"+Constants.categoriesData.get(position).getCategoryName());
+           mContext.startActivity(it);
+       }
+   });
+
     }
 
     @Override

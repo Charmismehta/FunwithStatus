@@ -6,58 +6,54 @@ import com.google.gson.annotations.SerializedName;
 public class ImageListDatum {
     @SerializedName("id")
     @Expose
-    private String id;
-    @SerializedName("subcata")
+    public int id;
+    @SerializedName("category_id")
     @Expose
-    private String subcata;
-    @SerializedName("image")
+    public String categoryId;
+    @SerializedName("user_id")
     @Expose
-    private String image;
-    @SerializedName("liked")
+    public String userId;
+    @SerializedName("name")
     @Expose
-    private String liked;
-    @SerializedName("user")
+    public String name;
+    @SerializedName("text")
     @Expose
-    private String user;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getSubcata() {
-        return subcata;
-    }
-
-    public void setSubcata(String subcata) {
-        this.subcata = subcata;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getLiked() {
-        return liked;
-    }
-
-    public void setLiked(String liked) {
-        this.liked = liked;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
+    public Object text;
+    @SerializedName("file")
+    @Expose
+    public String file;
+    @SerializedName("status")
+    @Expose
+    public String status;
+    @SerializedName("type")
+    @Expose
+    public String type;
+    @SerializedName("created_at")
+    @Expose
+    public String createdAt;
+    @SerializedName("updated_at")
+    @Expose
+    public String updatedAt;
+    @SerializedName("user_name")
+    @Expose
+    public String userName;
+    @SerializedName("category_name")
+    @Expose
+    public String categoryName;
+    @SerializedName("total_likes")
+    @Expose
+    public int totalLikes;
+    @SerializedName("total_unlikes")
+    @Expose
+    public int totalUnlikes;
+    @SerializedName("total_views")
+    @Expose
+    public int totalViews;
+    @SerializedName("user_data")
+    @Expose
+    public ImageUser userData;
+    @SerializedName("category")
+    @Expose
+    public ImageCategory category;
 
 }

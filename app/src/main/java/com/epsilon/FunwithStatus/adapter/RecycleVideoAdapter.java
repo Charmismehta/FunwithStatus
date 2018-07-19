@@ -10,12 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.epsilon.FunwithStatus.DisplayVideo;
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.VideoListActivity;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
 
@@ -48,6 +46,16 @@ public class RecycleVideoAdapter extends RecyclerView.Adapter<RecycleVideoAdapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
        holder.textview.setText(Constants.categoriesData.get(position).getCategoryName());
         Glide.with(activity).load(Constants.categoriesData.get(position).getCategoryStatusImage()).thumbnail(Glide.with(activity).load(R.drawable.load)).into(holder.imageview);
+
+        holder.textview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(activity, VideoListActivity.class);
+                it.putExtra("ID",Constants.categoriesData.get(position).getId());
+                activity.startActivity(it);
+                activity.finish();
+            }
+        });
 
     }
 

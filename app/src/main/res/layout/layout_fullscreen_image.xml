@@ -20,7 +20,7 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:id="@+id/display_image"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_200sdp"
+            android:layout_height="@dimen/_350sdp"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:src="@drawable/videocamera" />

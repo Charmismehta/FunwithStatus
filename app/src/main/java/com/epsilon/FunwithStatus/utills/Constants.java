@@ -37,8 +37,8 @@ public class Constants {
     public static List<GridViewVideoItem> videoitems = new ArrayList<>();
 
 
-    public static final String UPLOAD_URL = "https://epsiloninfotech.co.in/funwithstatus/image/upload.php";
-    public static final String UPLOAD_VIDEO = "https://epsiloninfotech.co.in/funwithstatus/video/upload.php";
+    public static final String UPLOAD_URL = "http://develop.ithetasolution.com/api/image/add";
+    public static final String UPLOAD_VIDEO = "http://develop.ithetasolution.com/api/video/add";
 
 
     @SuppressLint("LongLogTag")

@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddOption">
+    tools:context=".AddOptionActivity">
     <include layout="@layout/custom_bar" />
 
     <RelativeLayout
@@ -14,6 +14,7 @@
         android:layout_height="match_parent">
 
         <com.rockerhieu.emojicon.EmojiconEditText
+            android:padding="@dimen/_5sdp"
             android:id="@+id/et_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -8,24 +8,11 @@ import java.util.List;
 public class ImageList {
     @SerializedName("status")
     @Expose
-    private String status;
-    @SerializedName("Images")
+    public int status;
+    @SerializedName("msg")
     @Expose
-    private List<ImageListDatum> images = null;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public List<ImageListDatum> getImages() {
-        return images;
-    }
-
-    public void setImages(List<ImageListDatum> images) {
-        this.images = images;
-    }
+    public String msg;
+    @SerializedName("data")
+    @Expose
+    public ImageData data;
 }

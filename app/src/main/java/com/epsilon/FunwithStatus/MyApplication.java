@@ -13,7 +13,7 @@ public class MyApplication extends MultiDexApplication {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
-        AdSettings.addTestDevice("57f3c833-0f05-47a7-81fc-0dfbd8c1fa0b");
+        AdSettings.addTestDevice("bfbdb58b-e3db-4765-b72b-3ef06ae80597");
 //       AdSettings.clearTestDevices();
     }
 }

@@ -12,25 +12,19 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epsilon.FunwithStatus.Dashboard;
-import com.epsilon.FunwithStatus.LoginPage;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.TextListActivity;
+import com.epsilon.FunwithStatus.adapter.AlbumsAdapter;
+import com.epsilon.FunwithStatus.adapter.CategoryAdapter;
 import com.epsilon.FunwithStatus.adapter.RecycleImageAdapter;
-import com.epsilon.FunwithStatus.adapter.TextListAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
-import com.epsilon.FunwithStatus.jsonpojo.login.Login;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
@@ -49,7 +43,8 @@ public class HomeFragment extends Fragment {
     Context context;
     RecyclerView recycler_view;
     SwipeRefreshLayout swipelayout;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    CategoryAdapter categoryAdapter;
+    APIInterface apiInterface;
     Sessionmanager sessionmanager;
 
     @Override
@@ -60,12 +55,14 @@ public class HomeFragment extends Fragment {
         getActivity().setTitle(Html.fromHtml("<font color='#ffffff'> Texts </font>"));
         context = getContext();
         sessionmanager = new Sessionmanager(getActivity());
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         recycler_view =(RecyclerView)view.findViewById(R.id.recycler_view);
         swipelayout =(SwipeRefreshLayout) view.findViewById(R.id.swipelayout);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 4);
         recycler_view.setLayoutManager(mLayoutManager);
         recycler_view.addItemDecoration(new GridSpacingItemDecoration(4, dpToPx(10), true));
         recycler_view.setItemAnimator(new DefaultItemAnimator());
+
         Categories();
 
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -174,6 +171,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
+
     public void Categories() {
         final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setCanceledOnTouchOutside(false);
@@ -189,22 +187,22 @@ public class HomeFragment extends Fragment {
                     if (Constants.categoriesData != null) {
                         Constants.categoriesData.clear();
                     }
-                    if (!Constants.categoriesData.equals("") && Constants.statusData != null) {
+                    if (!Constants.categoriesData.equals("") && Constants.categoriesData != null) {
                         Constants.categoriesData.addAll(response.body().getData());
                         RecycleImageAdapter adapter = new RecycleImageAdapter(getActivity());
                         recycler_view.setAdapter(adapter);
                         if (adapter != null)
                             adapter.notifyDataSetChanged();
-                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<Categories> call, Throwable t) {
                 dialog.dismiss();
-                Helper.showToastMessage(context,"No Internet Connection");
+                Helper.showToastMessage(getActivity(), "No Internet Connection");
             }
         });
     }

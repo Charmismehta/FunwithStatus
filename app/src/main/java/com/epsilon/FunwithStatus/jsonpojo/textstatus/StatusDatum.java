@@ -6,57 +6,53 @@ import com.google.gson.annotations.SerializedName;
 public class StatusDatum {
     @SerializedName("id")
     @Expose
-    private String id;
-    @SerializedName("subcata")
+    public int id;
+    @SerializedName("category_id")
     @Expose
-    private String subcata;
+    public String categoryId;
+    @SerializedName("user_id")
+    @Expose
+    public String userId;
+    @SerializedName("name")
+    @Expose
+    public String name;
+    @SerializedName("text")
+    @Expose
+    public String text;
+    @SerializedName("file")
+    @Expose
+    public Object file;
     @SerializedName("status")
     @Expose
-    private String status;
-    @SerializedName("liked")
+    public String status;
+    @SerializedName("type")
     @Expose
-    private String liked;
-    @SerializedName("user")
+    public String type;
+    @SerializedName("created_at")
     @Expose
-    private String user;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getSubcata() {
-        return subcata;
-    }
-
-    public void setSubcata(String subcata) {
-        this.subcata = subcata;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getLiked() {
-        return liked;
-    }
-
-    public void setLiked(String liked) {
-        this.liked = liked;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
+    public String createdAt;
+    @SerializedName("updated_at")
+    @Expose
+    public String updatedAt;
+    @SerializedName("user_name")
+    @Expose
+    public String userName;
+    @SerializedName("category_name")
+    @Expose
+    public String categoryName;
+    @SerializedName("total_likes")
+    @Expose
+    public int totalLikes;
+    @SerializedName("total_unlikes")
+    @Expose
+    public int totalUnlikes;
+    @SerializedName("total_views")
+    @Expose
+    public int totalViews;
+    @SerializedName("user_data")
+    @Expose
+    public StatusUser userData;
+    @SerializedName("category")
+    @Expose
+    public StatusCategory category;
 }

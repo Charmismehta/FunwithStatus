@@ -1,31 +1,21 @@
 package com.epsilon.FunwithStatus.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.epsilon.FunwithStatus.ImageSlider;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.epsilon.FunwithStatus.whatsappImageSlide;
-
-import java.util.List;
-
-import cn.jzvd.JZVideoPlayerStandard;
+import com.epsilon.FunwithStatus.whatsappImageSlideActivity;
 
 public class MyGridAdapter extends BaseAdapter {
 
@@ -35,11 +25,9 @@ public class MyGridAdapter extends BaseAdapter {
 
 
     public MyGridAdapter(Context context) {
-
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         sessionmanager = new Sessionmanager(context);
-
     }
 
 
@@ -88,7 +76,7 @@ public class MyGridAdapter extends BaseAdapter {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent it = new Intent(context, whatsappImageSlide.class);
+                    Intent it = new Intent(context, whatsappImageSlideActivity.class);
                     it.putExtra("U_NAME", sessionmanager.getValue(Sessionmanager.Name));
                     it.putExtra("picture", Constants.items.get(position).getImage());
                     it.putExtra("NAME", "WHATSAPP");

@@ -15,7 +15,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,38 +24,25 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.epsilon.FunwithStatus.DisplayVideo;
+import com.epsilon.FunwithStatus.ImageSliderActivity;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.TextSlider;
-import com.epsilon.FunwithStatus.jsonpojo.mainhome.HomeData;
+import com.epsilon.FunwithStatus.TextSliderActivity;
+import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
+import com.epsilon.FunwithStatus.retrofit.APIClient;
+import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
-import com.facebook.ads.AdChoicesView;
-import com.facebook.ads.AdIconView;
-import com.facebook.ads.MediaView;
-import com.facebook.ads.NativeAd;
-import com.google.android.gms.ads.formats.NativeAdViewHolder;
 import com.rockerhieu.emojicon.EmojiconTextView;
 import com.vdurmont.emoji.EmojiParser;
 
@@ -66,8 +52,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.media.CamcorderProfile.get;
@@ -77,10 +66,13 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
     private LayoutInflater inflater;
     public Resources res;
     ProgressDialog mProgressDialog;
+    APIInterface apiInterface;
+    int count=0;
 
     public FirstFregmetnAdapter(Activity a) {
         this.activity = a;
         inflater = (LayoutInflater) activity.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
+        apiInterface = APIClient.getClient().create(APIInterface.class);
     }
 
     @Override
@@ -98,8 +90,8 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         holder.iv_share.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
         holder.iv_like.setColorFilter(activity.getResources().getColor(R.color.colorAccent));
 
-        if (Constants.homedata.get(position).getType().equalsIgnoreCase("image")) {
-            final String imgURL = Constants.homedata.get(position).getImage();
+        if (Constants.homedata.get(position).type.equalsIgnoreCase("image")) {
+            final String imgURL = Constants.homedata.get(position).image;
             holder.iv_imageview.setVisibility(View.VISIBLE);
             holder.tv_textview.setVisibility(View.GONE);
             holder.vv_videoview.setVisibility(View.GONE);
@@ -109,9 +101,22 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
                     .thumbnail(1.0f)
                     .into(holder.iv_imageview);
 //            Glide.with(activity).load(Constants.homedata.get(position).getImage()).into(holder.iv_imageview);
-            holder.tv_username.setText(Constants.homedata.get(position).getUserName());
-            holder.tv_caption.setText("#" + Constants.homedata.get(position).getType());
-            holder.tv_view.setText(Constants.homedata.get(position).getName());
+            holder.tv_username.setText(Constants.homedata.get(position).userName);
+            holder.tv_caption.setText("#" + Constants.homedata.get(position).categoryName);
+            holder.tv_view.setText(String.valueOf(Constants.homedata.get(position).totalViews));
+            holder.tv_likecount.setText(String.valueOf(Constants.homedata.get(position).totalLikes));
+
+            holder.iv_imageview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent it = new Intent(activity, ImageSliderActivity.class);
+                    it.putExtra("position",position);
+                    it.putExtra("ID",Constants.homedata.get(position).categoryId);
+                    it.putExtra("NAME","HOME");
+                    it.putExtra("pic", Constants.homedata.get(position).image);
+                    activity.startActivity(it);
+                }
+            });
 
             holder.iv_share.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -142,6 +147,14 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
                     }
                 }
             });
+            holder.iv_like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addlike(Constants.homedata.get(position).id,"like");
+                    count = Constants.homedata.get(position).totalLikes + 1;
+                    holder.tv_likecount.setText(String.valueOf(count));
+                }
+            });
 
             holder.iv_download.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -156,7 +169,6 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
                         r.allowScanningByMediaScanner();
 
                         r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
                         DownloadManager dm = (DownloadManager) activity.getSystemService(DOWNLOAD_SERVICE);
                         dm.enqueue(r);
                         addImageToGallery(imgURL, activity);
@@ -166,15 +178,16 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
             });
 
 
-        } else if (Constants.homedata.get(position).getType().equalsIgnoreCase("video")) {
-            final String video = Constants.homedata.get(position).getFile();
+        } else if (Constants.homedata.get(position).type.equalsIgnoreCase("video")) {
+            final String video = Constants.homedata.get(position).file;
             holder.iv_imageview.setVisibility(View.VISIBLE);
             holder.tv_textview.setVisibility(View.GONE);
             holder.vv_videoview.setVisibility(View.GONE);
-            Glide.with(activity).load(Constants.homedata.get(position).getImage()).into(holder.iv_imageview);
-            holder.tv_username.setText(Constants.homedata.get(position).getUserName());
-            holder.tv_caption.setText("#" + Constants.homedata.get(position).getType());
-            holder.tv_view.setText(Constants.homedata.get(position).getName());
+            Glide.with(activity).load(Constants.homedata.get(position).image).into(holder.iv_imageview);
+            holder.tv_username.setText(Constants.homedata.get(position).userName);
+            holder.tv_caption.setText("#" + Constants.homedata.get(position).categoryName);
+            holder.tv_view.setText(String.valueOf(Constants.homedata.get(position).totalViews));
+            holder.tv_likecount.setText(String.valueOf(Constants.homedata.get(position).totalLikes));
             holder.iv_share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -207,7 +220,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
 
             holder.iv_download.setOnClickListener(new View.OnClickListener() {
                 File extStore = Environment.getExternalStorageDirectory();
-                final File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.homedata.get(position).getFile() + ".mp4");
+                final File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.homedata.get(position).file + ".mp4");
 
                 @Override
                 public void onClick(View v) {
@@ -219,22 +232,31 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
                             new fileDownload(activity, video, position).execute();
 //
                         }
-
                     }
                 }
             });
 
+            holder.iv_like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addlike(Constants.homedata.get(position).id,"like");
+                    count = Constants.homedata.get(position).totalLikes + 1;
+                    holder.tv_likecount.setText(String.valueOf(count));
+                }
+            });
 
-        } else if (Constants.homedata.get(position).getType().equalsIgnoreCase("status")) {
+
+        } else if (Constants.homedata.get(position).type.equalsIgnoreCase("status")) {
             holder.tv_textview.setVisibility(View.VISIBLE);
             holder.iv_imageview.setVisibility(View.GONE);
             holder.vv_videoview.setVisibility(View.GONE);
-            String str = Constants.homedata.get(position).getText().toString();
+            String str = Constants.homedata.get(position).text.toString();
             final String result = EmojiParser.parseToUnicode(str);
             holder.tv_textview.setText(result);
-            holder.tv_username.setText(Constants.homedata.get(position).getUserName());
-            holder.tv_caption.setText("#" + Constants.homedata.get(position).getType());
-            holder.tv_view.setText(Constants.homedata.get(position).getName());
+            holder.tv_username.setText(Constants.homedata.get(position).userName);
+            holder.tv_caption.setText("#" + Constants.homedata.get(position).categoryName);
+            holder.tv_view.setText(String.valueOf(Constants.homedata.get(position).totalViews));
+            holder.tv_likecount.setText(String.valueOf(Constants.homedata.get(position).totalLikes));
 
             holder.iv_share.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -250,10 +272,11 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
             holder.tv_textview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent it = new Intent(activity, TextSlider.class);
+                    Intent it = new Intent(activity, TextSliderActivity.class);
                     it.putExtra("position", position);
-                    it.putExtra("NAME", Constants.homedata.get(position).getType());
-                    it.putExtra("U_NAME", Constants.homedata.get(position).getUserName());
+                    it.putExtra("NAME", "HOME");
+                    it.putExtra("U_NAME", Constants.homedata.get(position).userName);
+                    it.putExtra("ID",Constants.homedata.get(position).categoryId);
                     activity.startActivity(it);
                 }
             });
@@ -273,6 +296,14 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
                             Toast.makeText(activity, "Whatsapp have not been installed.", Toast.LENGTH_SHORT).show();
                         }
                     }
+                }
+            });
+            holder.iv_like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addlike(Constants.homedata.get(position).id,"like");
+                    count = Constants.homedata.get(position).totalLikes + 1;
+                    holder.tv_likecount.setText(String.valueOf(count));
                 }
             });
 
@@ -322,30 +353,30 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
             });
         }
 
-        holder.dot.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
-                final PopupMenu popup = new PopupMenu(activity, v);
-                popup.getMenuInflater().inflate(R.menu.menuitem, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.delete_post:
-                                Toast.makeText(activity, "delete Post", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.edit_post:
-                                Toast.makeText(activity, "edit Post", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        return true;
-                    }
-                });
-                popup.show(); //showing popup menu
-            }
-        });
+//        holder.dot.setOnClickListener(new View.OnClickListener()
+//
+//        {
+//            @Override
+//            public void onClick(View v) {
+//                final PopupMenu popup = new PopupMenu(activity, v);
+//                popup.getMenuInflater().inflate(R.menu.menuitem, popup.getMenu());
+//                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        switch (item.getItemId()) {
+//                            case R.id.delete_post:
+//                                Toast.makeText(activity, "delete Post", Toast.LENGTH_SHORT).show();
+//                                break;
+//                            case R.id.edit_post:
+//                                Toast.makeText(activity, "edit Post", Toast.LENGTH_SHORT).show();
+//                                break;
+//                        }
+//                        return true;
+//                    }
+//                });
+//                popup.show(); //showing popup menu
+//            }
+//        });
     }
 
 
@@ -374,7 +405,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
             iv_share = (ImageView) item.findViewById(R.id.iv_share);
             iv_like = (ImageView) item.findViewById(R.id.iv_like);
             iv_imageview = (ImageView) item.findViewById(R.id.iv_imageview);
-            dot = (ImageView) item.findViewById(R.id.dot);
+//            dot = (ImageView) item.findViewById(R.id.dot);
             vv_videoview = (VideoView) item.findViewById(R.id.vv_videoview);
             tv_username = (TextView) item.findViewById(R.id.tv_username);
             tv_view = (TextView) item.findViewById(R.id.tv_view);
@@ -406,7 +437,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         @Override
         protected String doInBackground(Void... voids) {
             File extStore = Environment.getExternalStorageDirectory();
-            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
 
             if (!myFile.exists()) {
                 downloadonly(video, position);
@@ -430,6 +461,28 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         }
     }
 
+    public void addlike(int id, String type) {
+        final ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+        final Call<AddLike> countrycall = apiInterface.addlikepojo(id, type);
+        countrycall.enqueue(new Callback<AddLike>() {
+            @Override
+            public void onResponse(Call<AddLike> call, Response<AddLike> response) {
+                dialog.dismiss();
+                Toast.makeText(activity, "Like Successfully", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(activity, response.body().msg.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<AddLike> call, Throwable t) {
+                dialog.dismiss();
+
+            }
+        });
+    }
+
     public void downloadonly(String url, int position) {
         File direct = new File(Environment.getExternalStorageDirectory()
                 + "/Download");
@@ -448,7 +501,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
                 DownloadManager.Request.NETWORK_WIFI
                         | DownloadManager.Request.NETWORK_MOBILE)
                 .setAllowedOverRoaming(false).setTitle("Download")
-                .setDestinationInExternalPublicDir("/FunwithStatus", Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+                .setDestinationInExternalPublicDir("/FunwithStatus", Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
 
         mgr.enqueue(request);
         addImageToGallery(url, activity);
@@ -476,7 +529,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         @Override
         protected String doInBackground(Void... voids) {
             File extStore = Environment.getExternalStorageDirectory();
-            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
 
             if (!myFile.exists()) {
                 downloadFile(video, position);
@@ -502,7 +555,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         {
             try {
                 File extStore = Environment.getExternalStorageDirectory();
-                File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+                File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
                 if (file.isFile()) {
                     MediaScannerConnection.scanFile(activity,
                             new String[]{file.toString()}, null,
@@ -574,7 +627,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         @Override
         protected String doInBackground(Void... voids) {
             File extStore = Environment.getExternalStorageDirectory();
-            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
 
             if (!myFile.exists()) {
                 downloadFile(video, position);
@@ -601,7 +654,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
     public void sharewhatupp(int position) {
 
         File extStore = Environment.getExternalStorageDirectory();
-        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
         if (file.exists()) {
             Log.e("downloadFile", "file:" + file.getAbsolutePath());
             Uri uri = Uri.parse(file.getPath());
@@ -720,7 +773,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
         @Override
         protected String doInBackground(Void... voids) {
             File extStore = Environment.getExternalStorageDirectory();
-            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+            File myFile = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
 
             if (!myFile.exists()) {
                 downloadFile(video, position);
@@ -743,7 +796,7 @@ public class FirstFregmetnAdapter extends RecyclerView.Adapter<FirstFregmetnAdap
 
     public void sharevideo(int position) {
         File extStore = Environment.getExternalStorageDirectory();
-        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).getImage()) + ".mp4");
+        File file = new File(extStore.getAbsolutePath(), "/" + "/FunwithStatus" + "/" + Constants.getFileName(Constants.videoListData.get(position).file) + ".mp4");
         if (file.exists()) {
             Log.e("downloadFile", "file:" + file.getAbsolutePath());
             Uri uri = Uri.parse(file.getPath());

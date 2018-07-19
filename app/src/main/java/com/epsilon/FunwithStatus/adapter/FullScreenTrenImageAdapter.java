@@ -8,13 +8,11 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -23,50 +21,30 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.epsilon.FunwithStatus.Dashboard;
 import com.epsilon.FunwithStatus.ImageListActivity;
-import com.epsilon.FunwithStatus.ImageSlider;
 import com.epsilon.FunwithStatus.R;
+import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.deleteimage.DeleteImage;
-import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.imagedislike.ImageDislike;
 import com.epsilon.FunwithStatus.jsonpojo.imagelike.ImageLike;
-import com.epsilon.FunwithStatus.jsonpojo.tending_img.TrendingImg;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdChoicesView;
-import com.facebook.ads.AdError;
-import com.facebook.ads.AdIconView;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.MediaView;
-import com.facebook.ads.NativeAd;
-import com.facebook.ads.NativeAdListener;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,7 +56,7 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
 
     private Activity _activity;
     private LayoutInflater inflater;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    APIInterface apiInterface ;
     Sessionmanager sessionmanager;
     ProgressDialog mProgressDialog;
     String name, maincat;
@@ -86,12 +64,13 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
 
 
     // constructor
-    public FullScreenTrenImageAdapter(Activity activity, String name, String maincat, int i) {
+    public FullScreenTrenImageAdapter(Activity activity, int i) {
         this._activity = activity;
         sessionmanager = new Sessionmanager(_activity);
         this.name = name;
         this.maincat = maincat;
         this.i = i;
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         inflater = (LayoutInflater) _activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -99,7 +78,7 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return Constants.trendingimgData.size();
+        return Constants.homedata.size();
     }
 
     @Override
@@ -113,8 +92,8 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
 //        Imagecategory("funny");
         final String email = sessionmanager.getValue(Sessionmanager.Email);
         final String loginuser = sessionmanager.getValue(Sessionmanager.Name);
-        final String u_name = Constants.trendingimgData.get(i).getUser();
-        final String Id = Constants.trendingimgData.get(i).getId();
+        final String u_name = Constants.homedata.get(i).userName;
+        final int Id = Constants.homedata.get(i).id;
 
 
         View viewLayout = inflater.inflate(R.layout.layout_fullscreen_image, container,
@@ -140,7 +119,7 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
 
         // The number of Columns
 
-        final String imgURL = Constants.trendingimgData.get(position).getImage();
+        final String imgURL = Constants.homedata.get(position).image;
         Glide.with(_activity).load(imgURL).thumbnail(Glide.with(_activity).load(R.drawable.load)).into(display_image);
 
 //        TrandingAlbums();
@@ -243,7 +222,8 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         like.startAnimation(animation_3);
-                        addlike(name, email, Id, imgURL);
+                        addlike(Id,"like");
+//                        addlike(name, email, Id, imgURL);
                     }
 
                     @Override
@@ -271,7 +251,8 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         dislike.startAnimation(animation_3);
-                        dislike(name, email, Id, imgURL);
+                        addlike(Id,"unlike");
+//                        dislike(name, email, Id, imgURL);
                     }
 
                     @Override
@@ -300,7 +281,7 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         delete.startAnimation(animation_3);
-                        delete(Id);
+//                        delete(Id);
                     }
 
                     @Override
@@ -382,74 +363,6 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         ((ViewPager) container).removeView((RelativeLayout) object);
     }
-
-//    private void  TrandingAlbums() {
-//        final ProgressDialog dialog = new ProgressDialog(_activity);
-//        dialog.setCanceledOnTouchOutside(false);
-//        dialog.setMessage("Please Wait...");
-//        dialog.show();
-//        final Call<TrendingImg> countrycall = apiInterface.trendingimgpojo();
-//        countrycall.enqueue(new Callback<TrendingImg>() {
-//            @Override
-//            public void onResponse(Call<TrendingImg> call, Response<TrendingImg> response) {
-//                dialog.dismiss();
-//
-//                if (Constants.trendingimgData != null) {
-//                    Constants.trendingimgData.clear();
-//                }
-//                if (!Constants.trendingimgData.equals("") && Constants.trendingimgData != null) {
-//                    Constants.trendingimgData.addAll(response.body().getData());
-//                    notifyDataSetChanged();
-//                    TrendingImgAdapter adapter = new TrendingImgAdapter(_activity);
-//                    rv_image.setAdapter(adapter);
-//
-//                } else {
-//                    Toast.makeText(_activity, "No Status Found", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<TrendingImg> call, Throwable t) {
-//                dialog.dismiss();
-//            }
-//        });
-//    }
-
-//    public void Imagecategory(String subcat) {
-//        final ProgressDialog dialog = new ProgressDialog(_activity);
-//        dialog.setCanceledOnTouchOutside(false);
-//        dialog.setMessage("Please Wait...");
-//        dialog.show();
-//        final Call<ImageList> countrycall = apiInterface.imagelistpojo(subcat);
-//        countrycall.enqueue(new Callback<ImageList>() {
-//            @Override
-//            public void onResponse(Call<ImageList> call, Response<ImageList> response) {
-//                dialog.dismiss();
-//                if (response.body().getStatus().equals("Success")) {
-//                    if (Constants.imageListData != null) {
-//                        Constants.imageListData.clear();
-//                    }
-//                    Constants.imageListData.addAll(response.body().getImages());
-//                    notifyDataSetChanged();
-//                    mLayoutManager = new LinearLayoutManager(_activity, LinearLayoutManager.HORIZONTAL, false);
-//                    rv_image.setLayoutManager(mLayoutManager);
-//                    ImageListAdapter adapter = new ImageListAdapter(_activity,maincat);
-//                    rv_image.setAdapter(adapter);
-//                }
-//                else
-//                {
-//                    Toast.makeText(_activity,"Try Again", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ImageList> call, Throwable t) {
-//                dialog.dismiss();
-//                Toast.makeText(_activity, "No Internet", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
     private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (_activity.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -469,60 +382,59 @@ public class FullScreenTrenImageAdapter extends PagerAdapter {
 
     // TODO : IMAGE LIKE API >>
 
-    public void addlike(String category, String email, String image_id, String image) {
+    public void addlike(int id, String type) {
         final ProgressDialog dialog = new ProgressDialog(_activity);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Please Wait...");
         dialog.show();
-        final Call<ImageLike> countrycall = apiInterface.addimagelikepojo(category, email, image_id, image);
-        countrycall.enqueue(new Callback<ImageLike>() {
+        final Call<AddLike> countrycall = apiInterface.addlikepojo(id, type);
+        countrycall.enqueue(new Callback<AddLike>() {
             @Override
-            public void onResponse(Call<ImageLike> call, Response<ImageLike> response) {
+            public void onResponse(Call<AddLike> call, Response<AddLike> response) {
                 dialog.dismiss();
-                Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(_activity, response.body().msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(Call<ImageLike> call, Throwable t) {
+            public void onFailure(Call<AddLike> call, Throwable t) {
                 dialog.dismiss();
 
             }
         });
     }
-
     // TODO IMAGE LIKE API END
 
     // TODO : IMAGE DELETE API >>
 
-    public void delete(String id) {
-        final ProgressDialog dialog = new ProgressDialog(_activity);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("Please Wait...");
-        dialog.show();
-        final Call<DeleteImage> countrycall = apiInterface.deleteimage(id);
-        countrycall.enqueue(new Callback<DeleteImage>() {
-            @Override
-            public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
-                dialog.dismiss();
-                if (response.body().getStatus().equals("Succ")) {
-                    Intent it = new Intent(_activity, ImageListActivity.class);
-                    it.putExtra("NAME", name);
-                    it.putExtra("REALNAME", maincat);
-                    _activity.startActivity(it);
-                    _activity.finish();
-                    Toast.makeText(_activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(_activity, "Try Again", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DeleteImage> call, Throwable t) {
-                dialog.dismiss();
-
-            }
-        });
-    }
+//    public void delete(String id) {
+//        final ProgressDialog dialog = new ProgressDialog(_activity);
+//        dialog.setCanceledOnTouchOutside(false);
+//        dialog.setMessage("Please Wait...");
+//        dialog.show();
+//        final Call<DeleteImage> countrycall = apiInterface.deleteimage(id);
+//        countrycall.enqueue(new Callback<DeleteImage>() {
+//            @Override
+//            public void onResponse(Call<DeleteImage> call, Response<DeleteImage> response) {
+//                dialog.dismiss();
+//                if (response.body().getStatus().equals("Succ")) {
+//                    Intent it = new Intent(_activity, ImageListActivity.class);
+//                    it.putExtra("NAME", name);
+//                    it.putExtra("REALNAME", maincat);
+//                    _activity.startActivity(it);
+//                    _activity.finish();
+//                    Toast.makeText(_activity, "Delete Successfully", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(_activity, "Try Again", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<DeleteImage> call, Throwable t) {
+//                dialog.dismiss();
+//
+//            }
+//        });
+//    }
 
 
     // TODO IMAGE DELETE API END

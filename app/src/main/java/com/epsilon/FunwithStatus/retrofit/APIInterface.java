@@ -1,6 +1,7 @@
 package com.epsilon.FunwithStatus.retrofit;
 
 
+import com.epsilon.FunwithStatus.jsonpojo.addimage.AddImage;
 import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
 import com.epsilon.FunwithStatus.jsonpojo.addstatus.AddStatus;
 import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
@@ -32,11 +33,13 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by DeLL on 12-01-2018.
@@ -69,26 +72,53 @@ public interface APIInterface {
     @GET(ServerURl.HOME)
     Call<Home> homepojo();
 
+//    public interface FooService {
+        @GET("http://develop.ithetasolution.com/api/home")
+        Call<Home> getHomeDataList(@Query("page") int page);
+//    }
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
-    @POST(ServerURl.TEXTLIST)
-    Call<Status> textstatuspojo(@Field("subcat") String subcat);
+    @POST(ServerURl.STATUSLIST)
+    Call<Status> statuspojo(@Field("category_id") String category_id);
+
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
     @POST(ServerURl.ADDSTATUS)
-    Call<AddStatus> addstatuspojo(@Field("subcat") String subcat,
-                                  @Field("user") String user,
-                                  @Field("status") String status);
+    Call<AddStatus> addstatuspojo(@Field("category_id") int category_id,
+                                  @Field("name") String name,
+                                  @Field("text") String text,
+                                  @Header("Authorization") String token);
+
+    @Multipart
+    @POST(ServerURl.ADDIMAGE)
+    Call<AddImage> circlepostaddpojocall(@Part("name") RequestBody name,
+                                         @Part("category_id") RequestBody category_id,
+                                         @Header("Authorization") String token,
+                                         @Part MultipartBody.Part file);
+
+
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
     @POST(ServerURl.ADDLIKE)
-    Call<AddLike> addlikepojo(@Field("category") String category,
-                                @Field("email") String email,
-                                @Field("status_id") String status_id,
-                                @Field("status") String status);
+    Call<AddLike> addlikepojo(@Field("item_id") int item_id,
+                              @Field("type") String type);
+
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.VIDEOLOIST)
+    Call<VideoList> videolist(@Field("category_id") int category_id);
+
+    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @FormUrlEncoded
+    @POST(ServerURl.IMAGELIST)
+    Call<ImageList> imagelistpojo(@Field("category_id") int category_id);
+
+
+
+
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
@@ -98,13 +128,6 @@ public interface APIInterface {
                               @Field("status_id") String status_id,
                               @Field("status") String status);
 
-    @GET(ServerURl.IMAGECATEGORY)
-    Call<ImageCategory> imagepojo();
-
-    @Headers({"Content-Type: application/x-www-form-urlencoded"})
-    @FormUrlEncoded
-    @POST(ServerURl.IMAGELIST)
-    Call<ImageList> imagelistpojo(@Field("subcata") String subcata);
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded
@@ -145,8 +168,6 @@ public interface APIInterface {
     @GET(ServerURl.TRANDINGIMG)
     Call<TrendingImg> trendingimgpojo();
 
-    @GET(ServerURl.VIDEOLIST)
-    Call<VideoList> videolistpojo();
 
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
     @FormUrlEncoded

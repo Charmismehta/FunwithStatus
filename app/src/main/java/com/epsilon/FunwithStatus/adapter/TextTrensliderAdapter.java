@@ -12,14 +12,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +22,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.epsilon.FunwithStatus.ImageSlider;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.TextListActivity;
 import com.epsilon.FunwithStatus.jsonpojo.addlike.AddLike;
@@ -38,7 +31,6 @@ import com.epsilon.FunwithStatus.jsonpojo.deletetext.DeleteText;
 import com.epsilon.FunwithStatus.jsonpojo.dislike.DisLike;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.StatusDatum;
-import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.jsonpojo.trending.TrendingDatum;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
@@ -56,18 +48,16 @@ import retrofit2.Response;
 public class TextTrensliderAdapter extends PagerAdapter {
     private Activity _activity;
     private LayoutInflater inflater;
-    String text, Id, name, email, u_name, loginuser, subcat;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    String text, name, email, u_name, loginuser, subcat;
+    APIInterface apiInterface ;
     Sessionmanager sessionmanager;
-    int i;
-
+    int i,Id;
 
     // constructor
-    public TextTrensliderAdapter(Activity activity, String subcat, String u_name,int i) {
+    public TextTrensliderAdapter(Activity activity,int i) {
         this._activity = activity;
-        this.subcat = subcat;
-        this.u_name = u_name;
         this.i = i;
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         sessionmanager = new Sessionmanager(activity);
         inflater = (LayoutInflater) _activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -75,7 +65,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return Constants.trendingData.size();
+        return Constants.homedata.size();
     }
 
     @Override
@@ -91,9 +81,9 @@ public class TextTrensliderAdapter extends PagerAdapter {
 
         email = sessionmanager.getValue(Sessionmanager.Email);
         loginuser = sessionmanager.getValue(Sessionmanager.Name);
-        text = Constants.trendingData.get(i).getStatus();
-        Id = Constants.trendingData.get(i).getId();
-        name = Constants.trendingData.get(i).getUser();
+        text = Constants.homedata.get(i).text.toString();
+        Id = Integer.valueOf(Constants.homedata.get(i).id);
+        name = Constants.homedata.get(i).userName;
 
         final EmojiconTextView display_text = (EmojiconTextView) viewLayout.findViewById(R.id.display_text);
         final ImageView like = (ImageView) viewLayout.findViewById(R.id.like);
@@ -104,13 +94,14 @@ public class TextTrensliderAdapter extends PagerAdapter {
         final ImageView whatsapp = (ImageView) viewLayout.findViewById(R.id.whatsapp);
         final ImageView facebook = (ImageView) viewLayout.findViewById(R.id.facebook);
 
-        String textURL = Constants.trendingData.get(i).getStatus();
+        String textURL = text;
         String result = EmojiParser.parseToUnicode(textURL);
         display_text.setText(result);
 
         if (loginuser.equalsIgnoreCase(u_name)) {
             delete.setVisibility(View.VISIBLE);
         }
+
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +120,8 @@ public class TextTrensliderAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         like.startAnimation(animation_3);
-                        addlike(name, email, Id, text);
+                        addlike(Id,"like");
+//                        addlike(name, email, Id, text);
                     }
 
                     @Override
@@ -156,7 +148,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         dislike.startAnimation(animation_3);
-                        dislike(name, email, Id, text);
+                        addlike(Id,"unlike");
                     }
 
                     @Override
@@ -247,7 +239,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         delete.startAnimation(animation_3);
-                        delete(Id);
+//                        delete(Id);
                     }
 
                     @Override
@@ -324,7 +316,7 @@ public class TextTrensliderAdapter extends PagerAdapter {
                             Toast.makeText(_activity, "Copied to clipboard", Toast.LENGTH_SHORT).show();
                             String url = display_text.getText().toString();
                             boolean facebookAppFound = false;
-                            Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                            Intent shareIntent = new Intent(Intent.ACTION_SEND);
                             shareIntent.setType("text/plain");
                             shareIntent.putExtra(Intent.EXTRA_TEXT, url);
                             shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
@@ -368,17 +360,17 @@ public class TextTrensliderAdapter extends PagerAdapter {
         ((ViewPager) container).removeView((LinearLayout) object);
     }
 
-    public void addlike(String category, String email, String status_id, String status) {
+    public void addlike(int id, String type) {
         final ProgressDialog dialog = new ProgressDialog(_activity);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Please Wait...");
         dialog.show();
-        final Call<AddLike> countrycall = apiInterface.addlikepojo(category, email, status_id, status);
+        final Call<AddLike> countrycall = apiInterface.addlikepojo(id, type);
         countrycall.enqueue(new Callback<AddLike>() {
             @Override
             public void onResponse(Call<AddLike> call, Response<AddLike> response) {
                 dialog.dismiss();
-                Toast.makeText(_activity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(_activity, response.body().msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -388,7 +380,6 @@ public class TextTrensliderAdapter extends PagerAdapter {
             }
         });
     }
-
     public void dislike(String category, String email, String status_id, String status) {
         final ProgressDialog dialog = new ProgressDialog(_activity);
         dialog.setCanceledOnTouchOutside(false);
@@ -442,31 +433,9 @@ public class TextTrensliderAdapter extends PagerAdapter {
 
     // TODO TEXT DELETE API END
 
-    public void textstatus(String subcat) {
-        final Call<Status> countrycall = apiInterface.textstatuspojo(subcat);
-        countrycall.enqueue(new Callback<Status>() {
-            @Override
-            public void onResponse(Call<Status> call, Response<Status> response) {
-                if (Constants.statusData != null) {
-                    Constants.statusData.clear();
-                }
-                if (!Constants.statusData.equals("") && Constants.statusData != null) {
-                    Constants.statusData.addAll(response.body().getData());
-                } else {
-                    Toast.makeText(_activity, "No Video Found", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Status> call, Throwable t) {
-
-            }
-        });
-    }
-
     private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
-            if (_activity.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (_activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
 //                Log.v(TAG,"Permission is granted2");
                 return true;

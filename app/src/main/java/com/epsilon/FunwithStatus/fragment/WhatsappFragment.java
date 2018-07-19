@@ -1,9 +1,7 @@
 package com.epsilon.FunwithStatus.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,10 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.epsilon.FunwithStatus.Dashboard;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.whatsappImage;
-import com.epsilon.FunwithStatus.whatsappVideo;
+import com.epsilon.FunwithStatus.whatsappImageActivity;
+import com.epsilon.FunwithStatus.whatsappVideoActivity;
 
 
 public class WhatsappFragment extends Fragment {
@@ -35,7 +32,7 @@ public class WhatsappFragment extends Fragment {
         gallary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity, whatsappImage.class);
+                Intent it = new Intent(activity, whatsappImageActivity.class);
                 startActivity(it);
                 getActivity().finish();
             }
@@ -44,7 +41,7 @@ public class WhatsappFragment extends Fragment {
         video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity, whatsappVideo.class);
+                Intent it = new Intent(activity, whatsappVideoActivity.class);
                 startActivity(it);
                 getActivity().finish();
             }

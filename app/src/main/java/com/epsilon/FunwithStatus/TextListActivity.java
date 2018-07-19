@@ -18,20 +18,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
+import com.epsilon.FunwithStatus.adapter.RecycleImageAdapter;
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
-import com.epsilon.FunwithStatus.adapter.TrendingAdapter;
+import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
+import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
-import com.epsilon.FunwithStatus.jsonpojo.trending.Trending;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAd;
-import com.facebook.ads.InterstitialAdListener;
-import com.google.android.gms.ads.AdRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,21 +43,27 @@ public class TextListActivity extends AppCompatActivity {
     Activity context;
     SwipeRefreshLayout swipelayout;
     RecyclerView recyclerView;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-    String name;
+    APIInterface apiInterface ;
+    String name,ID;
+    int Id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_list);
         context = this;
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         idMapping();
+        Intent mIntent = getIntent();
+        Id = mIntent.getIntExtra("ID", 0);
+        ID = String.valueOf(Id);
+        Log.e("TEXID",":"+Id);
+        name = getIntent().getStringExtra("NAME");
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        name = getIntent().getStringExtra("NAME");
-        textstatus(name);
+
 
 
         setSupportActionBar(toolbar);
@@ -72,13 +78,13 @@ public class TextListActivity extends AppCompatActivity {
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");
         } else {
-
+            textstatus(ID);
         }
 
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                textstatus(name);
+                textstatus(ID);
                 swipelayout.setRefreshing(false);
             }
         });
@@ -89,69 +95,41 @@ public class TextListActivity extends AppCompatActivity {
         swipelayout = (SwipeRefreshLayout) findViewById(R.id.swipelayout);
     }
 
-
     public void textstatus(String subcat) {
         final ProgressDialog dialog = new ProgressDialog(context);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Please Wait...");
         dialog.show();
-        final Call<Status> countrycall = apiInterface.textstatuspojo(subcat);
-        countrycall.enqueue(new Callback<Status>() {
+
+        Call<Status> logincall = apiInterface.statuspojo(subcat);
+        logincall.enqueue(new Callback<Status>() {
             @Override
             public void onResponse(Call<Status> call, Response<Status> response) {
                 dialog.dismiss();
-
-                if (Constants.statusData != null) {
-                    Constants.statusData.clear();
-                }
-                if (!Constants.statusData.equals("") && Constants.statusData != null) {
-                    Constants.statusData.addAll(response.body().getData());
-                    TextListAdapter adapter = new TextListAdapter(context);
-                    recyclerView.setAdapter(adapter);
-                    if (adapter != null)
-                        adapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(context, "No Video Found", Toast.LENGTH_SHORT).show();
+                if (response.body().status == 1) {
+                    if (Constants.statusData != null) {
+                        Constants.statusData.clear();
+                    }
+                    if (!Constants.statusData.equals("") && Constants.statusData != null) {
+                        Constants.statusData.addAll(response.body().data.data);
+                        TextListAdapter adapter = new TextListAdapter(context);
+                        recyclerView.setAdapter(adapter);
+//                        if (adapter != null)
+//                            adapter.notifyDataSetChanged();
+                        Toast.makeText(context, response.body().msg, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, response.body().msg, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
-
             @Override
             public void onFailure(Call<Status> call, Throwable t) {
                 dialog.dismiss();
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+                Helper.showToastMessage(context,"No Internet Connection");
             }
         });
     }
 
-//    public void trending() {
-////        final ProgressDialog dialog = new ProgressDialog(context);
-////        dialog.setCanceledOnTouchOutside(false);
-////        dialog.setMessage("Please Wait...");
-////        dialog.show();
-////        final Call<Trending> countrycall = apiInterface.trendingpojo();
-////        countrycall.enqueue(new Callback<Trending>() {
-////            @Override
-////            public void onResponse(Call<Trending> call, Response<Trending> response) {
-////                dialog.dismiss();
-////
-////                if (Constants.trendingData != null) {
-////                    Constants.trendingData.clear();
-////                }
-////                if (!Constants.trendingData.equals("") && Constants.statusData != null) {
-////                    Constants.trendingData.addAll(response.body().getData());
-////                    TrendingAdapter adapter = new TrendingAdapter(context);
-////                    recyclerView.setAdapter(adapter);
-////                } else {
-////                    Toast.makeText(context, "No Status Found", Toast.LENGTH_SHORT).show();
-////                }
-////            }
-////
-////            @Override
-////            public void onFailure(Call<Trending> call, Throwable t) {
-////                dialog.dismiss();
-////            }
-////        });
-////    }
 
     @Override
     public void onBackPressed() {
@@ -190,13 +168,14 @@ public class TextListActivity extends AppCompatActivity {
             {
                 Intent it = new Intent(TextListActivity.this, AddTextActivity.class);
                 it.putExtra("NAME", name);
+                it.putExtra("ID",Id);
                 startActivity(it);
                 finish();
             }
             else
             {
 
-                Intent mainIntent = new Intent(context, LoginPage.class);
+                Intent mainIntent = new Intent(context, LoginPageActivity.class);
                 startActivity(mainIntent);
                 LayoutInflater inflater = getLayoutInflater();
                 View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) findViewById(R.id.llCustom));

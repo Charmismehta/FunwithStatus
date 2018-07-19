@@ -2,13 +2,12 @@ package com.epsilon.FunwithStatus.adapter;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.content.res.Configuration;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,10 +16,6 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,37 +30,26 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.epsilon.FunwithStatus.ImageSlider;
-import com.epsilon.FunwithStatus.LoginPage;
+import com.epsilon.FunwithStatus.FullscreenActivity;
+import com.epsilon.FunwithStatus.LoginPageActivity;
 import com.epsilon.FunwithStatus.R;
 import com.epsilon.FunwithStatus.SingleUploadBroadcastReceiver;
-import com.epsilon.FunwithStatus.fragment.VideoFragment;
-import com.epsilon.FunwithStatus.jsonpojo.videolist.VideoList;
-import com.epsilon.FunwithStatus.retrofit.APIClient;
-import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
+import com.halilibo.bettervideoplayer.BetterVideoCallback;
+import com.halilibo.bettervideoplayer.BetterVideoPlayer;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.UploadNotificationConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.UUID;
 
-import cn.jzvd.JZVideoPlayerStandard;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroadcastReceiver.Delegate{
 
@@ -115,7 +99,7 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
             convertView = inflater.inflate(R.layout.whatsappvideo_item, null);
         }
 
-        JZVideoPlayerStandard JZVideoPlayerStandard = (JZVideoPlayerStandard) convertView.findViewById(R.id.Thumbnail);
+        BetterVideoPlayer bvp = (BetterVideoPlayer) convertView.findViewById(R.id.bvp);
         TextView user_name = (TextView) convertView.findViewById(R.id.user_name);
         TextView Upload = (TextView) convertView.findViewById(R.id.upload);
         LinearLayout mainlayout = (LinearLayout) convertView.findViewById(R.id.mainlayout);
@@ -129,15 +113,73 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
         String extension = filenameArray[filenameArray.length - 1];
 
         if (extension.equalsIgnoreCase("mp4")) {
-            RequestOptions options = new RequestOptions().frame(10000);
-//        holder.JZVideoPlayerStandard.releaseAllVideos();
-            JZVideoPlayerStandard.setUp(video,
-                    JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL,
-                    "");
-            Glide.with(context).asBitmap()
-                    .load(video)
-                    .apply(options)
-                    .into(JZVideoPlayerStandard.thumbImageView);
+            if (((Activity)context).getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+                    bvp.setAutoPlay(true);
+                    bvp.setSource(uri);
+//                bvp.setCaptions(R.raw.sub, CaptionsView.CMime.SUBRIP);
+
+                  bvp.setHideControlsOnPlay(true);
+//            bvp.getToolbar().inflateMenu(R.menu.menu_dizi);
+//            bvp.getToolbar().setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//                @Override
+//                public boolean onMenuItemClick(MenuItem item) {
+//                    Intent it = new Intent(activity, FullscreenActivity.class);
+//                    it.putExtra("uri" , uri.toString());
+//                    Log.e("URI",uri.toString());
+//                    startActivity(it);
+//                    return false;
+//                }
+//            });
+
+                bvp.enableSwipeGestures(context.getWindow());
+
+                bvp.setCallback(new BetterVideoCallback() {
+                    @Override
+                    public void onStarted(BetterVideoPlayer player) {
+                        //Log.i(TAG, "Started");
+                    }
+
+                    @Override
+                    public void onPaused(BetterVideoPlayer player) {
+                        //Log.i(TAG, "Paused");
+                    }
+
+                    @Override
+                    public void onPreparing(BetterVideoPlayer player) {
+                        //Log.i(TAG, "Preparing");
+                    }
+
+                    @Override
+                    public void onPrepared(BetterVideoPlayer player) {
+                        //Log.i(TAG, "Prepared");
+                    }
+
+                    @Override
+                    public void onBuffering(int percent) {
+                        //Log.i(TAG, "Buffering " + percent);
+                    }
+
+                    @Override
+                    public void onError(BetterVideoPlayer player, Exception e) {
+                        //Log.i(TAG, "Error " +e.getMessage());
+                    }
+
+                    @Override
+                    public void onCompletion(BetterVideoPlayer player) {
+                        //Log.i(TAG, "Completed");
+                    }
+
+                    @Override
+                    public void onToggleControls(BetterVideoPlayer player, boolean isShowing) {
+
+                    }
+                });
+            } else {
+                Intent it = new Intent(context, FullscreenActivity.class);
+                it.putExtra("uri" , uri.toString());
+                context.startActivity(it);
+            }
         } else {
             Toast.makeText(context, "no image", Toast.LENGTH_SHORT).show();
         }
@@ -155,7 +197,7 @@ public class MyVideoGridAdapter extends BaseAdapter implements SingleUploadBroad
                 if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false)) {
                     uploadMultipart(v,video);
                 } else {
-                    Intent mainIntent = new Intent(context, LoginPage.class);
+                    Intent mainIntent = new Intent(context, LoginPageActivity.class);
                     context.startActivity(mainIntent);
                     LayoutInflater inflater = context.getLayoutInflater();
                     View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup)v.findViewById(R.id.llCustom));

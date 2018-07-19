@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 27
@@ -6,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.epsilon.FunwithStatus"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode 4
         versionName "1.3"
@@ -52,6 +53,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.1'
     implementation 'com.intuit.sdp:sdp-android:1.0.4'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'// google ad
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
@@ -60,14 +62,15 @@ dependencies {
     implementation 'com.rockerhieu.emojicon:library:1.3.3' // support emojies
     implementation 'net.gotev:uploadservice:2.1' // upload all images and video
     implementation 'com.vdurmont:emoji-java:4.0.0' // support emojies at backend
-    implementation 'cn.jzvd:jiaozivideoplayer:6.2.10' // video Player
     implementation 'com.facebook.android:audience-network-sdk:4.99.0' // facebook ad
 //    classpath 'com.google.gms:google-services:4.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation 'com.google.android.gms:play-services-auth:12.0.1'
+    implementation 'com.karumi:dexter:5.0.0'
 
     implementation 'com.facebook.android:facebook-login:[4,5)'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.github.halilozercan:BetterVideoPlayer:1.2.alpha1'// videolibrary
+    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
 }
-apply plugin: 'com.google.gms.google-services'

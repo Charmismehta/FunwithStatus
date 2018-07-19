@@ -20,64 +20,64 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
-
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
 
-        <!--<activity-->
-            <!--android:name="com.facebook.CustomTabActivity"-->
-            <!--android:exported="true">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
-                <!--<data android:scheme="@string/fb_login_protocol_scheme" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
+        <!-- <activity -->
+        <!-- android:name="com.facebook.CustomTabActivity" -->
+        <!-- android:exported="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.VIEW" /> -->
+        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+        <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
+        <!-- <data android:scheme="@string/fb_login_protocol_scheme" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
 
-        <!--<activity android:name="com.facebook.FacebookActivity"-->
-            <!--android:configChanges=-->
-                <!--"keyboard|keyboardHidden|screenLayout|screenSize|orientation"-->
-            <!--android:label="@string/app_name" />-->
+
+        <!-- <activity android:name="com.facebook.FacebookActivity" -->
+        <!-- android:configChanges= -->
+        <!-- "keyboard|keyboardHidden|screenLayout|screenSize|orientation" -->
+        <!-- android:label="@string/app_name" /> -->
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider230732141087494"
             android:exported="true" />
 
-        <!--<provider-->
-        <!--android:name="android.support.v4.content.FileProvider"-->
-        <!--android:authorities="${applicationId}.provider"-->
-        <!--android:exported="false"-->
-        <!--android:grantUriPermissions="true">-->
-        <!--<meta-data-->
-        <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
-        <!--android:resource="@xml/provider_paths" />-->
-        <!--</provider>-->
+        <!-- <provider -->
+        <!-- android:name="android.support.v4.content.FileProvider" -->
+        <!-- android:authorities="${applicationId}.provider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/provider_paths" /> -->
+        <!-- </provider> -->
 
         <activity
-            android:name=".RegistrationPage"
+            android:name=".RegistrationPageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
-
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoginPage"
+            android:name=".LoginPageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden" >
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/fb_login_protocol_scheme" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -86,7 +86,7 @@
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".GallaryUtils"
+            android:name=".GallaryUtilsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
@@ -96,18 +96,23 @@
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".SplashScreen"
+            android:name=".SplashScreenActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
         <activity
             android:name=".Dashboard"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".DisplayText"
+            android:name=".DisplayTextActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
@@ -117,44 +122,37 @@
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".DisplayImage"
+            android:name=".DisplayImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".SubCatImage"
+            android:name=".DemoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".Demo"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="stateHidden">
-
-        </activity>
         <activity
             android:name=".AddVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".DisplayVideo"
+            android:name=".DisplayVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ForgetPassword"
+            android:name=".ForgetPasswordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ImageSlider"
+            android:name=".ImageSliderActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".TextSlider"
+            android:name=".TextSliderActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
@@ -169,28 +167,32 @@
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".whatsappImage"
+            android:name=".whatsappImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".whatsappVideo"
+            android:name=".whatsappVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".whatsappImageSlide"
+            android:name=".whatsappImageSlideActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".AddOption"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar"
+        <activity
+            android:name=".AddOptionActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|density"
-            android:windowSoftInputMode="stateVisible|stateAlwaysVisible|adjustResize"/>
-            <!--android:windowSoftInputMode="stateVisible" />-->
-        <activity android:name=".Categoriesoption" />
-        <activity android:name=".Advertise">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="stateVisible|stateAlwaysVisible|adjustResize" />
+        <!-- android:windowSoftInputMode="stateVisible" /> -->
+        <activity
+            android:name=".CategoriesoptionActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".VideoListActivity" />
+        <activity android:name=".FullscreenActivity"></activity>
     </application>
+
 </manifest>

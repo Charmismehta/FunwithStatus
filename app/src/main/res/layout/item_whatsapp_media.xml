@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:visibility="gone"
+            android:src="@drawable/videocamera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/iv_imageview"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY" />
+        <RelativeLayout
+            android:id="@+id/rr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/vv_videoview"
+            />
+            <Button
+                android:visibility="gone"
+                android:id="@+id/btn"
+                android:background="@drawable/vc_playicon"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_centerInParent="true"
+                android:gravity="center" />
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_30sdp"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/_10sdp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/ll_like">
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="wrap_content"
+                android:id="@+id/iv_like"
+                android:layout_marginLeft="@dimen/_7sdp"
+                android:layout_gravity="center"
+                android:src="@drawable/vc_thumbup"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:id="@+id/tv_likecount"
+                android:textSize="@dimen/_10sdp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:id="@+id/ll_share"
+            android:layout_marginLeft="@dimen/_5sdp">
+            <ImageView
+                android:layout_width="@dimen/_15sdp"
+                android:id="@+id/iv_share"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_4sdp"
+                android:src="@drawable/vc_share" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:id="@+id/ll_whatsapp"
+            android:layout_marginLeft="@dimen/_5sdp">
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:id="@+id/iv_whatsapp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_4sdp"
+                android:src="@drawable/whatsapp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:id="@+id/ll_facebook"
+            android:layout_marginLeft="@dimen/_5sdp">
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:id="@+id/iv_facebook"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_4sdp"
+                android:src="@drawable/fbicon" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:id="@+id/ll_download"
+            android:layout_marginLeft="@dimen/_5sdp">
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:id="@+id/iv_download"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_4sdp"
+                android:src="@drawable/vc_download" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text"
+            android:text="Upload it"/>
+        <TextView
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvUserName"
+            android:text="UserName"/>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:background="@color/colorAccent" />
+</LinearLayout>

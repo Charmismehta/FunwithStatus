@@ -1,52 +1,26 @@
 package com.epsilon.FunwithStatus;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 
-import com.bumptech.glide.Glide;
 import com.epsilon.FunwithStatus.adapter.ImageListAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.image_list.ImageList;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
@@ -61,25 +35,12 @@ import com.google.android.gms.ads.AdRequest;
 
 import com.google.android.gms.ads.InterstitialAd;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.UploadNotificationConfig;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.epsilon.FunwithStatus.utills.Sessionmanager.Id;
 
 public class ImageListActivity extends AppCompatActivity {
 
@@ -87,13 +48,12 @@ public class ImageListActivity extends AppCompatActivity {
     TextView title;
     ImageView ileft, iright;
     private RecyclerView recyclerView;
-    String subcat,maincat;
-    String  user;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    String name;
+    int Id;
+    APIInterface apiInterface;
     SwipeRefreshLayout swipelayout;
     Sessionmanager sessionmanager;
     EditText edit_caption;
-    private InterstitialAd mInterstitialAd;
     private AdView adView;
 
 
@@ -102,33 +62,25 @@ public class ImageListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_list);
         context = this;
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         sessionmanager = new Sessionmanager(this);
         idMappings();
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
-        mInterstitialAd = new InterstitialAd(context);
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_full_screen));
-        mInterstitialAd.loadAd(adRequest);
-        mInterstitialAd.setAdListener(new AdListener() {
-            public void onAdLoaded() {
-                showInterstitial();
-            }
-        });
-
-        subcat = getIntent().getStringExtra("NAME");
-        maincat = getIntent().getStringExtra("REALNAME");
-        user = sessionmanager.getValue(Sessionmanager.Name);
+        Intent mIntent = getIntent();
+        Id = mIntent.getIntExtra("ID", 0);
+        name = getIntent().getStringExtra("NAME");
 
         if (!Helper.isConnectingToInternet(context)) {
             Helper.showToastMessage(context, "Please Connect Internet");
         } else {
-            Imagecategory(subcat);
+            Imagecategory(Id);
         }
 
         swipelayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Imagecategory(subcat);
+                Imagecategory(Id);
                 swipelayout.setRefreshing(false);
             }
         });
@@ -136,19 +88,21 @@ public class ImageListActivity extends AppCompatActivity {
         ileft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-                it.putExtra("NAME",maincat);
-        startActivity(it);
-        finish();
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    finish();
+                }
             }
         });
+
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        title.setText(subcat);
+        title.setText(name);
         adView = new AdView(this, getString(R.string.Bannerplacement_id), AdSize.BANNER_HEIGHT_50);
         LinearLayout adContainer = (LinearLayout) findViewById(R.id.banner_container);
         adContainer.addView(adView);
@@ -159,9 +113,9 @@ public class ImageListActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                if (Sessionmanager.getPreferenceBoolean(context, Constants.IS_LOGIN, false))
 //                {
-                    Intent it = new Intent(context,Demo.class);
-                    it.putExtra("NAME",subcat);
-                    it.putExtra("REALNAME",maincat);
+                    Intent it = new Intent(context,DemoActivity.class);
+                    it.putExtra("ID",Id);
+                    it.putExtra("NAME",name);
                     startActivity(it);
                     finish();
 //                }
@@ -180,10 +134,11 @@ public class ImageListActivity extends AppCompatActivity {
         });
     }
     public void onBackPressed() {
-        Intent it = new Intent(ImageListActivity.this, SubCatImage.class);
-        it.putExtra("NAME",maincat);
-        startActivity(it);
-        finish();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            this.finish();
+        }
     }
 
     private int dpToPx(int dp) {
@@ -234,13 +189,8 @@ public class ImageListActivity extends AppCompatActivity {
         ileft=(ImageView) findViewById(R.id.ileft);
         iright=(ImageView) findViewById(R.id.iright);
     }
-    private void showInterstitial() {
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
-    }
 
-    public void Imagecategory(String subcat) {
+    public void Imagecategory(int subcat) {
         final ProgressDialog dialog = new ProgressDialog(context);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Please Wait...");
@@ -250,19 +200,22 @@ public class ImageListActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ImageList> call, Response<ImageList> response) {
                 dialog.dismiss();
-                if (response.body().getStatus().equals("Success")) {
+
+                Log.e("imageList--> ", response.toString());
+
+                if (response.body().status == 1) {
                     if (Constants.imageListData != null) {
                         Constants.imageListData.clear();
                     }
                     List<Object> recipeList = new ArrayList<>();
                     recipeList.add(response.body());
-                    Constants.imageListData.addAll(response.body().getImages());
-                    ImageListAdapter adapter = new ImageListAdapter(context,maincat);
+                    Constants.imageListData.addAll(response.body().data.data);
+                    ImageListAdapter adapter = new ImageListAdapter(context);
                     recyclerView.setAdapter(adapter);
                 }
                 else
                 {
-                    Toast.makeText(context,"Try Again", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,response.body().msg, Toast.LENGTH_SHORT).show();
                 }
             }
 

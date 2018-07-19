@@ -26,7 +26,7 @@ public class Sessionmanager {
     }
 
 
-    public String getValue(String KEY_ID){
+    public String getValue(String KEY_ID) {
         return sharedPreferences.getString(KEY_ID, "");
     }
 
@@ -47,25 +47,40 @@ public class Sessionmanager {
         return sharedPreferences.getBoolean(key, Default);
     }
 
-    public void logoutUser()
-    {
+    public void logoutUser() {
         sharedPreferences.edit().clear().apply();
     }
 
-    public void createSession_userLogin(LoginDatum userLogin)
-    {
-        sharedPreferences.edit().putString(Token,userLogin.getToken()).apply();
-        sharedPreferences.edit().putString(Id,userLogin.getUser().getId().toString()).apply();
-        sharedPreferences.edit().putString(Name,userLogin.getUser().getName()).apply();
-        sharedPreferences.edit().putString(Email,userLogin.getUser().getEmail()).apply();
+    public void createSession_userLogin(LoginDatum userLogin) {
+        sharedPreferences.edit().putString(Token, userLogin.getToken()).apply();
+        sharedPreferences.edit().putString(Id, userLogin.getUser().getId().toString()).apply();
+        sharedPreferences.edit().putString(Name, userLogin.getUser().getName()).apply();
+        sharedPreferences.edit().putString(Email, userLogin.getUser().getEmail()).apply();
     }
 
 
-    public void createSession_userRegister(RegistrationDatum userregister)
-    {
-        sharedPreferences.edit().putString(Token,userregister.getToken()).apply();
-        sharedPreferences.edit().putString(Id,userregister.getUser().getId().toString()).apply();
-        sharedPreferences.edit().putString(Name,userregister.getUser().getName()).apply();
-        sharedPreferences.edit().putString(Email,userregister.getUser().getEmail()).apply();
+    public void createSession_userRegister(RegistrationDatum userregister) {
+        sharedPreferences.edit().putString(Token, userregister.getToken()).apply();
+        sharedPreferences.edit().putString(Id, userregister.getUser().getId().toString()).apply();
+        sharedPreferences.edit().putString(Name, userregister.getUser().getName()).apply();
+        sharedPreferences.edit().putString(Email, userregister.getUser().getEmail()).apply();
+    }
+
+    public static class TokenSaver {
+        private final static String SHARED_PREF_NAME = "net.rouk1.SHARED_PREF_NAME";
+        private final static String TOKEN_KEY = "net.rouk1.TOKEN_KEY";
+
+        public static String getToken(Context c) {
+            SharedPreferences prefs = c.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+            return prefs.getString(TOKEN_KEY, "");
+        }
+
+        public static void setToken(Context c, String token) {
+            SharedPreferences prefs = c.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(TOKEN_KEY, token);
+            editor.apply();
+        }
+
     }
 }

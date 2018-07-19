@@ -6,38 +6,13 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Status {
-    @SerializedName("Category")
-    @Expose
-    private String category;
     @SerializedName("status")
     @Expose
-    private String status;
+    public int status;
+    @SerializedName("msg")
+    @Expose
+    public String msg;
     @SerializedName("data")
     @Expose
-    private List<StatusDatum> data = null;
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public List<StatusDatum> getData() {
-        return data;
-    }
-
-    public void setData(List<StatusDatum> data) {
-        this.data = data;
-    }
-
+    public StatusData data;
 }

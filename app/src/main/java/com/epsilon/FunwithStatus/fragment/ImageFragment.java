@@ -46,7 +46,7 @@ public class ImageFragment extends Fragment {
     private RecyclerView recyclerView;
     private AlbumsAdapter adapter;
     Activity context;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    APIInterface apiInterface;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +59,7 @@ public class ImageFragment extends Fragment {
 
 
         context = getActivity();
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         initCollapsingToolbar(view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -181,7 +182,6 @@ public class ImageFragment extends Fragment {
                         recyclerView.setAdapter(adapter);
                         if (adapter != null)
                             adapter.notifyDataSetChanged();
-                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     }

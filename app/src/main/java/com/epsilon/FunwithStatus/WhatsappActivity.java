@@ -24,7 +24,7 @@ public class WhatsappActivity extends AppCompatActivity {
         gallary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity,whatsappImage.class);
+                Intent it = new Intent(activity,whatsappImageActivity.class);
                 startActivity(it);
                 finish();
             }
@@ -33,7 +33,7 @@ public class WhatsappActivity extends AppCompatActivity {
         video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = new Intent(activity,whatsappVideo.class);
+                Intent it = new Intent(activity,whatsappVideoActivity.class);
                 startActivity(it);
                 finish();
             }

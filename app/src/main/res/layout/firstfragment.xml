@@ -33,13 +33,13 @@ android:orientation="vertical"
                         android:layout_weight="1"
                         android:textSize="@dimen/_13sdp"
                         android:textStyle="bold" />
-                    <ImageView
-                        android:layout_gravity="center"
-                        android:layout_marginRight="@dimen/_20sdp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/dot"
-                        android:src="@drawable/vc_playdot"/>
+                    <!--<ImageView-->
+                        <!--android:layout_gravity="center"-->
+                        <!--android:layout_marginRight="@dimen/_20sdp"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:id="@+id/dot"-->
+                        <!--android:src="@drawable/vc_playdot"/>-->
 
                 </LinearLayout>
 

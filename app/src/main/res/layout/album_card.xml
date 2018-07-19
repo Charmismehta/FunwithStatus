@@ -19,11 +19,11 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
+                    android:adjustViewBounds="true"
                     android:id="@+id/thumbnail1"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_100sdp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="fitXY" />
 
                 <TextView
                     android:id="@+id/title1"

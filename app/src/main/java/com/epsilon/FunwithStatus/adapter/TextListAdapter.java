@@ -3,22 +3,16 @@ package com.epsilon.FunwithStatus.adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.media.Image;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.epsilon.FunwithStatus.DisplayText;
 import com.epsilon.FunwithStatus.R;
-import com.epsilon.FunwithStatus.TextListActivity;
-import com.epsilon.FunwithStatus.TextSlider;
+import com.epsilon.FunwithStatus.TextSliderActivity;
 import com.epsilon.FunwithStatus.utills.Constants;
 import com.rockerhieu.emojicon.EmojiconTextView;
 import com.vdurmont.emoji.EmojiParser;
@@ -44,24 +38,31 @@ public class TextListAdapter extends RecyclerView.Adapter<TextListAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int i) {
-        String str = Constants.statusData.get(i).getStatus();
+        String str = Constants.statusData.get(i).text;
         str = str.replaceAll("\n\n",",");
         String result = EmojiParser.parseToUnicode(str);
         holder.tvtext_name.setText(result);
 
-        holder.like_count.setText(Constants.statusData.get(i).getLiked());
-        holder.user_name.setText(Constants.statusData.get(i).getUser());
+        holder.like_count.setText(String.valueOf(Constants.statusData.get(i).totalLikes));
+        holder.user_name.setText(Constants.statusData.get(i).userName);
         holder.like.setColorFilter(activity.getResources().getColor(R.color.white));
+
+        holder.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
 
         holder.rlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Intent it = new Intent(activity, TextSlider.class);
-                    it.putExtra("text", Constants.statusData.get(i).getStatus());
-                    it.putExtra("Id", Constants.statusData.get(i).getId());
-                    it.putExtra("NAME", Constants.statusData.get(i).getSubcata());
-                    it.putExtra("U_NAME", Constants.statusData.get(i).getUser());
+                    Intent it = new Intent(activity, TextSliderActivity.class);
+                    it.putExtra("text", Constants.statusData.get(i).text);
+                    it.putExtra("NAME", Constants.statusData.get(i).categoryName);
+                    it.putExtra("U_NAME", Constants.statusData.get(i).userName);
+                    it.putExtra("ID", Constants.statusData.get(i).categoryId);
                     it.putExtra("position", i);
                     activity.startActivity(it);
                     activity.finish();

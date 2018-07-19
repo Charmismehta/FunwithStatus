@@ -20,13 +20,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.epsilon.FunwithStatus.adapter.RecycleImageAdapter;
 import com.epsilon.FunwithStatus.adapter.TextListAdapter;
 import com.epsilon.FunwithStatus.jsonpojo.addstatus.AddStatus;
+import com.epsilon.FunwithStatus.jsonpojo.categories.Categories;
 import com.epsilon.FunwithStatus.jsonpojo.textstatus.Status;
 import com.epsilon.FunwithStatus.retrofit.APIClient;
 import com.epsilon.FunwithStatus.retrofit.APIInterface;
 import com.epsilon.FunwithStatus.utills.Constants;
+import com.epsilon.FunwithStatus.utills.Helper;
 import com.epsilon.FunwithStatus.utills.Sessionmanager;
+import com.epsilon.FunwithStatus.utills.Utils;
+import com.epsilon.FunwithStatus.utills.UtilsConstant;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -39,29 +44,33 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddTextActivity extends AppCompatActivity {
+public class AddTextActivity extends BaseActivity {
     Toolbar toolbar;
     EmojiconEditText edit_text;
     Context context;
-    APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-    String subcat,u_name;
+    APIInterface apiInterface;
+    String name, token;
     Sessionmanager sessionmanager;
+    int Id;
     private InterstitialAd mInterstitialAd;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.epsilon.FunwithStatus.R.layout.activity_add_text);
 
         context = this;
+        apiInterface = APIClient.getClient(context).create(APIInterface.class);
         sessionmanager = new Sessionmanager(this);
         idMappings();
-        subcat = getIntent().getStringExtra("NAME");
-        u_name= sessionmanager.getValue(Sessionmanager.Name);
+        Intent mIntent = getIntent();
+        Id = mIntent.getIntExtra("ID", 0);
+        name = getIntent().getStringExtra("NAME");
+        token = Utils.getPref(getActivity(), UtilsConstant.TOKEN, "");
 
-        toolbar=(Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.vc_back);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -72,29 +81,39 @@ public class AddTextActivity extends AppCompatActivity {
 
     private void idMappings() {
         edit_text = (EmojiconEditText) findViewById(R.id.edit_text);
-
-
     }
 
-    public void addstatus(String subcat,String u_name, final String status) {
-        final Call<AddStatus> countrycall = apiInterface.addstatuspojo(subcat,u_name, status);
-        countrycall.enqueue(new Callback<AddStatus>() {
+    public void addstatus(int category_id, String name, final String text, String token) {
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("Please Wait...");
+        dialog.show();
+
+        Call<AddStatus> logincall = apiInterface.addstatuspojo(category_id, name, text, token);
+        logincall.enqueue(new Callback<AddStatus>() {
             @Override
             public void onResponse(Call<AddStatus> call, Response<AddStatus> response) {
-                Log.e("TEXT",status);
-                Toast.makeText(context, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                if (response.body().status == 1) {
+                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call<AddStatus> call, Throwable t) {
-                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+                Helper.showToastMessage(context, "No Internet Connection");
             }
         });
     }
 
+
     public void onBackPressed() {
-        Intent it = new Intent(AddTextActivity.this,TextListActivity.class);
-        it.putExtra("NAME",subcat);
+        Intent it = new Intent(AddTextActivity.this, TextListActivity.class);
+        it.putExtra("NAME", name);
+        it.putExtra("ID", Id);
         startActivity(it);
         finish();
     }
@@ -115,7 +134,8 @@ public class AddTextActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (item.getItemId() == android.R.id.home) {
             Intent it = new Intent(AddTextActivity.this, TextListActivity.class);
-            it.putExtra("NAME",subcat);
+            it.putExtra("NAME", name);
+            it.putExtra("ID", Id);
             startActivity(it);
             finish();
             finish(); // close this activity and return to preview activity (if there is any)
@@ -123,11 +143,12 @@ public class AddTextActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.vc_addtext) {
             if (!edit_text.getText().toString().equalsIgnoreCase("")) {
-                String str= edit_text.getText().toString();
+                String str = edit_text.getText().toString();
                 String result = EmojiParser.parseToAliases(str);
-                addstatus(subcat,u_name, result);
+                addstatus(Id, name, result, token);
                 Intent it = new Intent(AddTextActivity.this, TextListActivity.class);
-                it.putExtra("NAME",subcat);
+                it.putExtra("NAME", name);
+                it.putExtra("ID", Id);
                 startActivity(it);
                 finish();
             } else {

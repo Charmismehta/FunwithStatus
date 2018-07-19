@@ -15,7 +15,6 @@ public class GridViewItem {
             this.image = image;
         }
 
-
         public String getPath() {
             return path;
         }
